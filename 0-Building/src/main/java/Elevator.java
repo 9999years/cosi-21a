@@ -1,22 +1,14 @@
 public class Elevator {
-	// Fields
-	/* Note:    You need to keep track of the current floor
-	   at which the elevator is at. Every time the
-	   elevator moves, a line should be printed to
-	   indicate the current floor of the elevator,
-	   which should change a floor at a time. */
 	protected ArrayQueue<Job> jobs;
 	protected Building building;
 	protected int floor;
 
 	protected static final int INITIAL_JOB_CAPACITY = 0;
 
-	/**
-	 *  Make sure to instantiate the required objects, such as the array
-	 *  of jobs that the elevator needs to have.
-	 */
-	public Elevator() {
+	public Elevator(Building building) {
 		jobs = new ArrayQueue<Job>();
+		floor = 1;
+		this.building = building;
 	}
 
 	protected void moveTo(int newFloor) {
@@ -80,8 +72,7 @@ public class Elevator {
 	 *  @param floor the floor at which the person is exiting
 	 */
 	public boolean exit(Person person, int floor) {
-		// TODO: implement me!
-		return false;
+		return building.enterFloor(person, floor);
 	}
 
 	/**

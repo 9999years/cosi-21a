@@ -12,10 +12,11 @@ public class Building {
 
 	public Building(int floors) {
 		this.floors = new Floor[floors];
-		elevator = new Elevator();
+		for(int i = 0; i < this.floors.length; i++) {
+			this.floors[i] = new Floor();
+		}
+		elevator = new Elevator(this);
 	}
-
-	// Methods
 
 	/**
 	 *  This method will process the request made by a person to enter the
@@ -27,8 +28,12 @@ public class Building {
 	 *  @param floor the number of the desired floor
 	 */
 	public boolean enterElevator(Person person, int floor) {
+		if(floor > floors.length) {
+			return false;
+		}
 		elevator.createJob(person, floor);
-		return false;
+		person.location = "elevator";
+		return true;
 	}
 
 	/**
@@ -50,6 +55,7 @@ public class Building {
 		if(floor > floors.length) {
 			return false;
 		}
+		person.location = "floor " + floor;
 		return floors[floor - 1].enterFloor(person);
 	}
 

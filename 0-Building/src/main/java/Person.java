@@ -1,7 +1,10 @@
 public class Person {
-	// Fields
 	public final String personal;
 	public final String family;
+
+	// (shrug)
+	// updated by other classes
+	public String location = "purgatory";
 
 	/**
 	 *  Make sure to pass as parameter the necessary information to
@@ -32,8 +35,7 @@ public class Person {
 	 *  "In Elevator", or "In floor 4", etc...
 	 */
 	public String getLocation() {
-		// TODO: implement me!
-		return null;
+		return "In " + location;
 	}
 
 	/**
