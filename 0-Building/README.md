@@ -24,3 +24,15 @@ removing their jobs from the queue as necessary. This involves the elevator
 moving to the lobby, moving to the destination floor, and calling
 `Building.enterFloor` to deposit the passenger on their floor, storing them in
 their floor's array (-queue).
+
+# Compiling
+
+Extract `rebeccaturner-PA0.zip` and enter the directory, as you’ve presumably
+already done if you’re reading this. You can compile with [Maven][1] or just via
+the command-line (except for the tests).
+
+    mvn compile
+
+Will compile the sources and place the `.class` files in `target/classes`.
+
+[1]: https://maven.apache.org/
