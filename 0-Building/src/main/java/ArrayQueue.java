@@ -21,8 +21,18 @@ public class ArrayQueue<T> {
 	}
 
 	ArrayQueue(int capacity) {
-		arr = (T[]) new Object[capacity];
+		arr = constructArray(capacity);
 		size = 0;
+	}
+
+	/**
+	 * java generics are basically a hacked in feature so we have to write
+	 * weird and unintuitive code like this
+	 */
+	protected T[] constructArray(int capacity) {
+		@SuppressWarnings("unchecked")
+		final T[] arr = (T[]) new Object[capacity];
+		return arr;
 	}
 
 	public int size() {
@@ -37,28 +47,30 @@ public class ArrayQueue<T> {
 		// instantiate new array; grow by factor of 2 by
 		// default
 		// im pretty sure that's standard across implementations
-		arr = (T[]) (new Object[arr.length * 2]);
+		arr = constructArray(arr.length * 2);
 		for(int i = 0; i < size; i++) {
 			arr[i] = oldArr[i];
 		}
 	}
 
 	/**
-	 * ensures the internal array can store capacity ELEMENTS (*not*
-	 * elements up to the capacity-th index)
+	 * ensures the internal array can add another element
 	 */
-	protected void ensureCapacity(int capacity) {
+	protected void ensureAddable() {
 		// length and capacity are in terms of elements and not indicies
 		// BUT they're consistent with each other so we don't have to
 		// do any OBO arithmetic to make them compatible
-		if(arr.length <= capacity) {
+		// ...
+		// but we also add one because we want to ensure we have space for one more element
+		if(arr.length <= size + 1) {
 			expand();
 		}
 	}
 
 	public void add(T t) {
-		ensureCapacity(size + 1);
+		ensureAddable();
 		arr[size] = t;
+		size++;
 	}
 
 	public T remove() {

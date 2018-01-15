@@ -11,10 +11,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-		<junit.version>4.12</junit.version>
 		<junit.jupiter.version>5.0.2</junit.jupiter.version>
-		<junit.vintage.version>${junit.version}.2</junit.vintage.version>
-		<junit.platform.version>1.0.2</junit.platform.version>
+		<junit.platform.version>1.0.1</junit.platform.version>
 	</properties>
 
 	<build>
@@ -31,15 +29,12 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.19.1</version>
-				<configuration>
-					<includes>
-						<include>**/*Test.java</include>
-					</includes>
-					<properties>
-						<excludeTags>slow</excludeTags>
-					</properties>
-				</configuration>
 				<dependencies>
+					<dependency>
+						<groupId>org.junit.platform</groupId>
+						<artifactId>junit-platform-surefire-provider</artifactId>
+						<version>${junit.platform.version}</version>
+					</dependency>
 					<dependency>
 						<groupId>org.junit.jupiter</groupId>
 						<artifactId>junit-jupiter-engine</artifactId>
@@ -77,12 +72,6 @@
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
 			<version>${junit.jupiter.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

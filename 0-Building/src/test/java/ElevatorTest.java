@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Test;
 
 public class ElevatorTest {
 	@Test
-	public void addTest() {
+	void addTest() {
 		Elevator e = new Elevator();
 		assertEquals(0, e.jobs.size());
 		e.createJob(new Person("Rebecca", "Turner"), 2);
