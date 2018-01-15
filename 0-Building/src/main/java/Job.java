@@ -1,23 +1,22 @@
 public class Job {
-	protected Person person;
-	protected int destinationFloor;
+	public final Person person;
+	public final int floor;
 
 	/**
 	 *  Make sure to pass the necessary parameters in order to
 	 *  instantiate a Job object that holds a person and a floor.
 	 */
-	public Job() {
-		// TODO: implement me!
-
+	public Job(Person person, int floor) {
+		this.person = person;
+		this.floor = floor;
 	}
-
-	// Methods
 
 	/**
 	 *  The string should be informative yet clean and concise
 	 */
 	public String toString() {
-		// TODO: implement me!
-		return null;
+		return "Job[person=" + person
+			+ ", destination=floor"
+			+ floor + "]";
 	}
 }

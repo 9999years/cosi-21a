@@ -1,15 +1,15 @@
 public class Person {
 	// Fields
-	protected String personal;
-	protected String family;
+	public final String personal;
+	public final String family;
 
 	/**
 	 *  Make sure to pass as parameter the necessary information to
 	 *  initialize the object with a name and a last name.
 	 */
-	public Person() {
-		// TODO: implement me!
-
+	public Person(String personal, String family) {
+		this.personal = personal;
+		this.family = family;
 	}
 
 	// Methods
@@ -21,7 +21,7 @@ public class Person {
 	 *  @param floor the floor requested
 	 */
 	public boolean enterBuilding(Building building, int floor) {
-		// TODO: implement me!
+		building.enterElevator(this, floor);
 		return false;
 	}
 

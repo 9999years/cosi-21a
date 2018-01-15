@@ -5,24 +5,26 @@ public class Elevator {
 	   elevator moves, a line should be printed to
 	   indicate the current floor of the elevator,
 	   which should change a floor at a time. */
-	protected Job[] jobs;
+	protected ArrayQueue<Job> jobs;
 	protected Building building;
 	protected int floor;
 
-	// Constructor
+	protected static final int INITIAL_JOB_CAPACITY = 0;
 
 	/**
 	 *  Make sure to instantiate the required objects, such as the array
 	 *  of jobs that the elevator needs to have.
 	 */
 	public Elevator() {
-		// TODO: implement me!
-
+		jobs = new ArrayQueue<Job>();
 	}
 
-	protected moveTo(int newFloor) {
+	protected void moveTo(int newFloor) {
 		int inc = (floor < newFloor) ? 1 : -1;
 		for(int i = floor; i != newFloor; i += inc) {
+			// technically a lie; `floor` isn't updated until after
+			// the loop. this elevator simulation is NOT thread
+			// safe!
 			System.out.println("The elevator is now at floor " + i);
 		}
 		floor = newFloor;
@@ -34,14 +36,8 @@ public class Elevator {
 	 *  @param person the person that requested the elevator
 	 *  @param floor the desired floor number
 	 */
-	public boolean createJob(Person person, int floor) {
-		// TODO: implement me!
-		/* Note:    In order to add jobs to the array you will
-		   need to have a variable that will keep track
-		   of the index of the job added last, this way
-		   you will be able to add a job at the next
-		   position in the array. */
-		return false;
+	public void createJob(Person person, int floor) {
+		jobs.add(new Job(person, floor));
 	}
 
 	/**
@@ -50,17 +46,7 @@ public class Elevator {
 	 *  in a valid state.
 	 */
 	public void cleanUpJobs() {
-		// TODO: implement me!
-		/* Note:    To remove a job from the array, you will need
-		   to remove the job added first, that is to say
-		   the job in jobs[0]. However, after a job is
-		   completed, you must shift all the elements of
-		   the array to the left, so that jobs[0] contains
-		   the next job to be complted. Make sure to also
-		   update the variable holding the index of the job
-		   added last. This is not efficient but will do
-		   for now. */
-
+		// implemented within the ArrayQueue class
 	}
 
 	/**
@@ -68,8 +54,9 @@ public class Elevator {
 	 *  and process them individually.
 	 */
 	public void processAllJobs() {
-		// TODO: implement me!
-
+		while(jobs.size() > 0) {
+			processJob(jobs.remove());
+		}
 	}
 
 	/**
@@ -79,9 +66,10 @@ public class Elevator {
 	 *  of a person (if necessary).
 	 *  @param job the job to be processed
 	 */
-	public boolean processJob(Job job) {
-		// TODO: implement me!
-		return false;
+	public void processJob(Job job) {
+		moveTo(1);
+		moveTo(job.floor);
+		exit(job.person, job.floor);
 	}
 
 	/**
@@ -100,7 +88,7 @@ public class Elevator {
 	 *  The string should be informative yet clean and concise
 	 */
 	public String toString() {
-		// TODO: implement me!
-		return null;
+		return "Elevator[floor=" + floor
+			+ ", jobs=" + jobs.size() + "]";
 	}
 }

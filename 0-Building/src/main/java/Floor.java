@@ -2,16 +2,13 @@ public class Floor {
 	// Note: you may assume that the capacity won't be surpassed.
 	public static final int floorCapacity = 100;
 
-	protected Person[] people;
-
-	// Constructor
+	protected ArrayQueue<Person> people;
 
 	/**
 	 *  Make sure to instantiate the required fields.
 	 */
 	public Floor() {
-		// TODO: implement me!
-
+		people = new ArrayQueue<Person>(floorCapacity);
 	}
 
 	// Methods
@@ -21,15 +18,18 @@ public class Floor {
 	 *  @param person the person to enter the floor.
 	 */
 	public boolean enterFloor(Person person) {
-		// TODO: implement me!
-		return false;
+		if(people.size() >= floorCapacity) {
+			return false;
+		} else {
+			people.add(person);
+			return true;
+		}
 	}
 
 	/**
 	 *  The string should be informative yet clean and concise
 	 */
 	public String toString() {
-		// TODO: implement me!
-		return null;
+		return "Floor[people=" + people.size() + "]";
 	}
 }
