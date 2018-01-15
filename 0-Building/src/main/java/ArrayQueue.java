@@ -1,3 +1,5 @@
+import java.lang.ArrayIndexOutOfBoundsException;
+
 /**
  * I know what you're thinking: "it's ridiculous to implement a queue with an
  * array!" well, yes, but i did it because the assignment said "the only
@@ -28,6 +30,10 @@ public class ArrayQueue<T> {
 	/**
 	 * java generics are basically a hacked in feature so we have to write
 	 * weird and unintuitive code like this
+	 *
+	 * due to how strange this code is and the fact that it requires a
+	 * compiler annotation i've decided to factor out / abstract something
+	 * as simple as array instantiation. incredible
 	 */
 	protected T[] constructArray(int capacity) {
 		@SuppressWarnings("unchecked")
@@ -48,6 +54,7 @@ public class ArrayQueue<T> {
 		// default
 		// im pretty sure that's standard across implementations
 		arr = constructArray(arr.length * 2);
+		// copy old array to new, larger array
 		for(int i = 0; i < size; i++) {
 			arr[i] = oldArr[i];
 		}
@@ -76,11 +83,21 @@ public class ArrayQueue<T> {
 	public T remove() {
 		T ret = arr[0];
 		size--;
+		// shift over the rest of the array
 		for(int i = 0; i < size; i++) {
 			// this is OK because we've just decremented the array
 			// size
 			arr[i] = arr[i + 1];
 		}
 		return ret;
+	}
+
+	public T get(int inx) {
+		// >= because sizes are in terms of cardinality and indexes are
+		// in terms of... a 0-based ordering system
+		if(inx >= size || inx < 0) {
+			throw new ArrayIndexOutOfBoundsException();
+		}
+		return arr[inx];
 	}
 }

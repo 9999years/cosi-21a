@@ -39,10 +39,16 @@ public class Person {
 	}
 
 	/**
-	 *  The string should be informative yet clean and concise
+	 * many cultures don't list their personal names first (such as in
+	 * China), or have generational names in addition to family names (such
+	 * as in Korea), or do any amount of things to names that don't conform
+	 * to western expectations. a short overview is here:
+	 * http://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/
+	 * but the general concept holds. i'll leave this be but this line of
+	 * code makes, i believe, this entire program fundamentally broken due
+	 * to its exclusion of billions of people
 	 */
 	public String toString() {
-		// TODO: implement me!
-		return null;
+		return personal + " " + family;
 	}
 }

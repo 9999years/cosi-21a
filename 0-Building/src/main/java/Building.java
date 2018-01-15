@@ -1,4 +1,6 @@
 public class Building {
+	public static final int DEFAULT_FLOOR_COUNT = 10;
+
 	protected Floor[] floors;
 	protected Elevator elevator;
 
@@ -7,13 +9,13 @@ public class Building {
 	 *  of floors. You can decide on the specifics of the building.
 	 */
 	public Building() {
-		this(10);
+		this(DEFAULT_FLOOR_COUNT);
 	}
 
 	public Building(int floors) {
 		this.floors = new Floor[floors];
 		for(int i = 0; i < this.floors.length; i++) {
-			this.floors[i] = new Floor();
+			this.floors[i] = new Floor(i + 1);
 		}
 		elevator = new Elevator(this);
 	}
@@ -29,6 +31,9 @@ public class Building {
 	 */
 	public boolean enterElevator(Person person, int floor) {
 		if(floor > floors.length) {
+			System.out.println("Hey, you can't go to floor "
+				+ floor + " in a building with only "
+				+ floors.length + " floors!");
 			return false;
 		}
 		elevator.createJob(person, floor);

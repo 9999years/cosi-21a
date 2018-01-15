@@ -11,13 +11,17 @@ public class Elevator {
 		this.building = building;
 	}
 
+	public void log(String msg) {
+		System.out.println("ELEVATOR: " + msg);
+	}
+
 	protected void moveTo(int newFloor) {
 		int inc = (floor < newFloor) ? 1 : -1;
 		for(int i = floor; i != newFloor; i += inc) {
 			// technically a lie; `floor` isn't updated until after
 			// the loop. this elevator simulation is NOT thread
 			// safe!
-			System.out.println("The elevator is now at floor " + i);
+			log("Now at floor " + i);
 		}
 		floor = newFloor;
 	}
@@ -59,8 +63,14 @@ public class Elevator {
 	 *  @param job the job to be processed
 	 */
 	public void processJob(Job job) {
+		log("Returning to lobby");
+		// no need to add another job the lobby return if we're only
+		// picking up one passenger at a time anyways
 		moveTo(1);
+		log("Picking up " + job.person);
+		log("Moving to " + job.floor);
 		moveTo(job.floor);
+		log("Dropping off passenger");
 		exit(job.person, job.floor);
 	}
 
