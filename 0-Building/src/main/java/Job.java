@@ -1,10 +1,6 @@
 public class Job {
-
-	// Fields
-	// TODO: what object instances should you keep track of?
-
-
-	// Constructor
+	protected Person person;
+	protected int destinationFloor;
 
 	/**
 	 *  Make sure to pass the necessary parameters in order to

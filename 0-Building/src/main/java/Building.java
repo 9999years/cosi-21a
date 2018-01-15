@@ -1,8 +1,6 @@
 public class Building {
-
-	// Fields
-	// TODO: what object instances should you keep track of?
-
+	protected Floor[] floors;
+	protected Elevator elevator;
 
 	// Constructor
 

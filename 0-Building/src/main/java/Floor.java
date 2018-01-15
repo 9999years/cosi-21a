@@ -1,11 +1,8 @@
 public class Floor {
-
 	// Note: you may assume that the capacity won't be surpassed.
 	public static final int floorCapacity = 100;
 
-	// Fields
-	// TODO: what object instances should you keep track of?
-
+	protected Person[] people;
 
 	// Constructor
 

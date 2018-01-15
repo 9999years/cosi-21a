@@ -1,13 +1,13 @@
 public class Elevator {
-
 	// Fields
-	// TODO: what object instances should you keep track of?
 	/* Note:    You need to keep track of the current floor
 	   at which the elevator is at. Every time the
 	   elevator moves, a line should be printed to
 	   indicate the current floor of the elevator,
 	   which should change a floor at a time. */
-
+	protected Job[] jobs;
+	protected Building building;
+	protected int floor;
 
 	// Constructor
 
@@ -20,7 +20,13 @@ public class Elevator {
 
 	}
 
-	// Methods
+	protected moveTo(int newFloor) {
+		int inc = (floor < newFloor) ? 1 : -1;
+		for(int i = floor; i != newFloor; i += inc) {
+			System.out.println("The elevator is now at floor " + i);
+		}
+		floor = newFloor;
+	}
 
 	/**
 	 *  This method should simply add, in the right place, a new job

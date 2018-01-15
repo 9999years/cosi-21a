@@ -1,9 +1,7 @@
 public class Person {
 	// Fields
-	// TODO: what object instances should you keep track of?
-
-
-	// Constructor
+	protected String personal;
+	protected String family;
 
 	/**
 	 *  Make sure to pass as parameter the necessary information to
