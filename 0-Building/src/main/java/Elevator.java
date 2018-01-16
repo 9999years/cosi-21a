@@ -23,6 +23,7 @@ public class Elevator {
 			// safe!
 			log("Now at floor " + i);
 		}
+		log("Now at floor " + newFloor);
 		floor = newFloor;
 	}
 
@@ -70,7 +71,7 @@ public class Elevator {
 		log("Picking up " + job.person);
 		log("Moving to " + job.floor);
 		moveTo(job.floor);
-		log("Dropping off passenger");
+		log("Dropping off " + job.person);
 		exit(job.person, job.floor);
 	}
 

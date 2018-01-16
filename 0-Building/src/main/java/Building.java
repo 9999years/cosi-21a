@@ -14,9 +14,19 @@ public class Building {
 
 	public Building(int floors) {
 		this.floors = new Floor[floors];
+		// initialize each cell in the floors array
 		for(int i = 0; i < this.floors.length; i++) {
 			this.floors[i] = new Floor(i + 1);
 		}
+		// link the elevator back to this building
+		// passing `this` from a constructor is generally frowned upon
+		// b/c invariants a class may maintain are not necessarily
+		// guarenteed to hold until the constructor is finished
+		// executing. however, being author of both classes, i know
+		// that the elevator just puts the building reference in a
+		// field for later, so this is fine
+		//
+		// it's the last statement in the constructor, anyways
 		elevator = new Elevator(this);
 	}
 

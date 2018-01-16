@@ -3,13 +3,12 @@ public class Floor {
 	public static final int floorCapacity = 100;
 
 	public final int number;
-	protected ArrayQueue<Person> people;
+	protected Person[] people;
+	protected int peopleCount;
 
-	/**
-	 *  Make sure to instantiate the required fields.
-	 */
 	public Floor(int number) {
-		people = new ArrayQueue<Person>(floorCapacity);
+		people = new Person[floorCapacity];
+		peopleCount = 0;
 		this.number = number;
 	}
 
@@ -22,19 +21,20 @@ public class Floor {
 	 *  @param person the person to enter the floor.
 	 */
 	public boolean enterFloor(Person person) {
-		if(people.size() >= floorCapacity) {
+		if(peopleCount >= floorCapacity) {
 			return false;
 		} else {
-			people.add(person);
-			log(person + " added to floor; there are now " + people.size() + " people on the floor");
+			people[peopleCount] = person;
+			peopleCount++;
+			log(person + " added to floor; there are now "
+				+ peopleCount + " people on floor "
+				+ number);
 			return true;
 		}
 	}
 
-	/**
-	 *  The string should be informative yet clean and concise
-	 */
 	public String toString() {
-		return "Floor[number=" + number + ", people=" + people.size() + "]";
+		return "Floor[number=" + number
+			+ ", people=" + peopleCount + "]";
 	}
 }

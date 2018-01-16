@@ -45,13 +45,14 @@ public class Simulation {
 
 	public static void main(String[] args) {
 		int floorCount = boundedInt(MIN_FLOORS, MAX_FLOORS);
-		System.out.println("Creating a building with " + floorCount + " floors");
+		System.out.println("Creating a building with "
+			+ floorCount + " floors");
 
 		// create a building
 		Building building = new Building(floorCount);
 
 		// add some people
-		for(int i = 0; i < PEOPLE; i++) {
+		for(int i = 1; i <= PEOPLE; i++) {
 			// create some random names and a destination
 			Person p = new Person(
 				name(),
@@ -61,7 +62,8 @@ public class Simulation {
 
 			// shove the new person in the elevator
 			building.enterElevator(p, dest);
-			System.out.println("Person " + i + " has entered the building, and wants to go to floor " + dest);
+			System.out.println(p + " has entered the building, "
+				+ "and wants to go to floor " + dest);
 
 			// assignment dictates two groups, so we send the
 			// elevator to pick up folks halfway through

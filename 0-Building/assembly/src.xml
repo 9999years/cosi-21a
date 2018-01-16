@@ -12,14 +12,16 @@
 	</formats>
 	<fileSets>
 		<fileSet>
-			<outputDirectory>src</outputDirectory>
 			<directory>src</directory>
+			<excludes>
+				<exclude>**/*.swp</exclude>
+			</excludes>
 		</fileSet>
 		<fileSet>
 			<includes>
 				<include>pom.xml</include>
 				<include>README.md</include>
-				<include>assembly/**</include>
+				<include>assembly/*.xml</include>
 			</includes>
 		</fileSet>
 	</fileSets>

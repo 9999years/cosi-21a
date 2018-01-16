@@ -10,7 +10,8 @@ import java.lang.ArrayIndexOutOfBoundsException;
  * also, if your data is small, eg an int, you're wasting like 2x space by
  * using a linked list!! time / space tradeoffs to watch out for
  *
- * note that this implementation never shinks the internal array
+ * note that this implementation never shinks the internal array, which could
+ * be bad if, uh, you need it to do that
  */
 public class ArrayQueue<T> {
 	public static final int DEFAULT_INITIAL_CAPACITY = 10;

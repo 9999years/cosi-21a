@@ -64,6 +64,21 @@
 					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>Simulation</mainClass>
+						</manifest>
+					</archive>
+					<finalName>rebeccaturner-PA0</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+					<useProjectArtifact>false</useProjectArtifact>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 

@@ -28,11 +28,37 @@ their floor's array (-queue).
 # Compiling
 
 Extract `rebeccaturner-PA0.zip` and enter the directory, as you’ve presumably
-already done if you’re reading this. You can compile with [Maven][1] or just via
-the command-line (except for the tests).
+already done if you’re reading this.
+
+From the directory with this file (`README.md`) and the `pom.xml`, you can
+compile the project either with [Maven][1] or directly.
+
+## Maven
 
     mvn compile
 
 Will compile the sources and place the `.class` files in `target/classes`.
+
+You can then run the simulation with
+
+    java -cp target/classes Simulation
+
+Alternatively,
+
+    mvn package
+
+Will generate an executable jar `rebeccaturner-PA0.jar` (and a source zip) in
+`target/`, which can be run with
+
+    java -jar target/rebeccaturner-PA0.jar
+
+## Direct compilation
+
+Fortunately, there are no external dependencies or whatnot, so compiling without
+Maven is easy too! Just
+
+    cd src/main/java
+    javac *.java
+    java Simulation
 
 [1]: https://maven.apache.org/
