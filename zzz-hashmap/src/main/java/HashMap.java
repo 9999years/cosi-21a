@@ -1,5 +1,8 @@
 import java.util.Map;
 import java.util.Set;
+import java.util.Optional;
+
+import java.util.NoSuchElementException;
 
 /**
  * generic HashMap implementation
@@ -17,13 +20,13 @@ import java.util.Set;
  * "
  */
 public class HashMap<K, V> implements Map<K, V> {
-	protected class Mapping<K, V> {
-		K k;
-		V v;
+	public class Mapping<K, V> {
+		public final K key;
+		public final V value;
 
-		Tuple(K k, V v) {
-			this.k = k;
-			this.v = v;
+		Mapping(K key, V value) {
+			this.key   = key;
+			this.value = value;
 		}
 	}
 
@@ -35,10 +38,41 @@ public class HashMap<K, V> implements Map<K, V> {
 		}
 
 		public void add(K key, V val) {
+			arr.add(new Mapping(key, val));
+		}
+
+		public Optional<V> get(K key) {
+			for(Mapping<> m : arr) {
+				if(m.key.equals(key)) {
+					return Optional.of(m.value);
+				}
+			}
+			return Optional.empty();
 		}
 	}
 
-	protected float loadFactor = 0.75;
+	public static final int DEFAULT_INITIAL_CAPACITY = 16;
+	public static final int DEFAULT_LOAD_FACTOR = 0.75;
+
+	protected float loadFactor = DEFAULT_LOAD_FACTOR;
+	protected ArrayList<Chain<K, V>> dat;
+
+	HashMap() {
+		this(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR);
+	}
+
+	HashMap(int initialCapacity) {
+		this(initialCapacity, DEFAULT_LOAD_FACTOR);
+	}
+
+	HashMap(int initialCapacity, float loadFactor) {
+		this.loadFactor = loadFactor;
+		dat = new ArrayList<>(initialCapacity);
+	}
+
+	HashMap(Map<? extends K, ? extends V> m) {
+		putAll(m);
+	}
 
 	void clear()
 	boolean containsKey(Object key)
@@ -50,7 +84,11 @@ public class HashMap<K, V> implements Map<K, V> {
 	Set<K> keySet()
 	V put(K key, V value)
 	V get(Object key)
-	void putAll(Map<? extends K,? extends V> m)
+
+	void putAll(Map<? extends K, ? extends V> m) {
+		m.forEach((k, v) -> put(k, v));
+	}
+
 	V remove(Object key)
 	int size()
 	Collection<V> values()

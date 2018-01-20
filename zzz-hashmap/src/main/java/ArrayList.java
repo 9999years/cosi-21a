@@ -1,7 +1,38 @@
 import java.lang.ArrayIndexOutOfBoundsException;
+import java.lang.Iterable;
 
-public class ArrayList<T> {
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+public class ArrayList<T> implements Iterable<T> {
 	public static final int DEFAULT_INITIAL_CAPACITY = 10;
+
+	protected class ArrayListIterator<T>
+		implements Iterator<T>, Iterable<T> {
+		int inx;
+		ArrayList<T> arr;
+
+		ArrayListIterator(ArrayList<T> arr) {
+			this.arr = arr;
+			this.inx = 0;
+		}
+
+		public boolean hasNext() {
+			return inx < arr.size();
+		}
+
+		public T next() {
+			if(hasNext()) {
+				inx++;
+				return arr.get(inx);
+			}
+			throw new NoSuchElementException();
+		}
+
+		public void remove() {
+			arr.remove(inx);
+		}
+	}
 
 	protected T[] arr;
 	protected int size;
@@ -13,6 +44,10 @@ public class ArrayList<T> {
 	ArrayQueue(int capacity) {
 		arr = constructArray(capacity);
 		size = 0;
+	}
+
+	Iterator<T> iterator() {
+		return new ArrayListIterator<>(this);
 	}
 
 	/**
