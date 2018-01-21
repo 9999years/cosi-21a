@@ -17,6 +17,10 @@ public class ArrayList<T> implements Iterable<T> {
 			this.inx = 0;
 		}
 
+		public Iterator<T> iterator() {
+			return this;
+		}
+
 		public boolean hasNext() {
 			return inx < arr.size();
 		}
@@ -37,16 +41,16 @@ public class ArrayList<T> implements Iterable<T> {
 	protected T[] arr;
 	protected int size;
 
-	ArrayQueue() {
+	ArrayList() {
 		this(DEFAULT_INITIAL_CAPACITY);
 	}
 
-	ArrayQueue(int capacity) {
+	ArrayList(int capacity) {
 		arr = constructArray(capacity);
 		size = 0;
 	}
 
-	Iterator<T> iterator() {
+	public Iterator<T> iterator() {
 		return new ArrayListIterator<>(this);
 	}
 
