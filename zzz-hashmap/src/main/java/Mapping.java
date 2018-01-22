@@ -11,9 +11,11 @@ public class Mapping<K, V> implements Map.Entry<K, V> {
 
 	public boolean equals(Object o) {
 		if(o instanceof Map.Entry) {
-			Map.Entry<K, V> e = (Map.Entry) o;
+			Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
 			return e.getKey().equals(key)
 				&& e.getValue().equals(value);
+		} else {
+			return false;
 		}
 	}
 

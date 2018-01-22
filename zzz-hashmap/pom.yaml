@@ -26,7 +26,7 @@ build:
         configuration:
             source: '${java.version}'
             target: '${java.version}'
-            #compilerArgs: [ -verbose ]
+            #compilerArgs: [ -verbose, '-Xlint:unchecked' ]
 
         # junit tests
       - groupId: org.apache.maven.plugins

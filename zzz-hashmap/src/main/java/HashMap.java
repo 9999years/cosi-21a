@@ -23,8 +23,8 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 		protected Iterator<Mapping<K, V>> chain;
 		protected Mapping<K, V> next = null;
 
-		HashMapIterator(HashMap<K, V> m) {
-			chains = m.dat.iterator();
+		HashMapIterator() {
+			chains = HashMap.this.dat.iterator();
 			hasNext();
 		}
 
@@ -100,8 +100,8 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 			if(m.isPresent()) {
 				m.get().value = value;
 			} else {
-				arr.add(new Mapping(key, value));
-				super.size++;
+				arr.add(new Mapping<K, V>(key, value));
+				HashMap.this.size++;
 			}
 			return value;
 		}
@@ -112,7 +112,7 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 				Mapping<K, V> m = itr.next();
 				if(m.key.equals(key)) {
 					itr.remove();
-					super.size--;
+					HashMap.this.size--;
 					return Optional.ofNullable(m.value);
 				}
 			}
@@ -132,7 +132,8 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 		 * a get / contains COMBO function
 		 */
 		public Optional<V> get(Object key) {
-			return getMapping(key).flatMap(m -> m.value);
+			return getMapping(key)
+				.flatMap(m -> Optional.ofNullable(m.value));
 		}
 	}
 
@@ -209,7 +210,7 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 	}
 
 	public Iterator<Mapping<K, V>> iterator() {
-		return new HashMapIterator(this);
+		return new HashMapIterator<K, V>();
 	}
 
 	// TODO lol
