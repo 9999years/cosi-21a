@@ -1,3 +1,5 @@
+package org.becca.cosi21a;
+
 import java.util.Map;
 
 public class Mapping<K, V> implements Map.Entry<K, V> {

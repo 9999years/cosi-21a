@@ -1,3 +1,5 @@
+package org.becca.cosi21a;
+
 import java.lang.Iterable;
 
 import java.util.Collection;
@@ -43,7 +45,7 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 				// non-empty chain
 				next = chain.next();
 				return true;
-			} else if(chains.hasNext()) {
+			} else if(chains != null && chains.hasNext()) {
 				// maybe a chain left?
 				while(chains.hasNext()) {
 					Chain<K, V> c = chains.next();
@@ -102,6 +104,9 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 			} else {
 				arr.add(new Mapping<K, V>(key, value));
 				HashMap.this.size++;
+				if(HashMap.this.needsRehash()) {
+					HashMap.this.rehash();
+				}
 			}
 			return value;
 		}
@@ -158,7 +163,16 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 	}
 
 	HashMap(Map<? extends K, ? extends V> m) {
+		this();
 		putAll(m);
+	}
+
+	protected boolean needsRehash() {
+		return (float) size / dat.size() > loadFactor;
+	}
+
+	protected void rehash() {
+		// shrugs
 	}
 
 	protected Chain<K, V> chain(Object key) {
@@ -202,7 +216,7 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 	}
 
 	public V remove(Object key) {
-		chain(key).remove(key);
+		return chain(key).remove(key).orElse(null);
 	}
 
 	public int size() {
