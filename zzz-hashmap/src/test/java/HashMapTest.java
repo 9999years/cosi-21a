@@ -1,3 +1,5 @@
+package org.becca.cosi21a;
+
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
@@ -9,13 +11,13 @@ public class HashMapTest {
 		map.put("a", null);
 		map.put(null, "qaz");
 
-		assertTrue(map.contains("abc"));
-		assertTrue(map.contains("a"));
-		assertTrue(map.contains(null));
+		assertTrue(map.containsKey("abc"));
+		assertTrue(map.containsKey("a"));
+		assertTrue(map.containsKey(null));
 
-		assertFalse(map.contains("adc"));
-		assertFalse(map.contains("b"));
-		assertFalse(map.contains("\n"));
+		assertFalse(map.containsKey("adc"));
+		assertFalse(map.containsKey("b"));
+		assertFalse(map.containsKey("\n"));
 
 		assertEquals("def", map.get("abc"));
 		assertEquals(null, map.get("a"));

@@ -24,7 +24,7 @@ public class ArrayList<T> implements Iterable<T> {
 		}
 
 		public boolean hasNext() {
-			return inx < arr.size();
+			return inx + 1 < arr.size();
 		}
 
 		public T next() {

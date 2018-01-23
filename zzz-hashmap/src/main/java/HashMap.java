@@ -5,8 +5,11 @@ import java.lang.Iterable;
 import java.util.Collection;
 import java.util.Set;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Iterator;
+
+// actual classes
+import java.util.Optional;
+import java.util.Arrays;
 
 import java.util.NoSuchElementException;
 
@@ -26,7 +29,7 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 		protected Mapping<K, V> next = null;
 
 		HashMapIterator() {
-			chains = HashMap.this.dat.iterator();
+			chains = Arrays.asList(HashMap.this.dat).iterator();
 			hasNext();
 		}
 
@@ -146,7 +149,7 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 	public static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
 	protected float loadFactor = DEFAULT_LOAD_FACTOR;
-	protected ArrayList<Chain<K, V>> dat;
+	protected Chain<K, V>[] dat;
 	protected int size = 0;
 
 	HashMap() {
@@ -159,7 +162,7 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 
 	HashMap(int initialCapacity, float loadFactor) {
 		this.loadFactor = loadFactor;
-		dat = new ArrayList<>(initialCapacity);
+		dat = chainArray(initialCapacity);
 	}
 
 	HashMap(Map<? extends K, ? extends V> m) {
@@ -167,8 +170,19 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 		putAll(m);
 	}
 
+	// java generics are a hack etc etc
+	protected Chain<K, V>[] chainArray(int length) {
+		@SuppressWarnings("unchecked")
+		final Chain<K, V>[] arr = (Chain<K, V>[]) new Chain[length];
+		for(int i = 0; i < arr.length; i++) {
+			arr[i] = new Chain<>();
+		}
+		return arr;
+	}
+
 	protected boolean needsRehash() {
-		return (float) size / dat.size() > loadFactor;
+		return dat.length > 0
+			&& (float) size / dat.length > loadFactor;
 	}
 
 	protected void rehash() {
@@ -176,7 +190,11 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 	}
 
 	protected Chain<K, V> chain(Object key) {
-		return dat.get(key.hashCode() % dat.size());
+		int inx = 0;
+		if(dat.length > 0 && key != null) {
+			inx = key.hashCode() % dat.length;
+		}
+		return dat[inx];
 	}
 
 	public void clear() {
@@ -186,10 +204,16 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 		size = 0;
 	}
 
+	/**
+	 * O(1) amortized
+	 */
 	public boolean containsKey(Object key) {
 		return chain(key).get(key).isPresent();
 	}
 
+	/**
+	 * O(n) amortized
+	 */
 	public boolean containsValue(Object value) {
 		for(Mapping<K, V> m : this) {
 			if(m.value.equals(value)) {
