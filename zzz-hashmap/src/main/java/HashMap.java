@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
  * TODO: rehashing lol
  */
 public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
-	protected class HashMapIterator<K, V>
+	protected class HashMapIterator
 		implements Iterable<Mapping<K, V>>, Iterator<Mapping<K, V>> {
 
 		protected Iterator<Chain<K, V>> chains;
@@ -224,7 +224,7 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 	}
 
 	public Iterator<Mapping<K, V>> iterator() {
-		return new HashMapIterator<K, V>();
+		return new HashMapIterator();
 	}
 
 	// TODO lol
