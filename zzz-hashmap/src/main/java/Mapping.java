@@ -33,4 +33,8 @@ public class Mapping<K, V> implements Map.Entry<K, V> {
 		this.value = value;
 		return this.value;
 	}
+
+	public String toString() {
+		return "(" + key + " -> " + value + ")";
+	}
 }

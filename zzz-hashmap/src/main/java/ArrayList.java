@@ -144,4 +144,18 @@ public class ArrayList<T> implements Iterable<T> {
 		}
 		return arr[inx];
 	}
+
+	public String toString() {
+		StringBuilder ret = new StringBuilder();
+		ret.append("[");
+		Iterator<T> itr = iterator();
+		while(itr.hasNext()) {
+			ret.append(itr.next());
+			if(itr.hasNext()) {
+				ret.append(", ");
+			}
+		}
+		ret.append("]");
+		return ret.toString();
+	}
 }

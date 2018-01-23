@@ -10,6 +10,7 @@ import java.util.Iterator;
 // actual classes
 import java.util.Optional;
 import java.util.Arrays;
+import java.lang.StringBuilder;
 
 import java.util.NoSuchElementException;
 
@@ -178,6 +179,15 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 			arr[i] = new Chain<>();
 		}
 		return arr;
+	}
+
+	protected String debug() {
+		StringBuilder ret = new StringBuilder();
+		for(Chain<K, V> chain : dat) {
+			ret.append(chain.arr);
+			ret.append("\n");
+		}
+		return ret.toString();
 	}
 
 	protected boolean needsRehash() {

@@ -11,6 +11,8 @@ public class HashMapTest {
 		map.put("a", null);
 		map.put(null, "qaz");
 
+		System.out.println(map.debug());
+
 		assertTrue(map.containsKey("abc"));
 		assertTrue(map.containsKey("a"));
 		assertTrue(map.containsKey(null));
