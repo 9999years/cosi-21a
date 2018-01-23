@@ -104,8 +104,10 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 		public V put(K key, V value) {
 			Optional<Mapping<K, V>> m = getMapping(key);
 			if(m.isPresent()) {
+				System.out.println("key is present!");
 				m.get().value = value;
 			} else {
+				System.out.println("adding key");
 				arr.add(new Mapping<K, V>(key, value));
 				HashMap.this.size++;
 				if(HashMap.this.needsRehash()) {
