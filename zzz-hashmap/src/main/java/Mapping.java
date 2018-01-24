@@ -1,6 +1,7 @@
 package org.becca.cosi21a;
 
 import java.util.Map;
+import java.lang.UnsupportedOperationException;
 
 public class Mapping<K, V> implements Map.Entry<K, V> {
 	protected K key;
@@ -31,7 +32,7 @@ public class Mapping<K, V> implements Map.Entry<K, V> {
 
 	public V setValue(V value) {
 		this.value = value;
-		return this.value;
+		return value;
 	}
 
 	public String toString() {

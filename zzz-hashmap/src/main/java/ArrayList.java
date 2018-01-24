@@ -9,15 +9,10 @@ import java.util.NoSuchElementException;
 public class ArrayList<T> implements Iterable<T> {
 	public static final int DEFAULT_INITIAL_CAPACITY = 10;
 
-	protected class ArrayListIterator<T>
+	protected class ArrayListIterator
 		implements Iterator<T>, Iterable<T> {
-		int inx;
-		ArrayList<T> arr;
-
-		ArrayListIterator(ArrayList<T> arr) {
-			this.arr = arr;
-			this.inx = 0;
-		}
+		int inx = -1;
+		ArrayList<T> arr = ArrayList.this;
 
 		public Iterator<T> iterator() {
 			return this;
@@ -53,7 +48,7 @@ public class ArrayList<T> implements Iterable<T> {
 	}
 
 	public Iterator<T> iterator() {
-		return new ArrayListIterator<>(this);
+		return new ArrayListIterator();
 	}
 
 	/**

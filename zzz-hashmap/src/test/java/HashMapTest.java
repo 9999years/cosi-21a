@@ -7,11 +7,15 @@ public class HashMapTest {
 	@Test
 	void integrationTest() {
 		HashMap<String, String> map = new HashMap<>();
-		map.put("abc", "def");
+		map.put("abc", "abc");
 		map.put("a", null);
 		map.put(null, "qaz");
 
+		map.put("abc", "def");
+
 		System.out.println(map.debug());
+
+		assertEquals(3, map.size());
 
 		assertTrue(map.containsKey("abc"));
 		assertTrue(map.containsKey("a"));
