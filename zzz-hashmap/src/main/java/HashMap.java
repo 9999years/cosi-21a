@@ -102,7 +102,7 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 		 * set key to value if present, otherwise add the mapping
 		 */
 		public V put(K key, V value) {
-			Optional<Mapping<K, V>> m = getMapping(key);
+			Option<Mapping<K, V>> m = getMapping(key);
 			if(m.isPresent()) {
 				m.get().value = value;
 			} else {
@@ -115,43 +115,37 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 			return value;
 		}
 
-		public Optional<V> remove(Object key) {
+		public Option<V> remove(Object key) {
 			Iterator<Mapping<K, V>> itr = arr.iterator();
 			while(itr.hasNext()) {
 				Mapping<K, V> m = itr.next();
 				if(m.key.equals(key)) {
 					itr.remove();
 					HashMap.this.size--;
-					return Optional.ofNullable(m.value);
+					return Option.of(m.value);
 				}
 			}
-			return Optional.empty();
+			return Option.empty();
 		}
 
-		public Optional<Mapping<K, V>> getMapping(Object key) {
+		public Option<Mapping<K, V>> getMapping(Object key) {
 			for(Mapping<K, V> m : arr) {
 				System.out.println("Checking if " + m + " maps from " + key);
-				if(key == null && m.key == null
-						|| m.key.equals(key)) {
+				if((key == null && m.key == null)
+					|| (m.key != null
+					&& m.key.equals(key))) {
 					System.out.println("true!");
-					return Optional.of(m);
+					return Option.of(m);
 				}
 			}
-			return Optional.empty();
+			return Option.empty();
 		}
 
 		/**
 		 * a get / contains COMBO function
 		 */
-		public Optional<V> get(Object key) {
-			//return getMapping(key)
-				//.flatMap(m -> Optional.ofNullable(m.value));
-			Optional<Mapping<K, V>> m = getMapping(key);
-			if(m.isPresent()) {
-				return Optional.ofNullable(m.get().value);
-			} else {
-				return Optional.empty();
-			}
+		public Option<V> get(Object key) {
+			return getMapping(key).map(m -> m.value);
 		}
 	}
 

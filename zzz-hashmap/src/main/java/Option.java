@@ -1,7 +1,5 @@
 package org.becca.cosi21a;
 
-import java.util.Optional;
-
 import java.util.function.Predicate;
 import java.util.function.Function;
 import java.util.function.Consumer;
@@ -9,12 +7,17 @@ import java.util.function.Supplier;
 
 import java.lang.Throwable;
 
-public class Option<T> extends Optional<T> {
+import java.util.NoSuchElementException;
+
+/**
+ * drop-in replacement for java.util.Optional which supports encoding null
+ * values
+ *
+ * @See java.util.Optional
+ */
+public class Option<T> {
 	protected final T t;
 	protected final boolean present;
-
-	protected Option() {
-	}
 
 	protected Option(T t, boolean present) {
 		this.t = t;
@@ -33,13 +36,6 @@ public class Option<T> extends Optional<T> {
 		return new Option<T>(value, true);
 	}
 
-	/**
-	 * throws UnsupportedOperationException
-	 */
-	public static <T> Option<T> ofNullable(T value) {
-		throw new UnsupportedOperationException();
-	}
-
 	public Option<T> filter(Predicate<? super T> predicate) {
 		if(present && predicate.test(t)) {
 			return this;
@@ -52,25 +48,20 @@ public class Option<T> extends Optional<T> {
 		return present ? mapper.apply(t) : empty();
 	}
 
+	/**
+	 * unlike java.util.Optional.map this always returns a non-empty Option
+	 * if this Option is non-empty even if the mapper's result is null
+	 */
 	public <U> Option<U> map(Function<? super T, ? extends U> mapper) {
-		if(present) {
-			U u = mapper.apply(t);
-			if(u == null) {
-				return empty();
-			} else {
-				return Option.of(u);
-			}
-		}
-		return empty();
+		return present ? Option.of(mapper.apply(t)) : empty();
 	}
 
-	/**
-	 * same as map() but always returns a non-empty Option even if the
-	 * mapper's result is null
-	 */
-	public <U> Option<U> mapNullable(
-			Function<? super T, ? extends U> mapper) {
-		return present ? Option.of(mapper.apply(t)) : empty();
+	public T get() {
+		if(present) {
+			return t;
+		} else {
+			throw new NoSuchElementException();
+		}
 	}
 
 	public T orElse(T other) {
@@ -100,8 +91,8 @@ public class Option<T> extends Optional<T> {
 	}
 
 	public boolean equals(Object o) {
-		if(o instanceof Optional) {
-			Optional<?> opt = (Optional<?>) o;
+		if(o instanceof Option) {
+			Option<?> opt = (Option<?>) o;
 			if(present && opt.isPresent()) {
 				// both present
 				return opt.get().equals(t);
