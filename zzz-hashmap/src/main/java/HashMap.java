@@ -6,11 +6,14 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.function.Function;
 
 // actual classes
-import java.util.Optional;
 import java.util.Arrays;
 import java.lang.StringBuilder;
+
+// is this cheating?
+import java.util.HashSet;
 
 import java.util.NoSuchElementException;
 
@@ -130,11 +133,9 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 
 		public Option<Mapping<K, V>> getMapping(Object key) {
 			for(Mapping<K, V> m : arr) {
-				System.out.println("Checking if " + m + " maps from " + key);
 				if((key == null && m.key == null)
 					|| (m.key != null
 					&& m.key.equals(key))) {
-					System.out.println("true!");
 					return Option.of(m);
 				}
 			}
@@ -151,6 +152,7 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 
 	public static final int DEFAULT_INITIAL_CAPACITY = 16;
 	public static final float DEFAULT_LOAD_FACTOR = 0.75f;
+	public static final int EXPANSION_FACTOR = 2;
 
 	protected float loadFactor = DEFAULT_LOAD_FACTOR;
 	protected Chain<K, V>[] dat;
@@ -199,7 +201,13 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 	}
 
 	protected void rehash() {
-		// shrugs
+		// create larger map
+		HashMap<K, V> expanded =
+			new HashMap(dat.length * EXPANSION_FACTOR, loadFactor);
+		// put our keys in it
+		expanded.putAll(this);
+		// swap out the data
+		dat = expanded.dat;
 	}
 
 	protected Chain<K, V> chain(Object key) {
@@ -265,11 +273,11 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 	}
 
 	// TODO lol
-	public Set<Map.Entry<K,V>> entrySet() { return null;  }
-	public boolean equals(Object o)       { return false; }
-	public int hashCode()                 { return 0;     }
-	public Set<K> keySet()                { return null;  }
-	public Collection<V> values()         { return null;  }
+	public Set<Map.Entry<K, V>> entrySet() { return null;  }
+	public Set<K> keySet()                 { return null;  }
+	public boolean equals(Object o)        { return false; }
+	public int hashCode()                  { return 0;     }
+	public Collection<V> values()          { return null;  }
 
 	// DEFAULT METHODS !!!!
 	/*
