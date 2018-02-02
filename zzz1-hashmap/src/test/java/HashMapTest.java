@@ -13,8 +13,6 @@ public class HashMapTest {
 
 		map.put("abc", "def");
 
-		System.out.println(map.debug());
-
 		assertEquals(3, map.size());
 
 		assertTrue(map.containsKey("abc"));

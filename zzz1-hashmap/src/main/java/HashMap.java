@@ -11,9 +11,7 @@ import java.util.function.Function;
 // actual classes
 import java.util.Arrays;
 import java.lang.StringBuilder;
-
-// is this cheating?
-import java.util.HashSet;
+import java.lang.Math;
 
 import java.util.NoSuchElementException;
 
@@ -21,8 +19,6 @@ import java.util.NoSuchElementException;
  * generic HashMap implementation
  *
  * I'm probably going to have to do this eventually anyways, right
- *
- * TODO: rehashing lol
  */
 public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 	protected class HashMapIterator
@@ -213,7 +209,7 @@ public class HashMap<K, V> implements Map<K, V>, Iterable<Mapping<K, V>> {
 	protected Chain<K, V> chain(Object key) {
 		int inx = 0;
 		if(dat.length > 0 && key != null) {
-			inx = key.hashCode() % dat.length;
+			inx = Math.abs(key.hashCode()) % dat.length;
 		}
 		return dat[inx];
 	}
