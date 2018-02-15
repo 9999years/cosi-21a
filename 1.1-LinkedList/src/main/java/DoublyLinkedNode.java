@@ -1,7 +1,13 @@
-public class DoublyLinkedNode<T> {
+import java.lang.Comparable;
+
+public class DoublyLinkedNode<T extends Comparable<T>> {
 	public final T data;
-	protected DoublyLinkedNode<T> prev;
-	protected DoublyLinkedNode<T> next;
+	protected DoublyLinkedNode<T> prev = null;
+	protected DoublyLinkedNode<T> next = null;
+
+	DoublyLinkedNode() {
+		this(null);
+	}
 
 	DoublyLinkedNode(T data) {
 		this.data = data;
@@ -12,6 +18,10 @@ public class DoublyLinkedNode<T> {
 		this(data);
 		this.prev = prev;
 		this.next = next;
+	}
+
+	public int compareTo(T other) {
+		return data.compareTo(other);
 	}
 
 	/**
@@ -26,6 +36,10 @@ public class DoublyLinkedNode<T> {
 	 * all internal `DoublyLinkedNode`s, we're completely unable to
 	 * maintain any invariants. amazing.
 	 */
+	public void setPrev(DoublyLinkedNode<T> prevNode) {
+		prev = prevNode;
+	}
+
 	public void setNext(DoublyLinkedNode<T> nextNode) {
 		next = nextNode;
 	}
