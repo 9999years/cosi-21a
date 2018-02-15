@@ -4,19 +4,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.api.DisplayName;
 
-import java.util.Deque;
-import java.util.function.Consumer;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import java.util.ListIterator;
-import java.util.Iterator;
+import java.util.Arrays;
+import java.util.List;
 
 public class QueueTest {
 
@@ -165,58 +156,118 @@ public class QueueTest {
 	}
 
 	/**
-	 * basic operations
+	 * basic operations; this mucks around and checks a bunch of internals
 	 */
 	@Test
-	void simpleTest1() {
-		Queue<Integer> list = new Queue<>();
-		assertEquals(0, list.getSize());
-		Integer el = 100;
-		list.enqueue(el);
-		assertEquals(1, list.getSize(), "size");
-		assertEquals(el, list.dequeue(), "peek");
+	void simpleTest() {
+		Queue<Integer> queue = new Queue<>();
+
+		assertEquals(0, queue.front);
+		assertEquals(0, queue.back);
+
+		// enqueue, checking size
+		assertEquals(0, queue.getSize());
+
+		queue.enqueue(999);
+		assertEquals(0, queue.front);
+		assertEquals(0, queue.back);
+		assertEquals(1, queue.getSize(), "size");
+
+		queue.enqueue(1);
+		assertEquals(0, queue.front);
+		assertEquals(1, queue.back);
+		assertEquals(2, queue.getSize(), "size");
+
+		queue.enqueue(39);
+		assertEquals(0, queue.front);
+		assertEquals(2, queue.back);
+		assertEquals(3, queue.getSize(), "size");
+
+		assertEquals(999, (int) queue.get(0));
+		assertEquals(1, (int) queue.get(1));
+		assertEquals(39, (int) queue.get(2));
+
+		// dequeue, checking size
+		assertEquals(999, (int) queue.dequeue(), "dequeue");
+		assertEquals(2, queue.getSize(), "size");
+
+		assertEquals(1, queue.front);
+		assertEquals(2, queue.back);
+
+		assertEquals(1, (int) queue.dequeue(), "dequeue");
+		assertEquals(1, queue.getSize(), "size");
+
+		assertEquals(2, queue.front);
+		assertEquals(2, queue.back);
+
+		assertEquals(39, (int) queue.dequeue(), "dequeue");
+		assertEquals(0, queue.getSize(), "size");
+
+		assertEquals(2, queue.front);
+		assertEquals(2, queue.back);
 	}
 
 	/**
-	 * tests all add at front methods:
-	 * addFirst, offerFirst, push
-	 */
-	@ParameterizedTest
-	@MethodSource("numbersProvider")
-	void pusherTest(List<Integer> input) {
-		for(MethodNamePair<BiConsumer<Queue, Integer>> method
-				: addTailMethods) {
-			pusherTest(input, method);
-		}
-	}
-
-	/**
-	 * also tests the peek methods
+	 * tests peek, enqueue, dequeue, get, and set
 	 */
 	@ParameterizedTest
 	@MethodSource("numbersProvider")
 	void addRemovePeekTest(List<Integer> input) {
-		Queue<Integer> list = new Queue<>();
+		Queue<Integer> queue = new Queue<>();
 		for(int i : input) {
-			list.add(i);
+			queue.enqueue(i);
+		}
+		int inx = 0;
+		for(int i : input) {
+			assertEquals(i, (int) queue.get(inx));
+			queue.set(0, inx);
+			assertEquals(0, (int) queue.get(inx));
+			queue.set(i, inx);
+			inx++;
 		}
 		for(int i : input) {
-			peekTest(list, i);
-			assertEquals((Object) i, list.poll());
+			assertEquals(i, (int) queue.peek());
+			assertEquals(i, (int) queue.dequeue());
 		}
 	}
+
+	/**
+	 * by setting an initial size of 1 we can ensure that most of the test
+	 * cases will force several expansions
+	 */
+	@ParameterizedTest
+	@MethodSource("numbersProvider")
+	void expandTest(List<Integer> input) {
+		Queue<Integer> queue = new Queue<>(1);
+		for(int i : input) {
+			queue.enqueue(i);
+		}
+		assertEquals(input.toString(), queue.toString());
+	}
+
 
 	@Test
 	void toStringTest() {
-		Queue<String> list = new Queue<>(Arrays.asList(
-			"a", "b", "c", "d", "e"
-		));
-
-		assertEquals("[a, b, c, d, e]", list.toString());
+		Queue<String> queue = new Queue<>();
+		assertEquals("[]", queue.toString());
+		queue.enqueue("a");
+		assertEquals("[a]", queue.toString());
+		queue.enqueue("b");
+		assertEquals("[a, b]", queue.toString());
+		queue.enqueue("c");
+		assertEquals("[a, b, c]", queue.toString());
+		queue.enqueue("d");
+		queue.enqueue("e");
+		assertEquals("[a, b, c, d, e]", queue.toString());
+		queue.dequeue();
+		assertEquals("[b, c, d, e]", queue.toString());
+		queue.dequeue();
+		assertEquals("[c, d, e]", queue.toString());
+		queue.dequeue();
+		assertEquals("[d, e]", queue.toString());
+		queue.dequeue();
+		assertEquals("[e]", queue.toString());
+		queue.dequeue();
+		assertEquals("[]", queue.toString());
 	}
-
-	// TO TEST:
-	// operateOnFirst(Object o, Consumer<E> operation)
-	// removeFirstOccurrence(Object o)
-	// removeLastOccurrence(Object o)
 }

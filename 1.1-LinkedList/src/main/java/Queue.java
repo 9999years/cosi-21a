@@ -1,4 +1,8 @@
 import java.lang.ArrayIndexOutOfBoundsException;
+import java.lang.IllegalStateException;
+import java.lang.IllegalArgumentException;
+
+import java.util.Arrays;
 
 /**
  * array-based deque
@@ -6,16 +10,47 @@ import java.lang.ArrayIndexOutOfBoundsException;
 public class Queue<T> {
 	public static final int DEFAULT_INITIAL_CAPACITY = 10;
 
+	/**
+	 * example layout:
+	 * ∅ := null
+	 * size = 12
+	 * capacity = 18
+	 * arr index:  0  1 2 3 4 5 6 7  8  9 10 11 12 13 14 15 16 17
+	 * arr:       10 11 ∅ ∅ ∅ ∅ ∅ ∅  0  1  2  3  4  5  6  7  8  9
+	 *                ^back = 1      ^front = 8
+	 * elements are enqueue'd at the back of the queue, increasing back by
+	 * 1, and dequeue'd from the front of the queue, increasing front by 1
+	 *
+	 * arr: ∅ ∅ ∅ ∅
+	 *     bf
+	 * arr: 0 ∅ ∅ ∅
+	 *      b=f
+	 * arr: 0 1 ∅ ∅
+	 *      f b
+	 * arr: 0 1 2 ∅
+	 *      f   b
+	 * arr: ∅ 1 2 ∅
+	 *        f b
+	 */
 	protected T[] arr;
+	// the difference between front and back is *kinda* the size but we
+	// have to do math (ie add the array capacity and subtract them) to get
+	// the size from that data so we store it separately
 	protected int size = 0;
 	protected int front = 0;
+	// we add 1 to back adding our first element so this ensures that the
+	// first element is enqueued into position 0
 	protected int back = 0;
 
-	ArrayQueue() {
+	Queue() {
 		this(DEFAULT_INITIAL_CAPACITY);
 	}
 
-	ArrayQueue(int capacity) {
+	Queue(int capacity) {
+		if(capacity < 1) {
+			// cannot have a 0-capacity queue
+			throw new IllegalArgumentException();
+		}
 		arr = constructArray(capacity);
 		size = 0;
 	}
@@ -74,22 +109,31 @@ public class Queue<T> {
 		}
 	}
 
-	protected void index(int inx) {
-		return (front + inx) % arr.length;
-	}
-
-	protected void incFront() {
-		front = index(front + 1);
-	}
-
-	protected void incBack() {
-		back = index(back + 1);
-	}
-
 	protected void throwIfOOB(int inx) {
 		if(inx < 0 || inx > size || size == 0) {
 			throw new ArrayIndexOutOfBoundsException();
 		}
+	}
+
+	/**
+	 * turn an index relative to the front of the queue into an index
+	 * usable with the wrapping internal array
+	 */
+	protected int index(int inx) {
+		return (front + inx) % arr.length;
+	}
+
+	protected void incFront() {
+		// index() is relative to the front of the queue
+		if(size > 0) {
+			front = index(1);
+		}
+	}
+
+	protected void incBack() {
+		// always at the end of the queue, and size = last index + 1 or
+		// 0
+		back = index(size);
 	}
 
 	public void set(T t, int inx) {
@@ -103,22 +147,36 @@ public class Queue<T> {
 	}
 
 	public T peek() {
-		throwIfOOB();
 		return get(0);
 	}
 
 	public void enqueue(T data) {
+		// ensure we have space for another element, expanding the
+		// array if necessary
 		ensureAddable();
+		// increment the queue back
 		incBack();
+		// increment our size
 		size++;
-		set(data, back);
+		// set the new back position to our data
+		arr[back] = data;
 	}
 
-	public T dequeue(T data) {
+	public T dequeue() {
+		if(isEmpty()) {
+			// cannot dequeue from empty queue!
+			throw new IllegalStateException();
+		}
+
+		// get the element currently at the front
+		T ret = arr[front];
+		// decrease the size
+		// let the gc clean up by setting the old front in the array to
+		// null, leaving ret unimpacted
+		arr[front] = null;
+		// decrease size, increment front index
 		size--;
-		T ret = get(front);
-		// let the gc clean up
-		set(null, front);
+
 		incFront();
 		return ret;
 	}
@@ -141,4 +199,14 @@ public class Queue<T> {
 		ret.append("]");
 		return ret.toString();
 	}
+
+	/**
+	 * thorough report on internal queue state; debugging only
+	 */
+	//public void debug() {
+		//System.out.println("size  = " + size);
+		//System.out.println("front = " + front);
+		//System.out.println("back  = " + back);
+		//System.out.println("arr   = " + Arrays.toString(arr) + ".\n");
+	//}
 }
