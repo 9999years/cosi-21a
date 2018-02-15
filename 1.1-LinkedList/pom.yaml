@@ -32,6 +32,8 @@ build:
       - groupId: org.apache.maven.plugins
         artifactId: maven-surefire-plugin
         version: 2.19.1
+        configuration:
+            trimStackTrace: false
         dependencies:
             # launcher
           - groupId: org.junit.platform

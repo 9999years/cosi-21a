@@ -2,8 +2,6 @@ public class SinglyLinkedNode<T> {
 	public final T data;
 	protected SinglyLinkedNode<T> next;
 
-	SinglyLinkedNode() { }
-
 	SinglyLinkedNode(T data) {
 		this.data = data;
 	}
@@ -14,7 +12,9 @@ public class SinglyLinkedNode<T> {
 	}
 
 	/**
-	 * irrelevant b/c write-protection is enforced with a final field
+	 * irrelevant to encapsulate this with a getter method b/c
+	 * write-protection is enforced with a final field (plus it wastes a
+	 * stack frame!)
 	 */
 	public T getData() {
 		return data;

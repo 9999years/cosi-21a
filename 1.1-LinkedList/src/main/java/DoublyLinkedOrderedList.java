@@ -1,4 +1,4 @@
-public class DoublyLinkedOrderedList<T> {
+//public class DoublyLinkedOrderedList<T> {
 	// implementation notes:
 	// if you ensure that the head and tail are always-extant empty nodes
 	// and never let them leak, you can simplify a lot of the logic; by
@@ -24,6 +24,6 @@ public class DoublyLinkedOrderedList<T> {
 	// I know what you're thinking, we need the O(1) random removal of a
 	// linked list! but removing a random element in a linked list takes
 	// O(n) time if you account for actually getting your hands on the
-	// node; N swaps are certainly no more expensive than N compaers,
+	// node; N swaps are certainly no more expensive than N compares,
 	// especially if an equality method is non-trivial.
-}
+//}

@@ -3,8 +3,6 @@ public class DoublyLinkedNode<T> {
 	protected DoublyLinkedNode<T> prev;
 	protected DoublyLinkedNode<T> next;
 
-	DoublyLinkedNode() { }
-
 	DoublyLinkedNode(T data) {
 		this.data = data;
 	}
@@ -24,22 +22,22 @@ public class DoublyLinkedNode<T> {
 	}
 
 	/**
-	 * since this is public and SinglyLinkedList allows public access to
-	 * all internal `SinglyLinkedNode`s, we're completely unable to
+	 * since this is public and DoublyLinkedList allows public access to
+	 * all internal `DoublyLinkedNode`s, we're completely unable to
 	 * maintain any invariants. amazing.
 	 */
-	public void setNext(SinglyLinkedNode<T> nextNode) {
+	public void setNext(DoublyLinkedNode<T> nextNode) {
 		next = nextNode;
 	}
 
 	/**
 	 * @url https://kirit.com/On%20following%20rules/Encapsulation%20is%20a%20Good%20Thing%E2%84%A2
 	 */
-	public SinglyLinkedNode<T> getNext() {
+	public DoublyLinkedNode<T> getNext() {
 		return next;
 	}
 
-	public SinglyLinkedNode<T> getPrev() {
+	public DoublyLinkedNode<T> getPrev() {
 		return prev;
 	}
 

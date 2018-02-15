@@ -3,48 +3,72 @@ import java.lang.Iterable;
 
 import java.lang.StringBuilder;
 
-import java.util.NoSuchElementException;
+import java.util.Random;
+import java.util.Objects;
 
-public class SinglyLinkedList<T> {
+import java.util.NoSuchElementException;
+import java.lang.ArrayIndexOutOfBoundsException;
+
+public class SinglyLinkedList<T> implements Iterable<T> {
+	/**
+	 * oh yeah this should totally live inside a list implementation, lmao
+	 */
 	Random rand = new Random();
 
+	/**
+	 * the usual, singly linked lists sucked because you cant do the cool
+	 * trick for doubly linked lists to simplify your logic
+	 */
 	protected SinglyLinkedNode<T> tail = null;
-	protected SinglyLinkedNode<T> head = null
+	protected SinglyLinkedNode<T> head = null;
 	protected int size = 0;
 
 	/**
-	 * due to the way we've implemented the list, this is actually a
-	 * *backwards* iterator. but that's okay? because no methods of the
-	 * list actually expect any ordered access
+	 * iterator over nodes, useful internally (and to implement the regular
+	 * iterator)
 	 */
-	protected class SinglyLinkedListIterator implements Iterator<T> {
-		SinglyLinkedNode<T> curr = this.SinglyLinkedList.head;
-		SinglyLinkedNode<T> prev = this.SinglyLinkedList.head;
+	protected class SinglyLinkedListNodeIterator
+			implements Iterator<SinglyLinkedNode<T>> {
+		protected SinglyLinkedNode<T> curr = SinglyLinkedList.this.head;
 
 		public boolean hasNext() {
-			return curr != null &&
-				curr.next != this.SinglyLinkedList.tail;
+			return curr != null;
 		}
 
-		public T next() {
+		public SinglyLinkedNode<T> next() {
 			if(hasNext()) {
-				prev = curr;
+				SinglyLinkedNode<T> ret = curr;
 				curr = curr.next;
-				return curr;
+				return ret;
 			} else {
 				throw new NoSuchElementException();
 			}
 		}
+	}
 
-		public void remove() {
-			// bridge over curr
-			prev.next = curr.next;
-			// let the GC clean up
-			curr.data = null;
-			// when we set `prev` to `curr` in next() we still get
-			// the old `prev` and not the now-deleted `curr`
-			curr = prev;
+	/**
+	 * regular iterator because im a fan of those for(T t : this) loops
+	 * (even though the semantics are extremely limited)
+	 */
+	protected class SinglyLinkedListIterator implements Iterator<T> {
+		Iterator<SinglyLinkedNode<T>> itr
+			= new SinglyLinkedListNodeIterator();
+
+		public boolean hasNext() {
+			return itr.hasNext();
 		}
+
+		public T next() {
+			return itr.next().data;
+		}
+	}
+
+	/**
+	 * i do not want to type this out and also it fits in with the naming
+	 * convention of iterator()
+	 */
+	protected Iterator<SinglyLinkedNode<T>> nodeIterator() {
+		return new SinglyLinkedListNodeIterator();
 	}
 
 	public Iterator<T> iterator() {
@@ -60,82 +84,141 @@ public class SinglyLinkedList<T> {
 	}
 
 	/**
-	 * lots of insertion logic here, which sucks; it's kinda bug prone.
-	 * it's simpler if we have a doubly-linked list and then we can have
-	 * simple `insertBefore` and `insertAfter` methods
+	 * lots of insertion logic here, which sucks; it's kinda bug prone. and
+	 * multiple pieces of code are doing the same thing
+	 *
+	 * theres lots of cases for a 0 size list because we cant do, again,
+	 * the cool doubly linked list trick
+	 *
+	 * anyways this inserts at the end
 	 */
 	public void regularInsert(T data) {
-		SinglyLinkedNode<T> node = new SinglyLinkedNode<T>(data);
 		if(size == 0) {
-			head = tail = node;
+			insertFront(data);
 		} else {
-			tail.next = node;
+			insertAfter(tail, data);
+		}
+	}
+
+	/**
+	 * insert at the front of the list
+	 */
+	protected void insertFront(T data) {
+		if(size == 0) {
+			head = tail = new SinglyLinkedNode<>(data);
+		} else {
+			SinglyLinkedNode<T> first = head;
+			head = new SinglyLinkedNode<T>(data, first);
 		}
 		size++;
 	}
 
-	protected void insertFront(T dat) {
-		SinglyLinkedList<T> first = head.next;
-		head = new SinglyLinkedNode<T>(dat, first);
+	/**
+	 * insert a new node with content data after the given node
+	 */
+	protected void insertAfter(SinglyLinkedNode<T> node, T data) {
+		SinglyLinkedNode<T> after = node.next;
+		node.next = new SinglyLinkedNode<T>(data, after);
+		if(node == tail) {
+			tail = node.next;
+		}
 		size++;
 	}
 
-	protected void insertAfter(SinglyLinkedNode<T> node, T dat) {
-		SinglyLinkedList<T> after = node.next;
-		node.next = new SinglyLinkedNode<T>(dat, after);
-		size++;
-	}
+	/**
+	 * insert at a given index such that `index` is the new index of
+	 * `data`; used to implement randomInsert
+	 */
+	public void insert(T data, final int index) {
+		if(index < 0 || index > size) {
+			throw new ArrayIndexOutOfBoundsException();
+		}
 
-	public void insert(T data, int index) {
 		if(index == 0) {
 			// insert before head
 			insertFront(data);
-		}
-
-		// insert after some element between the first and the last
-		int i = 0;
-		for(SinglyLinkedNode<T> n : this) {
-			if(index == i) {
-				insertAfter(n, data);
-				return;
-			}
-			i++;
-		}
-	}
-
-	public void randomInsert(T data) {
-		int pos = rand.nextInt(size + 1);
-		if(pos == 0) {
-			// insert before head
-			SinglyLinkedNode<T> first = head;
-			head = new SinglyLinkedNode<T>(data, first);
+			return;
+		} else if(index == size) {
+			insertAfter(tail, data);
 			return;
 		}
 
 		// insert after some element between the first and the last
-		int inx = 0;
-		for(SinglyLinkedNode<T> n : this) {
-			if(pos == inx) {
-				insert(n, data);
+		Iterator<SinglyLinkedNode<T>> itr = nodeIterator();
+
+		for(int i = 0; itr.hasNext(); i++) {
+			SinglyLinkedNode<T> n = itr.next();
+			if(index == i) {
+				insertAfter(n, data);
 				return;
 			}
-			inx++;
 		}
 	}
 
+	/**
+	 * insert data randomly in the list, anywhere between before the head
+	 * and after the tail
+	 */
+	public void randomInsert(T data) {
+		if(size == 0) {
+			insertFront(data);
+		} else {
+			// Random complains about an upper bound of 0
+			insert(data, rand.nextInt(size));
+		}
+	}
+
+	/**
+	 * removes the node after `prev`
+	 */
+	public void remove(SinglyLinkedNode<T> prev) {
+		SinglyLinkedNode<T> removing = prev.next;
+		// bridge over removing; removing.next might be null
+		// but that doesn't matter; if removing is null we're
+		// removing the tail
+		prev.next = removing == null ? null : removing.next;
+		size--;
+	}
+
+	/**
+	 * remove the first occurance of `data` in the list
+	 */
+	public void remove(T data) {
+		Iterator<SinglyLinkedNode<T>> itr = nodeIterator();
+		SinglyLinkedNode<T> prev = head;
+		SinglyLinkedNode<T> curr = head;
+		while(itr.hasNext()) {
+			curr = itr.next();
+			if((curr.data == null && data == null)
+				|| curr.data.equals(data)) {
+				remove(prev);
+				return;
+			}
+			prev = curr;
+		}
+	}
+
+	/**
+	 * the number of nodes currently in the list
+	 */
 	public int size() {
 		return size;
 	}
 
 	public String toString() {
+		if(size == 0) {
+			return "[]";
+		}
+
 		StringBuilder ret = new StringBuilder("[");
 		for(T t : this) {
 			ret.append(t);
+			ret.append(", ");
 		}
 		// "[x, y," -> "[x, y"
 		// saves us from having to keep track of if the iterator is
 		// empty so we dont add an extra comma at the end
-		ret.delete(ret.length() - 2, ret.length() - 1);
+		ret.delete(ret.length() - 2, ret.length());
 		// "[x, y" -> "[x, y]"
 		ret.append("]");
 		return ret.toString();
