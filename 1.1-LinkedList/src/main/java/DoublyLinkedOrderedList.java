@@ -11,8 +11,7 @@ import java.lang.Iterable;
 import java.util.Iterator;
 
 /**
- * minimal linked list implementation; no iterators, no fancy methods, just
- * the basics; adding, peeking, removing at both ends
+ * always-increasing doubly-linked ordered list
  */
 public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 	// implementation notes: if you ensure that the head and tail are
@@ -48,7 +47,7 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 			DoublyLinkedOrderedList.this.head;
 
 		public boolean hasNext() {
-			return current != tail;
+			return current != tail.prev;
 		}
 
 		public DoublyLinkedNode<T> next() {
@@ -74,6 +73,10 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 
 	DoublyLinkedOrderedList() {
 		clear();
+	}
+
+	protected DoublyLinkedOrderedListIterator nodeIterator() {
+		return new DoublyLinkedOrderedListIterator();
 	}
 
 	protected void throwIfEmpty() {
@@ -154,8 +157,7 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 	}
 
 	public DoublyLinkedNode<T> delete(T data) {
-		for(DoublyLinkedNode<T> n :
-			new DoublyLinkedOrderedListIterator()) {
+		for(DoublyLinkedNode<T> n : nodeIterator()) {
 			if(n.compareTo(data) == 0) {
 				remove(n);
 				return n;
@@ -170,8 +172,7 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 		}
 
 		StringBuilder ret = new StringBuilder("[");
-		for(DoublyLinkedNode<T> n :
-				new DoublyLinkedOrderedListIterator()) {
+		for(DoublyLinkedNode<T> n : nodeIterator()) {
 			ret.append(n.data);
 			ret.append(", ");
 		}

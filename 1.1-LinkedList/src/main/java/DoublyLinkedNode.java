@@ -21,7 +21,20 @@ public class DoublyLinkedNode<T extends Comparable<T>> {
 	}
 
 	public int compareTo(T other) {
-		return data.compareTo(other);
+		if(data == null || other == null) {
+			if(data == other) {
+				// both null
+				return 0;
+			} else if(data == null) {
+				// null < anything
+				return -1;
+			} else {
+				// other null
+				return 1;
+			}
+		} else {
+			return data.compareTo(other);
+		}
 	}
 
 	/**
@@ -32,9 +45,9 @@ public class DoublyLinkedNode<T extends Comparable<T>> {
 	}
 
 	/**
-	 * since this is public and DoublyLinkedList allows public access to
-	 * all internal `DoublyLinkedNode`s, we're completely unable to
-	 * maintain any invariants. amazing.
+	 * since this is public and DoublyLinkedOrderedList allows public
+	 * access to all internal `DoublyLinkedNode`s, we're completely unable
+	 * to maintain any invariants. amazing.
 	 */
 	public void setPrev(DoublyLinkedNode<T> prevNode) {
 		prev = prevNode;

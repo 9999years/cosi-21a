@@ -6,7 +6,7 @@ version: 1.0.0
 properties:
     java.version: 1.8
     project.build.sourceEncoding: UTF-8
-    junit.jupiter.version: 5.0.2
+    junit.jupiter.version: 5.0.3
     junit.platform.version: 1.0.3
 
 dependencies:
@@ -14,6 +14,9 @@ dependencies:
     artifactId: junit-jupiter-api
     version: '${junit.jupiter.version}'
     scope: test
+  - groupId: org.junit.jupiter
+    artifactId: junit-jupiter-params
+    version: '${junit.jupiter.version}'
 
 build:
     # suppress version nr
@@ -43,6 +46,10 @@ build:
           - groupId: org.junit.jupiter
             artifactId: junit-jupiter-engine
             version: '${junit.jupiter.version}'
+            # parameterized tests
+          - groupId: org.junit.jupiter
+            artifactId: junit-jupiter-params
+            version: '${junit.jupiter.version}'
 
         # source zip
       - groupId: org.apache.maven.plugins
@@ -54,11 +61,3 @@ build:
                 appendAssemblyId: false
             goals: [ single ]
             phase: package
-
-        # jar
-      - groupId: org.apache.maven.plugins
-        artifactId: maven-jar-plugin
-        version: 2.4
-        configuration:
-            archive:
-                manifest: { mainClass: Simulation }
