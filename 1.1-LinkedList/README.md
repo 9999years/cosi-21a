@@ -18,10 +18,16 @@ Alternatively,
 
     mvn package
 
-Will generate an executable jar `rebeccaturner-PA1-Part1.jar` (and a source zip)
-in `target/`, which can be run with
+Will generate a source zip `rebeccaturner-PA1-Part1.zip` in `target/`.
 
-    java -jar target/rebeccaturner-PA1-Part1.jar
+Testing is easy too, with
+
+    mvn test
+
+But note that JUnit 5 is required and [parameterized tests][param] are used, so
+`org.junit.jupiter.junit-jupiter-params` is required as well; Maven will take
+care of this for you but as far as I know it’s essentially impossible to
+hand-install JUnit 5.
 
 ## Direct compilation
 
@@ -31,6 +37,11 @@ Maven is easy too! Just
     cd src/main/java
     javac *.java
 
+Testing, however, is another manner; see the note above and let me know if you
+find a way to run JUnit 5 tests without using some dependency management system
+(Maven, Gradle, etc.).
+
 [mvn]: https://maven.apache.org/
 [polyglot]: https://github.com/takari/polyglot-maven
 [takari]: https://github.com/takari
+[param]: https://junit.org/junit5/docs/5.0.0-M4/user-guide/#writing-tests-parameterized-tests
