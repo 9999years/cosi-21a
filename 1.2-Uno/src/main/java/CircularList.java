@@ -1,7 +1,7 @@
 import java.lang.Iterable;
 import java.util.Iterator;
 
-import java.lang.NoSuchElementException;
+import java.util.NoSuchElementException;
 
 /**
  * circular linked list of type T; this allows us to separate our player logic
@@ -49,18 +49,18 @@ public class CircularList<T> implements Iterable<T> {
 	 * iterates over the list ONCE
 	 */
 	protected class SingleIterator implements Iterator<T> {
-		Node curr = this.CircularList.first.prev;
+		Node curr = CircularList.this.first.prev;
 		int consumed = 0;
 
 		public boolean hasNext() {
-			return consumed < this.CircularList.size;
+			return consumed < CircularList.this.size;
 		}
 
 		public T next() {
 			if(hasNext()) {
 				consumed++;
 				curr = curr.next;
-				return curr;
+				return curr.data;
 			} else {
 				throw new NoSuchElementException();
 			}
@@ -68,7 +68,7 @@ public class CircularList<T> implements Iterable<T> {
 
 		public void remove() {
 			consumed--;
-			this.CircularList.remove(curr);
+			CircularList.this.remove(curr);
 		}
 	}
 
@@ -142,8 +142,6 @@ public class CircularList<T> implements Iterable<T> {
 			// bridge over n
 			n.prev.next = n.next;
 			n.next.prev = n.prev;
-			// advance first
-			T ret = n.data;
 		}
 
 		if(n == first && size > 1) {
@@ -159,7 +157,7 @@ public class CircularList<T> implements Iterable<T> {
 	 * removes and returns the first element in the list
 	 */
 	public T removeFront() {
-		remove(first);
+		return remove(first);
 	}
 
 	/**
