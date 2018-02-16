@@ -94,7 +94,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 	 */
 	public void regularInsert(T data) {
 		if(size == 0) {
-			insertFront(data);
+			insertHead(data);
 		} else {
 			insertAfter(tail, data);
 		}
@@ -103,7 +103,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 	/**
 	 * insert at the front of the list
 	 */
-	protected void insertFront(T data) {
+	protected void insertHead(T data) {
 		if(size == 0) {
 			head = tail = new SinglyLinkedNode<>(data);
 		} else {
@@ -136,7 +136,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 
 		if(index == 0) {
 			// insert before head
-			insertFront(data);
+			insertHead(data);
 			return;
 		} else if(index == size) {
 			insertAfter(tail, data);
@@ -161,7 +161,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 	 */
 	public void randomInsert(T data) {
 		if(size == 0) {
-			insertFront(data);
+			insertHead(data);
 		} else {
 			// Random complains about an upper bound of 0
 			insert(data, rand.nextInt(size));
@@ -170,38 +170,53 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 
 	/**
 	 * removes the node after `prev`
+	 * @return the data of the removed node
+	 * @param prev the node *before* the node to remove
+	 * @throws IllegalArgumentException if `prev` is the tail; i.e.
+	 * prev.next == null
 	 */
-	public void remove(SinglyLinkedNode<T> prev) {
+	protected T removeAfter(SinglyLinkedNode<T> prev) {
+		if(prev.next == null) {
+			throw new IllegalArgumentException();
+		}
+		// guaranteed to not be null
 		SinglyLinkedNode<T> removing = prev.next;
-		// bridge over removing; removing.next might be null
-		// but that doesn't matter; if removing is null we're
-		// removing the tail
-		prev.next = removing == null ? null : removing.next;
+		// bridge prev.next over removing; removing.next might be null
+		// (if it's the tail element) but that doesn't matter
+		prev.next = removing.next;
 		size--;
+		return removing.data;
 	}
 
 	/**
 	 * remove the first occurance of `data` in the list
+	 * @return true if data was removed
 	 */
-	public void remove(T data) {
+	public boolean remove(T data) {
 		Iterator<SinglyLinkedNode<T>> itr = nodeIterator();
+		// this is only ever the tail if head == tail
 		SinglyLinkedNode<T> prev = head;
 		SinglyLinkedNode<T> curr = head;
 		while(itr.hasNext()) {
 			curr = itr.next();
 			if((curr.data == null && data == null)
 				|| curr.data.equals(data)) {
-				remove(prev);
-				return;
+				if(size == 1) {
+					removeHead();
+				} else {
+					removeAfter(prev);
+				}
+				return true;
 			}
 			prev = curr;
 		}
+		return false;
 	}
 
 	/**
 	 * removes and returns the list's first node
 	 */
-	public T popHead() {
+	public T removeHead() {
 		if(size == 0) {
 			return null;
 		} else {
@@ -219,7 +234,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 		return size;
 	}
 
-	public boolean empty() {
+	public boolean isEmpty() {
 		return size == 0;
 	}
 

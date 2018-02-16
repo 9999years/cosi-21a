@@ -15,7 +15,7 @@ public class UnoDeckTest {
 		UnoDeck deck = new UnoDeck();
 		List<UnoCard> hand = new ArrayList<>();
 		for(int i = 0; i < 500; i++) {
-			if(!deck.empty()) {
+			if(!deck.isEmpty()) {
 				hand.add(deck.drawCard());
 			}
 			// discard any cards we can

@@ -140,23 +140,23 @@ public class SinglyLinkedListTest {
 	}
 
 	@Test
-	public void popHeadTest() {
+	public void removeHeadTest() {
 		SinglyLinkedList<Integer> list = new SinglyLinkedList<>();
 		for(int i : nums1) {
 			list.regularInsert(i);
 		}
 
 		int i = 0;
-		while(!list.empty()) {
+		while(!list.isEmpty()) {
 			assertTrue(i < nums1.length, "popped more than added");
-			assertEquals(nums1[i], (int) list.popHead());
+			assertEquals(nums1[i], (int) list.removeHead());
 			i++;
 		}
 
 		// repeated because i had a bug where the size wasn't
-		// decremented, causing an NPE on the *second* call of popHead
-		// on an empty list
-		assertEquals(null, list.popHead(), "null when empty");
-		assertEquals(null, list.popHead(), "null when empty");
+		// decremented, causing an NPE on the *second* call of
+		// removeHead on an empty list
+		assertEquals(null, list.removeHead(), "null when empty");
+		assertEquals(null, list.removeHead(), "null when empty");
 	}
 }

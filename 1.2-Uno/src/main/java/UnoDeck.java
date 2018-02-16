@@ -53,8 +53,8 @@ public class UnoDeck {
 	}
 
 	// all cards are out of the deck and in hands
-	public boolean empty() {
-		return deck.empty() && discard.empty();
+	public boolean isEmpty() {
+		return deck.isEmpty() && discard.isEmpty();
 	}
 
 	public UnoCard getLastDiscarded() {
@@ -62,8 +62,8 @@ public class UnoDeck {
 	}
 
 	public UnoCard drawCard() {
-		if(deck.empty()) {
-			if(discard.empty()) {
+		if(deck.isEmpty()) {
+			if(discard.isEmpty()) {
 				// uh oh -- someone drew all the cards from the
 				// deck and didn't discard any
 				return null;
@@ -76,7 +76,7 @@ public class UnoDeck {
 			discard = deck;
 			deck = oldDiscard;
 		}
-		return deck.popHead();
+		return deck.removeHead();
 	}
 
 	public void discardCard(UnoCard c) {

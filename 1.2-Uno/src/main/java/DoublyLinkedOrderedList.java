@@ -12,34 +12,29 @@ import java.util.Iterator;
 
 /**
  * always-increasing doubly-linked ordered list
+ * implementation notes: if you ensure that the head and tail are always-extant
+ * empty nodes and never let them leak, you can simplify a lot of the logic; by
+ * ensuring that (as long as it's not the tail) a node's .next will never be
+ * null, you can cut back on a lot of `if`s
+ *
+ * also, linked lists are terrible!  Alexis Beingessner calls array-based
+ * deques and stacks "blatantly superior data structures for most workloads due
+ * to less frequent allocation, lower memory overhead, true random access, and
+ * cache locality" in contrast with linked lists. See:
+ * http://cglab.ca/~abeinges/blah/too-many-lists/book/ I know what you're
+ * thinking, we need the O(1) random removal of a linked list!  but removing a
+ * random element in a linked list takes O(n) time if you account for actually
+ * getting your hands on the node; N swaps are certainly no more expensive than
+ * N compares, especially if an equality method is non-trivial.
+ *
+ * Further, Bjarne Stroustrup notes that linked list performance is often
+ * closer to exponential in real-world cases due to the ways they interact with
+ * CPUs and memory (badly; they have unpredictable memory allocation and access
+ * patterns which wreak havoc on CPU branch predictors and caches). See:
+ * https://www.youtube.com/watch?v=YQs6IC-vgmo if you can stand his weird voice
+ * (doesn't he sound and look like Benjamin Franklin?)
  */
 public class DoublyLinkedOrderedList<T extends Comparable<T>> {
-	// implementation notes: if you ensure that the head and tail are
-	// always-extant empty nodes and never let them leak, you can simplify
-	// a lot of the logic; by ensuring that (as long as it's not the tail)
-	// a node's .next will never be null, you can cut back on a lot of
-	// `if`s
-	//
-	// also, linked lists are terrible!  Alexis Beingessner calls
-	// array-based deques and stacks "blatantly superior data structures
-	// for most workloads due to less frequent allocation, lower memory
-	// overhead, true random access, and cache locality" in contrast with
-	// linked lists. See:
-	// http://cglab.ca/~abeinges/blah/too-many-lists/book/ I know what
-	// you're thinking, we need the O(1) random removal of a linked list!
-	// but removing a random element in a linked list takes O(n) time if
-	// you account for actually getting your hands on the node; N swaps are
-	// certainly no more expensive than N compares, especially if an
-	// equality method is non-trivial.
-	//
-	// Further, Bjarne Stroustrup notes that linked list performance is
-	// often closer to exponential in real-world cases due to the ways they
-	// interact with CPUs and memory (badly; they have unpredictable memory
-	// allocation and access patterns which wreak havoc on CPU branch
-	// predictors and caches). See:
-	// https://www.youtube.com/watch?v=YQs6IC-vgmo if you can stand his
-	// weird voice (doesn't he sound and look like Benjamin Franklin?)
-	//
 	protected class DoublyLinkedOrderedListIterator
 			implements Iterator<DoublyLinkedNode<T>>,
 			Iterable<DoublyLinkedNode<T>> {
@@ -75,20 +70,17 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 		clear();
 	}
 
+	/**
+	 * both an Iterable and an Iterator
+	 */
 	protected DoublyLinkedOrderedListIterator nodeIterator() {
 		return new DoublyLinkedOrderedListIterator();
 	}
 
-	protected void throwIfEmpty() {
-		if(isEmpty()) {
-			throw new NoSuchElementException();
-		}
-	}
-
-	protected <T> T nullIfEmpty(Supplier<T> t) {
-		return isEmpty() ? null : t.get();
-	}
-
+	/**
+	 * @param t data to add
+	 * @param n node to add after
+	 */
 	protected void addAfter(DoublyLinkedNode<T> n, T t) {
 		Objects.requireNonNull(n);
 		DoublyLinkedNode<T> insert = new DoublyLinkedNode<T>(n, t, n.next);
@@ -97,6 +89,10 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 		size++;
 	}
 
+	/**
+	 * @param t data to add
+	 * @param n node to add before
+	 */
 	protected void addBefore(DoublyLinkedNode<T> n, T t) {
 		Objects.requireNonNull(n);
 		addAfter(n.prev, t);
@@ -104,10 +100,16 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 
 	// DEQUE METHODS:
 
+	/**
+	 * true if size == 0
+	 */
 	public boolean isEmpty() {
 		return size == 0;
 	}
 
+	/**
+	 * the list's size; O(1) time
+	 */
 	public int size() {
 		return size;
 	}
@@ -122,6 +124,9 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 		size = 0;
 	}
 
+	/**
+	 * removes a list node
+	 */
 	protected T remove(DoublyLinkedNode<T> n) {
 		T data = n.data;
 		n.prev.next = n.next;
@@ -136,6 +141,10 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 
 	// PUBLIC INTERFACE
 
+	/**
+	 * why does the api specify i have to allow public access to the head
+	 * node??
+	 */
 	public DoublyLinkedNode<T> getHead() {
 		// no need to check for size really here for our impl. but
 		// thems the breaks if youve gotta deal with nulls
@@ -143,7 +152,9 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 	}
 
 	/**
-	 * inserts in increasing order
+	 * inserts data in the proper position such that the list is in
+	 * increasing order; O(n) amortized
+	 * @param data the data to insert
 	 */
 	public void insert(T data) {
 		for(DoublyLinkedNode<T> n :
@@ -156,6 +167,10 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 		addAfter(tail.prev, data);
 	}
 
+	/**
+	 * deletes the first node in the list such that node.compareTo(data) ==
+	 * 0; O(n) amortized
+	 */
 	public DoublyLinkedNode<T> delete(T data) {
 		for(DoublyLinkedNode<T> n : nodeIterator()) {
 			if(n.compareTo(data) == 0) {
@@ -166,6 +181,9 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 		return null;
 	}
 
+	/**
+	 * compatible with the java.util collections; O(n) time
+	 */
 	public String toString() {
 		if(size == 0) {
 			return "[]";

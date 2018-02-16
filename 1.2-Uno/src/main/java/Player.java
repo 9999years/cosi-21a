@@ -9,7 +9,7 @@ public class Player {
 	}
 
 	public void addToHand(UnoCard c){
-		//you have to implement this
+		hand.insert(c);
 	}
 
 	public void removeFromHand(int index){
@@ -17,9 +17,7 @@ public class Player {
 	}
 
 	public boolean winner(){
-		// return true when your hand has nothing left.
-		// you have to implement this
-		return false;
+		return hand.isEmpty();
 	}
 
 	public Player getNextPlayer() {
