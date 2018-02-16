@@ -32,6 +32,9 @@ public class UnoDeck {
 
 	protected void initDeck() {
 		for(UnoCard.Color color : UnoCard.Color.values()) {
+			if(color == UnoCard.Color.Wild) {
+				continue;
+			}
 			add(new UnoCard(color, 0));
 			for (int i = 1; i <= 9; i++){
 				addTwice(new UnoCard(color, i));
@@ -49,12 +52,22 @@ public class UnoDeck {
 		addTwice(new UnoCard(UnoCard.Color.Wild, UnoCard.Special.DrawFour));
 	}
 
+	// all cards are out of the deck and in hands
+	public boolean empty() {
+		return deck.empty() && discard.empty();
+	}
+
 	public UnoCard getLastDiscarded() {
 		return lastDiscarded;
 	}
 
 	public UnoCard drawCard() {
 		if(deck.empty()) {
+			if(discard.empty()) {
+				// uh oh -- someone drew all the cards from the
+				// deck and didn't discard any
+				return null;
+			}
 			// no reason to actually move 108 cards around when we
 			// can just move the lists; one is completely empty and
 			// one is completely full, so a simple swap is all we
@@ -67,12 +80,20 @@ public class UnoDeck {
 	}
 
 	public void discardCard(UnoCard c) {
-		if(! c.canBePlacedOn(lastDiscarded)) {
+		if(!c.canBePlacedOn(lastDiscarded)) {
 			throw new IllegalArgumentException();
 		}
 
 		discard.randomInsert(c);
 		lastDiscarded = c;
+	}
+
+	/**
+	 * draws a card from the deck and places it on the discard pile; can be
+	 * used for starting a game
+	 */
+	public void discardCard() {
+		discardCard(drawCard());
 	}
 
 	public String toString() {

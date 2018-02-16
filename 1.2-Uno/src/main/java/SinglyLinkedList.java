@@ -83,16 +83,6 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 		return head;
 	}
 
-	public T popHead() {
-		if(size == 0) {
-			return null;
-		} else {
-			T ret = head.data;
-			head = head.next;
-			return ret;
-		}
-	}
-
 	/**
 	 * lots of insertion logic here, which sucks; it's kinda bug prone. and
 	 * multiple pieces of code are doing the same thing
@@ -205,6 +195,20 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 				return;
 			}
 			prev = curr;
+		}
+	}
+
+	/**
+	 * removes and returns the list's first node
+	 */
+	public T popHead() {
+		if(size == 0) {
+			return null;
+		} else {
+			T ret = head.data;
+			head = head.next;
+			size--;
+			return ret;
 		}
 	}
 

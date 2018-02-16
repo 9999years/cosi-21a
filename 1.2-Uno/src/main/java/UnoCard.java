@@ -58,12 +58,16 @@ public class UnoCard {
 	}
 
 	public boolean canBePlacedOn(UnoCard other){
-		if(color == other.color || color == Color.Wild) {
+		if(other == null) {
+			return false;
+		} else if(color == other.color || color == Color.Wild) {
+			// same color is OK, wild can be placed on anything
 			return true;
 		} else if(special != Special.None) {
-			// number == NO_NUMBER
+			// number == NO_NUMBER, same special is OK (diff colors)
 			return special == other.special;
 		} else {
+			// same number is OK
 			return number == other.number;
 		}
 	}

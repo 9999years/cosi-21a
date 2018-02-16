@@ -138,4 +138,25 @@ public class SinglyLinkedListTest {
 
 		assertEquals("[28, 5, 44, 30, 16, 1, 47, 3, 48, 6, 9, 15, 18, 23, 22]", list.toString());
 	}
+
+	@Test
+	public void popHeadTest() {
+		SinglyLinkedList<Integer> list = new SinglyLinkedList<>();
+		for(int i : nums1) {
+			list.regularInsert(i);
+		}
+
+		int i = 0;
+		while(!list.empty()) {
+			assertTrue(i < nums1.length, "popped more than added");
+			assertEquals(nums1[i], (int) list.popHead());
+			i++;
+		}
+
+		// repeated because i had a bug where the size wasn't
+		// decremented, causing an NPE on the *second* call of popHead
+		// on an empty list
+		assertEquals(null, list.popHead(), "null when empty");
+		assertEquals(null, list.popHead(), "null when empty");
+	}
 }
