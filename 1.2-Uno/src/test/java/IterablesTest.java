@@ -30,4 +30,12 @@ public class IterablesTest {
 		assertEquals(-111, (int) Iterables.min(itr(1, -111, 10)));
 		assertEquals(-200, (int) Iterables.min(itr(1, -111, -200)));
 	}
+
+	@Test
+	void maxTest() {
+		assertEquals(1, (int) Iterables.max(itr(1)));
+		assertEquals(10, (int) Iterables.max(itr(1, 2, 10)));
+		assertEquals(999, (int) Iterables.max(itr(1, 999, 10)));
+		assertEquals(200, (int) Iterables.max(itr(1, -111, 200)));
+	}
 }

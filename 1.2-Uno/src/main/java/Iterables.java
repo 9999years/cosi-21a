@@ -47,4 +47,22 @@ public class Iterables {
 	public static <T extends Comparable<T>> T min(Iterable<T> itr) {
 		return min(itr, Comparator.naturalOrder());
 	}
+
+	/**
+	 * finds the maximum element in an iterable
+	 * @throws NoSuchElementException if ita is empty
+	 */
+	public static <T> T max(Iterable<T> ita, Comparator<T> comp) {
+		// if we reverse the ordering, we can try to find the 'minimum'
+		// and really get the maximum
+		return min(ita, comp.reversed());
+	}
+
+	/**
+	 * finds the maximum element in an iterable
+	 * @throws NoSuchElementException if ita is empty
+	 */
+	public static <T extends Comparable<T>> T max(Iterable<T> itr) {
+		return min(itr, Comparator.reverseOrder());
+	}
 }
