@@ -97,8 +97,12 @@ public class SinglyLinkedListTest {
 		list.remove(9);
 		assertEquals(3, list.size());
 
+		assertEquals("[100, 10, 1]", list.toString());
+
 		// -> [100, 1]
 		list.remove(10);
+
+		assertEquals("[100, 1]", list.toString());
 
 		// uhh maybe we should have a get(index) method but
 		// i'm really working on not doing a ton more than the

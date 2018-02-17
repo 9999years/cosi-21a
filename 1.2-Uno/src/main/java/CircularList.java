@@ -69,6 +69,10 @@ public class CircularList<T> implements Iterable<T> {
 		public void remove() {
 			consumed--;
 			CircularList.this.remove(curr);
+			if(curr == CircularList.this.first) {
+				CircularList.this.first =
+					CircularList.this.first.next;
+			}
 		}
 	}
 
@@ -114,23 +118,55 @@ public class CircularList<T> implements Iterable<T> {
 	}
 
 	/**
-	 * inserts the T before the first element in the list / after the tail
-	 *
-	 * don't think about it too hard or your head will hurt
+	 * adds data t before a given node n, or at the start of the list if n
+	 * is null or the list is empty
 	 */
-	public void insertEnd(T t) {
-		if(isEmpty()) {
+	protected void addBefore(Node n, T t) {
+		if(isEmpty() || n == null) {
 			// (insert crab cycle joke)
 			first = new Node(t);
 			first.prev = first;
 			first.next = first;
+		} else {
+			Node adding = new Node(n.prev, t, n);
+			n.prev.next = adding;
+			n.prev = adding;
 		}
-
-		Node adding = new Node(first.prev, t, first);
-		first.prev.next = adding;
-		first.prev = adding;
-
 		size++;
+	}
+
+	/**
+	 * inserts the T before the first element in the list / after the tail
+	 *
+	 * don't think about it too hard or your head will hurt
+	 */
+	public void add(T t) {
+		addBefore(first, t);
+	}
+
+	/**
+	 * inserts the T after the given element in the list
+	 * allows negative indicies because why not? that's your problem.
+	 * @param i index to insert at; this is the new element's index
+	 * @throws NoSuchElementException if the list is empty or if |i| >= the
+	 * list's size
+	 */
+	public void add(T t, int i) {
+		addBefore(node(i), t);
+		if(i == 0) {
+			// if we've inserted at the first node, we don't expect
+			// our new element to be at the end of the list
+			first = first.prev;
+		}
+	}
+
+	/**
+	 * adds all the elements in the given collection at the end of the list
+	 */
+	public void addAll(Iterable<T> collection) {
+		for(T t : collection) {
+			add(t);
+		}
 	}
 
 	protected T remove(Node n) {
@@ -160,6 +196,10 @@ public class CircularList<T> implements Iterable<T> {
 		return remove(first);
 	}
 
+	public T remove(int i) {
+		return remove(node(i));
+	}
+
 	/**
 	 * removes the given data from the list
 	 * @return if any elements were deleted
@@ -168,12 +208,53 @@ public class CircularList<T> implements Iterable<T> {
 		Iterator<T> itr = iterator();
 		while(itr.hasNext()) {
 			T t = itr.next();
-			if((data == null && t == null)
-				|| (data != null && data.equals(t))) {
+			if(Equality.nullableEquals(data, t)) {
 				itr.remove();
 				return true;
 			}
 		}
 		return false;
+	}
+
+	protected Node node(int i) {
+		if(isEmpty() || i >= size || i <= -size) {
+			throw new NoSuchElementException();
+		}
+
+		Node curr = first;
+		if(i > 0) {
+			while(i != 0) {
+				curr = curr.next;
+				i--;
+			}
+		} else {
+			while(i != 0) {
+				curr = curr.prev;
+				i++;
+			}
+		}
+		return curr;
+	}
+
+	/**
+	 * get an element at a specified index; allows negative indicies
+	 * because why not? that's your problem.
+	 * @param i index
+	 * @throws NoSuchElementException if the list is empty or if |i| &gt;=
+	 * the list's size
+	 */
+	public T get(int i) {
+		return node(i).data;
+	}
+
+	public T getFront() {
+		if(isEmpty()) {
+			throw new NoSuchElementException();
+		}
+		return first.data;
+	}
+
+	public String toString() {
+		return Iterables.toString(this);
 	}
 }

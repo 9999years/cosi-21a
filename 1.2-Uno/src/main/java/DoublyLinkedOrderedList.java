@@ -34,8 +34,9 @@ import java.util.Iterator;
  * https://www.youtube.com/watch?v=YQs6IC-vgmo if you can stand his weird voice
  * (doesn't he sound and look like Benjamin Franklin?)
  */
-public class DoublyLinkedOrderedList<T extends Comparable<T>> {
-	protected class DoublyLinkedOrderedListIterator
+public class DoublyLinkedOrderedList<T extends Comparable<T>>
+		implements Iterable<T> {
+	protected class DoublyLinkedOrderedListNodeIterator
 			implements Iterator<DoublyLinkedNode<T>>,
 			Iterable<DoublyLinkedNode<T>> {
 		protected DoublyLinkedNode<T> current =
@@ -62,6 +63,23 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 		}
 	}
 
+	protected class DoublyLinkedOrderedListIterator implements Iterator<T> {
+		protected Iterator<DoublyLinkedNode<T>> itr =
+			DoublyLinkedOrderedList.this.nodeIterator();
+
+		public boolean hasNext() {
+			return itr.hasNext();
+		}
+
+		public T next() {
+			return itr.next().data;
+		}
+
+		public void remove() {
+			itr.remove();
+		}
+	}
+
 	protected DoublyLinkedNode<T> head;
 	protected DoublyLinkedNode<T> tail;
 	protected int size;
@@ -71,9 +89,13 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 	}
 
 	/**
-	 * both an Iterable and an Iterator
+	 * both an Iterable and an Iterator. @ me about it
 	 */
-	protected DoublyLinkedOrderedListIterator nodeIterator() {
+	protected DoublyLinkedOrderedListNodeIterator nodeIterator() {
+		return new DoublyLinkedOrderedListNodeIterator();
+	}
+
+	public Iterator<T> iterator() {
 		return new DoublyLinkedOrderedListIterator();
 	}
 
@@ -154,11 +176,12 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 	/**
 	 * inserts data in the proper position such that the list is in
 	 * increasing order; O(n) amortized
-	 * @param data the data to insert
+	 * @param data the data to insert. cannot be null
+	 * @throws NullPointerException if data == null
 	 */
 	public void insert(T data) {
-		for(DoublyLinkedNode<T> n :
-			new DoublyLinkedOrderedListIterator()) {
+		Objects.requireNonNull(data);
+		for(DoublyLinkedNode<T> n : nodeIterator()) {
 			if(n.compareTo(data) > 0) {
 				addBefore(n, data);
 				return;
@@ -185,21 +208,6 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>> {
 	 * compatible with the java.util collections; O(n) time
 	 */
 	public String toString() {
-		if(size == 0) {
-			return "[]";
-		}
-
-		StringBuilder ret = new StringBuilder("[");
-		for(DoublyLinkedNode<T> n : nodeIterator()) {
-			ret.append(n.data);
-			ret.append(", ");
-		}
-		// "[x, y," -> "[x, y"
-		// saves us from having to keep track of if the iterator is
-		// empty so we dont add an extra comma at the end
-		ret.delete(ret.length() - 2, ret.length());
-		// "[x, y" -> "[x, y]"
-		ret.append("]");
-		return ret.toString();
+		return Iterables.toString(this);
 	}
 }

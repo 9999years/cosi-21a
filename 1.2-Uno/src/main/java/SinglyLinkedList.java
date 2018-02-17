@@ -199,8 +199,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 		SinglyLinkedNode<T> curr = head;
 		while(itr.hasNext()) {
 			curr = itr.next();
-			if((curr.data == null && data == null)
-				|| curr.data.equals(data)) {
+			if(Equality.nullableEquals(data, curr.data)) {
 				if(size == 1) {
 					removeHead();
 				} else {
@@ -239,21 +238,6 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 	}
 
 	public String toString() {
-		if(size == 0) {
-			return "[]";
-		}
-
-		StringBuilder ret = new StringBuilder("[");
-		for(T t : this) {
-			ret.append(t);
-			ret.append(", ");
-		}
-		// "[x, y," -> "[x, y"
-		// saves us from having to keep track of if the iterator is
-		// empty so we dont add an extra comma at the end
-		ret.delete(ret.length() - 2, ret.length());
-		// "[x, y" -> "[x, y]"
-		ret.append("]");
-		return ret.toString();
+		return Iterables.toString(this);
 	}
 }
