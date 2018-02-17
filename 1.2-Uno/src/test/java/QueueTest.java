@@ -209,7 +209,7 @@ public class QueueTest {
 	}
 
 	/**
-	 * tests peek, enqueue, dequeue, get, and set
+	 * tests peek, peekBack, enqueue, dequeue, get, and set
 	 */
 	@ParameterizedTest
 	@MethodSource("numbersProvider")
@@ -217,6 +217,7 @@ public class QueueTest {
 		Queue<Integer> queue = new Queue<>();
 		for(int i : input) {
 			queue.enqueue(i);
+			assertEquals(i, (int) queue.peekBack());
 		}
 		int inx = 0;
 		for(int i : input) {

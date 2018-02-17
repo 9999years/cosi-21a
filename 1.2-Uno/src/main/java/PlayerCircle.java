@@ -1,5 +1,5 @@
 public class PlayerCircle {
-	CircularOrderedList<Player> players = new CircularOrderedList();
+	CircularOrderedList<Player> players = new CircularOrderedList<>();
 
 	public Player getFirstPlayer() {
 		return players.getFront();

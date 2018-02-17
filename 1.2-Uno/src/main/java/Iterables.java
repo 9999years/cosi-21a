@@ -1,4 +1,6 @@
 import java.lang.Iterable;
+import java.util.Comparator;
+import java.util.Iterator;
 
 public class Iterables {
 	public static <T> String toString(Iterable<T> itr) {
@@ -19,5 +21,30 @@ public class Iterables {
 		}
 		ret.append("]");
 		return ret.toString();
+	}
+
+	/**
+	 * finds the minimum element in an iterable
+	 * @throws NoSuchElementException if ita is empty
+	 */
+	public static <T> T min(Iterable<T> ita, Comparator<T> comp) {
+		Iterator<T> itr = ita.iterator();
+		T min = itr.next();
+		while(itr.hasNext()) {
+			T t = itr.next();
+			if(comp.compare(t, min) < 0) {
+				// t < min
+				min = t;
+			}
+		}
+		return min;
+	}
+
+	/**
+	 * finds the minimum element in an iterable
+	 * @throws NoSuchElementException if ita is empty
+	 */
+	public static <T extends Comparable<T>> T min(Iterable<T> itr) {
+		return min(itr, Comparator.naturalOrder());
 	}
 }
