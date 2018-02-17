@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Arrays;
 
-public class SortedCircularListTest {
+public class CircularOrderedListTest {
 	static Integer[] nums = new Integer[] {
 		46, 82, 11, 81, 33, 55, 97, 48, 75, 5, 70, 16, 1, 13, 45,
 		69, 97, 81, 7, 87, 99, 87, 92, 67, 11, 97, 2, 32,
@@ -13,7 +13,7 @@ public class SortedCircularListTest {
 
 	@Test
 	void toStringTest() {
-		SortedCircularList<String> list = new SortedCircularList<>();
+		CircularOrderedList<String> list = new CircularOrderedList<>();
 
 		List<String> letters = Arrays.asList("d", "b", "e", "a", "c");
 		for(String s : letters) {
@@ -24,7 +24,7 @@ public class SortedCircularListTest {
 	}
 
 	<T extends Comparable<T>> void
-	ensureSorted(SortedCircularList<T> list) {
+	ensureSorted(CircularOrderedList<T> list) {
 		if(list.size() < 2) {
 			return;
 		}
@@ -37,7 +37,7 @@ public class SortedCircularListTest {
 
 	@Test
 	void sortingTest() {
-		SortedCircularList<Integer> list = new SortedCircularList<>();
+		CircularOrderedList<Integer> list = new CircularOrderedList<>();
 		for(int i : nums) {
 			list.add(i);
 			ensureSorted(list);

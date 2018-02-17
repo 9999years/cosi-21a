@@ -1,7 +1,7 @@
-public class Player {
+import java.lang.Comparable;
+
+public class Player implements Comparable<Player> {
 	public final String name;
-	protected Player nextPlayer;
-	protected Player prevPlayer;
 	protected DoublyLinkedOrderedList<UnoCard> hand;
 
 	public Player(String name){
@@ -20,25 +20,11 @@ public class Player {
 		return hand.isEmpty();
 	}
 
-	public Player getNextPlayer() {
-		return nextPlayer;
-	}
-
-	public void setNextPlayer(Player nextPlayer) {
-		this.nextPlayer = nextPlayer;
-	}
-
-	public Player getPrevPlayer() {
-		return prevPlayer;
-	}
-
-	public void setPrevPlayer(Player prevPlayer) {
-		this.prevPlayer = prevPlayer;
-	}
-
 	public String toString() {
 		return name;
 	}
-
-
+	
+	public int compareTo(Player p) {
+		return name.compareTo(p.name);
+	}
 }

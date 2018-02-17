@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Iterator;
 
 public class QueueTest {
 
@@ -242,7 +243,12 @@ public class QueueTest {
 		for(int i : input) {
 			queue.enqueue(i);
 		}
+		assertEquals(input.size(), queue.getSize());
 		assertEquals(input.toString(), queue.toString());
+		for(int i : input) {
+			assertEquals(i, (int) queue.peek());
+			assertEquals(i, (int) queue.dequeue());
+		}
 	}
 
 
@@ -269,5 +275,46 @@ public class QueueTest {
 		assertEquals("[e]", queue.toString());
 		queue.dequeue();
 		assertEquals("[]", queue.toString());
+	}
+
+	@Test
+	void simpleIteratorTest() {
+		Queue<Integer> queue = new Queue<>();
+		assertEquals("[]", queue.toString());
+		queue.enqueue(1);
+		queue.enqueue(2);
+		queue.enqueue(3);
+		queue.enqueue(4);
+		assertEquals(4, queue.getSize());
+		assertEquals("[1, 2, 3, 4]", queue.toString());
+		Iterator<Integer> itr = queue.iterator();
+		assertTrue(itr.hasNext());
+		assertEquals(1, (int) itr.next());
+		assertTrue(itr.hasNext());
+		assertEquals(2, (int) itr.next());
+		assertTrue(itr.hasNext());
+		assertEquals(3, (int) itr.next());
+		assertTrue(itr.hasNext());
+		assertEquals(4, (int) itr.next());
+		assertFalse(itr.hasNext());
+		assertEquals("[1, 2, 3, 4]", queue.toString());
+	}
+
+	/**
+	 * tests peek, enqueue, dequeue, get, and set
+	 */
+	@ParameterizedTest
+	@MethodSource("numbersProvider")
+	void iterableTest(List<Integer> input) {
+		Queue<Integer> queue = new Queue<>();
+		for(int i : input) {
+			queue.enqueue(i);
+		}
+		int inx = 0;
+		for(int i : queue) {
+			assertEquals((int) input.get(inx), i);
+			assertEquals((int) input.get(inx), (int) queue.get(inx));
+			inx++;
+		}
 	}
 }

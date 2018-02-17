@@ -52,6 +52,10 @@ Will generate an executable jar `rebeccaturner-PA0.jar` (and a source zip) in
 
     java -jar target/rebeccaturner-PA0.jar
 
+It is worth noting that the `pom.yaml` is translated with [Takari’s Polyglot for
+Maven][2]; this doesn't require any user attention, and is automatically enabled
+through the `.mvn/extensions.xml`.
+
 ## Direct compilation
 
 Fortunately, there are no external dependencies or whatnot, so compiling without
@@ -62,3 +66,4 @@ Maven is easy too! Just
     java Simulation
 
 [1]: https://maven.apache.org/
+[2]: https://github.com/takari/polyglot-maven

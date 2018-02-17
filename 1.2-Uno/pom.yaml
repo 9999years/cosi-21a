@@ -1,6 +1,6 @@
 modelVersion: 4.0.0
 groupId: org.becca.cosi21a
-artifactId: rebeccaturner-PA1-Part1
+artifactId: rebeccaturner-PA1-Part2
 version: 1.0.0
 
 properties:
@@ -62,8 +62,17 @@ build:
             goals: [ single ]
             phase: package
 
+        # javadoc
       - groupId: org.apache.maven.plugins
         artifactId: maven-javadoc-plugin
         version: 3.0.0
         configuration:
             show: private
+
+        # jar
+      - groupId: org.apache.maven.plugins
+        artifactId: maven-jar-plugin
+        version: 2.4
+        configuration:
+            archive:
+                manifest: { mainClass: UnoGame }

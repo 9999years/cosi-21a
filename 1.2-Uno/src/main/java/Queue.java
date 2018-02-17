@@ -1,14 +1,41 @@
 import java.lang.ArrayIndexOutOfBoundsException;
 import java.lang.IllegalStateException;
 import java.lang.IllegalArgumentException;
+import java.util.NoSuchElementException;
+
+import java.lang.Iterable;
+import java.util.Iterator;
 
 import java.util.Arrays;
 
 /**
- * array-based deque
+ * array-based deque with elements from 0..size - 1; O(1) insertion at end of
+ * queue and removal at front of queue
  */
-public class Queue<T> {
-	public static final int DEFAULT_INITIAL_CAPACITY = 10;
+public class Queue<T> implements Iterable<T> {
+	public static final int DEFAULT_INITIAL_CAPACITY = 16;
+
+	protected class QueueIterator implements Iterator<T> {
+		int inx = 0;
+
+		public boolean hasNext() {
+			return inx < Queue.this.size;
+		}
+
+		public T next() {
+			if(hasNext()) {
+				T ret = Queue.this.get(inx);
+				inx++;
+				return ret;
+			} else {
+				throw new NoSuchElementException();
+			}
+		}
+	}
+
+	public Iterator<T> iterator() {
+		return new QueueIterator();
+	}
 
 	/**
 	 * example layout:
@@ -150,6 +177,10 @@ public class Queue<T> {
 		return get(0);
 	}
 
+	public T peekBack() {
+		return get(size - 1);
+	}
+
 	public void enqueue(T data) {
 		// ensure we have space for another element, expanding the
 		// array if necessary
@@ -182,22 +213,7 @@ public class Queue<T> {
 	}
 
 	public String toString() {
-		if(size == 0) {
-			return "[]";
-		}
-
-		StringBuilder ret = new StringBuilder("[");
-		for(int i = 0; i < size; i++) {
-			ret.append(get(i));
-			ret.append(", ");
-		}
-		// "[x, y," -> "[x, y"
-		// saves us from having to keep track of if the iterator is
-		// empty so we dont add an extra comma at the end
-		ret.delete(ret.length() - 2, ret.length());
-		// "[x, y" -> "[x, y]"
-		ret.append("]");
-		return ret.toString();
+		return Iterables.toString(this);
 	}
 
 	/**

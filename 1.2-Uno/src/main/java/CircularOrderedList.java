@@ -9,7 +9,7 @@ import java.util.Objects;
  *
  * @see CircularList
  */
-public class SortedCircularList<T extends Comparable<T>>
+public class CircularOrderedList<T extends Comparable<T>>
 		extends CircularList<T> {
 	/**
 	 * illegal operation on a sorted list!
