@@ -1,4 +1,7 @@
-public class PlayerCircle {
+import java.lang.Iterable;
+import java.util.Iterator;
+
+public class PlayerCircle implements Iterable<Player> {
 	CircularOrderedList<Player> players = new CircularOrderedList<>();
 
 	public Player getFirstPlayer() {
@@ -36,5 +39,9 @@ public class PlayerCircle {
 
 	public String toString() {
 		return players.toString();
+	}
+
+	public Iterator<Player> iterator() {
+		return players.iterator();
 	}
 }

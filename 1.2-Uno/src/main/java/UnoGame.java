@@ -9,9 +9,10 @@ public class UnoGame {
 
 	public static final int UNO_STARTING_HAND_SIZE = 7;
 
-	public static Scanner in = new Scanner(System.in);
-	public static PlayerCircle players = new PlayerCircle();
-	public static Queue<Player> extraPlayers = new Queue<Player>();
+	protected static Scanner in = new Scanner(System.in);
+	protected static PlayerCircle players = new PlayerCircle();
+	protected static Queue<Player> extraPlayers = new Queue<Player>();
+	protected static UnoDeck deck = new UnoDeck();
 
 	public static String getName() {
 		System.out.print(NAME_QUERY);
@@ -52,7 +53,20 @@ public class UnoGame {
 	public static void main(String[] args) {
 		System.out.println(INTRO);
 		getPlayers();
-		System.out.println("Players: " + players);
-		System.out.println("Backups: " + extraPlayers);
+		System.out.print(Iterables.englishToString(players)
+			+ " are playing");
+		if(!extraPlayers.isEmpty()) {
+			System.out.println(" and "
+				+ Iterables.englishToString(extraPlayers)
+				+ " are waiting to play.");
+		} else {
+			System.out.println();
+		}
+		System.out.println("The hands are as follows:");
+
+		for(Player p : players) {
+			p.drawHand(deck);
+			System.out.println(p + ": " + p.handString());
+		}
 	}
 }
