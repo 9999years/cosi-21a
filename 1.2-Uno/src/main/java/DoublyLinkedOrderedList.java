@@ -163,11 +163,7 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>>
 
 	// PUBLIC INTERFACE
 
-	/**
-	 * why does the api specify i have to allow public access to the head
-	 * node??
-	 */
-	public DoublyLinkedNode<T> getHead() {
+	public T getHead() {
 		// no need to check for size really here for our impl. but
 		// thems the breaks if youve gotta deal with nulls
 		return size == 0 ? null : head.next;
@@ -194,14 +190,14 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>>
 	 * deletes the first node in the list such that node.compareTo(data) ==
 	 * 0; O(n) amortized
 	 */
-	public DoublyLinkedNode<T> delete(T data) {
+	public boolean delete(T data) {
 		for(DoublyLinkedNode<T> n : nodeIterator()) {
 			if(n.compareTo(data) == 0) {
 				remove(n);
-				return n;
+				return true;
 			}
 		}
-		return null;
+		return false;
 	}
 
 	/**

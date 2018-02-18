@@ -86,10 +86,15 @@ public class UnoCard implements Comparable<UnoCard> {
 		return ret;
 	}
 
-	public boolean equals(UnoCard other){
-		return other.color == color
-			&& other.special == special
-			&& other.number == number;
+	public boolean equals(Object o){
+		if(o instanceof UnoCard) {
+			UnoCard card = (UnoCard) o;
+			return card.color == color
+				&& card.special == special
+				&& card.number == number;
+		} else {
+			return false;
+		}
 	}
 
 	public int compareTo(UnoCard other) {

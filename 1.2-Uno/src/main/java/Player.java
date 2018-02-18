@@ -3,13 +3,15 @@ import java.util.Comparator;
 
 import java.lang.IllegalStateException;
 
-public class Player implements Comparable<Player> {
+import java.lang.Iterable;
+import java.util.Iterator;
+
+public class Player implements Comparable<Player>, Iterable<UnoCard> {
 	protected static int players = 0;
 
 	public final String name;
 	public final int id;
-	protected DoublyLinkedOrderedList<UnoCard> hand
-		= new DoublyLinkedOrderedList<>();
+	public final Hand hand = new Hand();
 
 	public Player(String name) {
 		this.name = name;
@@ -17,57 +19,8 @@ public class Player implements Comparable<Player> {
 		players++;
 	}
 
-	/**
-	 * string representation of the player's hand
-	 */
-	public String handString() {
-		return Iterables.englishToString(hand);
-	}
-
-	public DoublyLinkedOrderedList<UnoCard> playable(UnoCard top) {
-		DoublyLinkedOrderedList<UnoCard> ret =
-			new DoublyLinkedOrderedList<>();
-		for(UnoCard c : hand) {
-			if(c.canBePlacedOn(top)) {
-				ret.add(c);
-			}
-		}
-		return ret;
-	}
-
-	public void clearHand() {
-		hand.clear();
-	}
-
-	public void addToHand(UnoCard c) {
-		hand.insert(c);
-	}
-
-	/**
-	 * @throws IllegalStateException if the player doesn't have an empty
-	 * hand
-	 */
-	public void drawHand(UnoDeck deck) {
-		if(!hand.isEmpty()) {
-			throw new IllegalStateException();
-		}
-
-		for(int i = 0; i < UnoGame.UNO_STARTING_HAND_SIZE; i++) {
-			addToHand(deck.drawCard());
-		}
-	}
-
-	/**
-	 * if there are owed cards, pick them up
-	 */
-	public void pickUpOwed(UnoDeck deck) {
-		while(deck.cardsOwed() > 0) {
-			addToHand(deck.drawOwedCard());
-		}
-	}
-
-	public void removeFromHand(int index) {
-		//you have to implement this
+	public Iterator<UnoCard> iterator() {
+		return hand.iterator();
 	}
 
 	public int handSize() {
@@ -87,7 +40,7 @@ public class Player implements Comparable<Player> {
 	}
 
 	/**
-	 * compares names lexically
+	 * compares names alphabetically
 	 */
 	public int compareTo(Player p) {
 		return name.compareTo(p.name);
