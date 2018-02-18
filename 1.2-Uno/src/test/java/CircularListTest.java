@@ -28,7 +28,7 @@ public class CircularListTest {
 	 */
 	@Test
 	void simpleTest() {
-		CircularList<Integer> list = new CircularList();
+		CircularList<Integer> list = new CircularList<>();
 		assertEquals(0, list.size());
 		assertTrue(list.isEmpty());
 		assertEquals("[]", list.toString());
@@ -61,7 +61,7 @@ public class CircularListTest {
 	 */
 	@Test
 	void addAllTest() {
-		CircularList<Integer> list = new CircularList();
+		CircularList<Integer> list = new CircularList<>();
 		list.addAll(boxed(nums1));
 		assertEquals(nums1.length, list.size());
 		assertEquals(nums1[0], (int) list.getFront());
@@ -75,7 +75,7 @@ public class CircularListTest {
 
 	@Test
 	void infiniteIteratorTest() {
-		CircularList<Integer> list = new CircularList();
+		CircularList<Integer> list = new CircularList<>();
 		list.addAll(boxed(nums1));
 		Iterator<Integer> itr = list.infiniteIterator();
 		for(int i = 0; i < nums1.length * 10; i++) {
@@ -85,7 +85,7 @@ public class CircularListTest {
 
 	@Test
 	void indexTests() {
-		CircularList<Integer> list = new CircularList();
+		CircularList<Integer> list = new CircularList<>();
 		for(int i = 0; i < 100; i++) {
 			list.add(0);
 		}

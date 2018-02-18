@@ -5,12 +5,16 @@ import java.util.List;
 import java.util.Arrays;
 
 public class IterablesTest {
-	<T> Iterable<T> itr(T... ts) {
+	@SafeVarargs
+	@SuppressWarnings("varargs")
+	final <T> Iterable<T> itr(T... ts) {
 		// lol
 		return Arrays.asList(ts);
 	}
 
-	<T> String anyToString(T... ts) {
+	@SafeVarargs
+	@SuppressWarnings("varargs")
+	final <T> String anyToString(T... ts) {
 		return Iterables.toString(itr(ts));
 	}
 
@@ -21,6 +25,18 @@ public class IterablesTest {
 		assertEquals("[1, 2]", anyToString(1, 2));
 		assertEquals("[1, 2, 3]", anyToString(1, 2, 3));
 		assertEquals("[1, null, 3]", anyToString(1, null, 3));
+	}
+
+	@Test
+	void simpleEnglishToStringTest() {
+		assertEquals("", Iterables.englishToString(Arrays.asList()));
+		assertEquals("A", Iterables.englishToString(Arrays.asList("A")));
+		assertEquals("A and B", Iterables.englishToString(
+			Arrays.asList("A", "B")));
+		assertEquals("A, B, and C", Iterables.englishToString(
+			Arrays.asList("A", "B", "C")));
+		assertEquals("A, B, C, and D", Iterables.englishToString(
+			Arrays.asList("A", "B", "C", "D")));
 	}
 
 	@Test

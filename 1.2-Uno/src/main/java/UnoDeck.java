@@ -1,4 +1,5 @@
 import java.lang.IllegalArgumentException;
+import java.lang.IllegalStateException;
 
 /*
  * Uno deck
@@ -61,12 +62,16 @@ public class UnoDeck {
 		return lastDiscarded;
 	}
 
+	/**
+	 * @throws IllegalStateException if the deck is empty, ie all the cards
+	 * have been drawn and none have been discarded back into the deck
+	 */
 	public UnoCard drawCard() {
 		if(deck.isEmpty()) {
 			if(discard.isEmpty()) {
 				// uh oh -- someone drew all the cards from the
 				// deck and didn't discard any
-				return null;
+				throw new IllegalStateException();
 			}
 			// no reason to actually move 108 cards around when we
 			// can just move the lists; one is completely empty and

@@ -7,6 +7,8 @@ public class UnoGame {
 	public static final int MIN_PLAYERS_IN_CIRCLE = 2;
 	public static final int MAX_PLAYERS_IN_CIRCLE = 5;
 
+	public static final int UNO_STARTING_HAND_SIZE = 7;
+
 	public static Scanner in = new Scanner(System.in);
 	public static PlayerCircle players = new PlayerCircle();
 	public static Queue<Player> extraPlayers = new Queue<Player>();
@@ -23,9 +25,11 @@ public class UnoGame {
 	public static void getPlayers() {
 		// get names and add them to the circle while the name exists
 		// & there's <= 5 players in the circle
+		// strict less than because we already call getName outside the
+		// loop
 		String name = getName();
 		while(!name.isEmpty() &&
-				players.getSize() <= MAX_PLAYERS_IN_CIRCLE) {
+				players.getSize() < MAX_PLAYERS_IN_CIRCLE) {
 			players.addToCircle(name);
 			name = getName();
 		}
@@ -40,10 +44,8 @@ public class UnoGame {
 		// we already have another name in the `name` variable! if it's
 		// empty we never enter this loop
 		while(!name.isEmpty()) {
-			if(name == "") {
-				return;
-			}
 			extraPlayers.enqueue(new Player(name));
+			name = getName();
 		}
 	}
 
