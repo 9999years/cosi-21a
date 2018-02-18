@@ -4,6 +4,7 @@ public class UnoGame {
 	public static final String NAME_QUERY = "What's your name? ";
 	public static final String INTRO = "Welcome to Uno!\nPlease enter the player names --- one per line, and a blank line to stop.";
 	public static final String LESS_THAN_2_PLAYERS = "You need at least 2 players for Uno! Add some more players!";
+	public static final String CHOOSE_CARD = "Which card would you like to play? ";
 	public static final int MIN_PLAYERS_IN_CIRCLE = 2;
 	public static final int MAX_PLAYERS_IN_CIRCLE = 5;
 
@@ -50,23 +51,61 @@ public class UnoGame {
 		}
 	}
 
+	public static String playing() {
+		String ret = Iterables.englishToString(players)
+			+ " are playing";
+		if(!extraPlayers.isEmpty()) {
+			ret += " and "
+				+ Iterables.englishToString(extraPlayers)
+				+ " are waiting to play.";
+		} else {
+			ret += ".";
+		}
+		return ret;
+	}
+
+	/**
+	 * processes step 4 from p. 2 of the spec
+	 */
+	public static void play(Player p) {
+		System.out.println("It is " + p + "'s turn! They have "
+			+ p.handSize() + " cards left");
+		// pick up any cards from a previous draw 2 or draw 4 card
+		// 4.a
+		p.pickUpOwed();
+		// 4.b
+		System.out.println("You can play any of "
+			+ Iterables.englishToString(
+				p.playable(deck.getLastDiscarded())));
+		System.out.print(CHOOSE_CARD);
+	}
+
+	public static void processTurn() {
+		for(Player p : players) {
+			p.play();
+		}
+	}
+
 	public static void main(String[] args) {
+		// step 1
 		System.out.println(INTRO);
 		getPlayers();
-		System.out.print(Iterables.englishToString(players)
-			+ " are playing");
-		if(!extraPlayers.isEmpty()) {
-			System.out.println(" and "
-				+ Iterables.englishToString(extraPlayers)
-				+ " are waiting to play.");
-		} else {
-			System.out.println();
-		}
-		System.out.println("The hands are as follows:");
+		System.out.println(playing());
+		System.out.println();
+		// end step 1
 
+		// step 2
+		System.out.println("The hands are as follows:");
 		for(Player p : players) {
 			p.drawHand(deck);
 			System.out.println(p + ": " + p.handString());
 		}
+		System.out.println();
+		//end step 2
+
+		// step 3
+		deck.discardCard();
+		System.out.println("The top card is a" + deck.lastDiscarded());
+		// end step 3
 	}
 }

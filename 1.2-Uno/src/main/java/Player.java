@@ -24,6 +24,17 @@ public class Player implements Comparable<Player> {
 		return Iterables.englishToString(hand);
 	}
 
+	public DoublyLinkedOrderedList<UnoCard> playable(UnoCard top) {
+		DoublyLinkedOrderedList<UnoCard> ret =
+			new DoublyLinkedOrderedList<>();
+		for(UnoCard c : hand) {
+			if(c.canBePlacedOn(top)) {
+				ret.add(c);
+			}
+		}
+		return ret;
+	}
+
 	public void clearHand() {
 		hand.clear();
 	}
@@ -43,6 +54,15 @@ public class Player implements Comparable<Player> {
 
 		for(int i = 0; i < UnoGame.UNO_STARTING_HAND_SIZE; i++) {
 			addToHand(deck.drawCard());
+		}
+	}
+
+	/**
+	 * if there are owed cards, pick them up
+	 */
+	public void pickUpOwed(UnoDeck deck) {
+		while(deck.cardsOwed() > 0) {
+			addToHand(deck.drawOwedCard());
 		}
 	}
 

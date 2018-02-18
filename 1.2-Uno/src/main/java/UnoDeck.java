@@ -7,7 +7,13 @@ import java.lang.IllegalStateException;
 public class UnoDeck {
 	protected SinglyLinkedList<UnoCard> deck = new SinglyLinkedList<>();
 	protected SinglyLinkedList<UnoCard> discard = new SinglyLinkedList<>();
+
 	protected UnoCard lastDiscarded;
+	/**
+	 * non-zero if the next player needs to pick up extra cards ie a draw 2
+	 * or draw 4 card
+	 */
+	protected int cardsOwed = 0;
 
 	/**
 	 * There are 108 cards in a Uno deck.  There are four suits, Red,
@@ -84,9 +90,35 @@ public class UnoDeck {
 		return deck.removeHead();
 	}
 
+	/**
+	 * cards owed to the next player as the result of a draw 2 or draw 4
+	 */
+	public int cardsOwed() {
+		return cardsOwed();
+	}
+
+	/**
+	 * draw an owed card and decrease the owed card counter
+	 * @throws IllegalStateException if there are no owed cards to draw
+	 */
+	public UnoCard drawOwedCard() {
+		if(cardsOwed == 0) {
+			throw new IllegalStateException();
+		}
+		UnoCard card = drawCard();
+		cardsOwed--;
+		return card;
+	}
+
 	public void discardCard(UnoCard c) {
 		if(!c.canBePlacedOn(lastDiscarded)) {
 			throw new IllegalArgumentException();
+		}
+
+		if(c.special == UnoCard.Special.DrawTwo) {
+			cardsOwed += 2;
+		} else if(c.special == UnoCard.Special.DrawFour) {
+			cardsOwed += 4;
 		}
 
 		discard.randomInsert(c);
