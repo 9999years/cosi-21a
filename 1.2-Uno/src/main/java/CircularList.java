@@ -1,7 +1,10 @@
 import java.lang.Iterable;
 import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.Spliterator;
 
 import java.util.NoSuchElementException;
+import java.lang.UnsupportedOperationException;
 
 /**
  * circular linked list of type T; this allows us to separate our player logic
@@ -35,7 +38,19 @@ public class CircularList<T> implements Iterable<T> {
 	/**
 	 * iterator of no elements
 	 */
-	protected class EmptyIterator implements Iterator<T> {
+	protected class EmptyIterator implements ListIterator<T> {
+		public boolean hasPrevious() {
+			return false;
+		}
+
+		public T previous() {
+			throw new NoSuchElementException();
+		}
+
+		public int previousIndex() {
+			throw new UnsupportedOperationException();
+		}
+
 		public boolean hasNext() {
 			return false;
 		}
@@ -43,54 +58,157 @@ public class CircularList<T> implements Iterable<T> {
 		public T next() {
 			throw new NoSuchElementException();
 		}
+
+		public int nextIndex() {
+			throw new UnsupportedOperationException();
+		}
+
+		public int add() {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	/**
-	 * iterates over the list ONCE
+	 * iterates over the list ONCE; starts with the cursor before the first
+	 * element
 	 */
-	protected class SingleIterator implements Iterator<T> {
-		Node curr = CircularList.this.first.prev;
-		int consumed = 0;
+	protected class SingleIterator implements ListIterator<T> {
+		/**
+		 * our "cursor" is between current and current.next
+		 *
+		 * before the list / after list end: current == first.prev
+		 */
+		protected Node current = CircularList.this.first.prev;
+		/**
+		 * last node returned
+		 */
+		protected Node last = null;
+		/**
+		 * inx of current
+		 */
+		protected int inx = -1;
 
-		public boolean hasNext() {
-			return consumed < CircularList.this.size;
+		/**
+		 * decrements the index safely. it seems like this is a
+		 * use-case for mod but that can return negative numbers in
+		 * java soooo
+		 */
+		protected void decrementIndex() {
+			inx--;
+			if(inx < 0) {
+				// such that inx = -1 goes to inx = size
+				// - 1 (last el in list)
+				inx += CircularList.this.size;
+			}
 		}
 
+		protected void incrementIndex() {
+			inx++;
+			if(inx >= CircularList.this.size) {
+				// such that inx = size goes to 0
+				inx -= CircularList.this.size;
+			}
+		}
+
+		public boolean hasNext() {
+			return inx < CircularList.this.size;
+		}
+
+		public boolean hasPrevious() {
+			// we must be able to get the ListIterator to the
+			// position "before" the first element, which is, in
+			// our case, where curent == head
+			return inx > 0;
+		}
+
+		/**
+		 * cursor is in front of current, so we advance the cursor
+		 * to the next value and then return the current value
+		 */
 		public T next() {
-			if(hasNext()) {
-				consumed++;
-				curr = curr.next;
-				return curr.data;
-			} else {
+			if(!hasNext()) {
 				throw new NoSuchElementException();
 			}
+			current = current.next;
+			last = current;
+			incrementIndex();
+			return last.data;
+		}
+
+		/**
+		 * cursor is in front of current, so we take our value at
+		 * current (to return) and then rewind the cursor
+		 */
+		public T previous() {
+			if(!hasPrevious()) {
+				throw new NoSuchElementException();
+			}
+			last = current;
+			current = current.prev;
+			decrementIndex();
+			return last.data;
+		}
+
+		public int nextIndex() {
+			return inx + 1;
+		}
+
+		public int previousIndex() {
+			return inx;
+		}
+
+		public void add(T t) {
+			CircularList.this.addBefore(current, t);
 		}
 
 		public void remove() {
-			consumed--;
-			CircularList.this.remove(curr);
-			if(curr == CircularList.this.first) {
-				CircularList.this.first =
-					CircularList.this.first.next;
+			// no last node
+			if(last == null) {
+				throw new IllegalStateException();
 			}
+			CircularList.this.remove(last);
+		}
+
+		public void set(T t) {
+			replace(last, t);
+		}
+
+		// spliterator methods
+
+		public int characteristics() {
+			return Spliterator.SIZED;
+		}
+
+		public long estimateSize() {
+			return size;
+		}
+
+		/**
+		 * this doesn't do anything, ever. sorry threads!
+		 */
+		public Spliterator<T> trySplit() {
+			// lol
+			return null;
 		}
 	}
 
-	protected class InfiniteIterator extends SingleIterator
-			implements Iterator<T> {
+	/**
+	 * https://i.imgur.com/JRQ5S3v.jpg
+	 */
+	protected class InfiniteIterator extends SingleIterator {
 		public boolean hasNext() {
 			return true;
 		}
 
-		public T next() {
-			return super.next();
+		public boolean hasPrevious() {
+			return true;
 		}
 	}
 
 	/**
 	 * iterates over the list once
 	 */
-	public Iterator<T> iterator() {
+	public ListIterator<T> iterator() {
 		// return an empty iterator for an empty list so we don't have
 		// to worry about null cases in the actual iterators
 		return isEmpty() ? new EmptyIterator() : new SingleIterator();
@@ -99,7 +217,7 @@ public class CircularList<T> implements Iterable<T> {
 	/**
 	 * iterates over the list forever
 	 */
-	public Iterator<T> infiniteIterator() {
+	public ListIterator<T> infiniteIterator() {
 		return isEmpty() ? new EmptyIterator() : new InfiniteIterator();
 	}
 
@@ -187,6 +305,12 @@ public class CircularList<T> implements Iterable<T> {
 		}
 
 		return ret;
+	}
+
+	protected void replace(Node n, T t) {
+		Node replacement = new Node(n.prev, t, n.next);
+		n.prev.next = replacement;
+		n.next.prev = replacement;
 	}
 
 	/**

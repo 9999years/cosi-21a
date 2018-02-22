@@ -166,7 +166,7 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>>
 	public T getHead() {
 		// no need to check for size really here for our impl. but
 		// thems the breaks if youve gotta deal with nulls
-		return size == 0 ? null : head.next;
+		return size == 0 ? null : head.next.data;
 	}
 
 	/**

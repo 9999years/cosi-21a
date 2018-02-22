@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 import java.util.List;
 import java.util.Iterator;
+import java.util.ListIterator;
 
 public class CircularListTest {
 	public static final int[] nums1 = new int[] {
@@ -99,4 +100,54 @@ public class CircularListTest {
 		assertEquals(0, (int) list.get(0));
 		assertEquals(0, (int) list.get(31));
 	}
+
+	@ParameterizedTest
+	@MethodSource("numbersProvider")
+	void listIteratorTest(List<Integer> input) {
+		CircularList<Integer> list = new CircularList<>();
+		list.addAll(input);
+		ListIterator<Integer> itr = list.listIterator();
+		assertFalse(itr.hasPrevious(), "no hasPrevious at start");
+		assertEquals(-1, itr.previousIndex(), "previousIndex at start");
+		assertEquals(0, itr.nextIndex(), "nextIndex at start");
+
+		if(list.size() > 0) {
+			assertTrue(itr.hasNext(), "hasNext at start (size > 0)");
+		} else {
+			assertFalse(itr.hasNext(), "no hasNext at start (size == 0)");
+			// quit early; nothing to do
+			return;
+		}
+
+		// traverse forwards
+		int i = 0;
+		while(itr.hasNext()) {
+			assertEquals(i, itr.nextIndex(),
+				"index (forward traversal)");
+			assertEquals((Object) input.get(i), itr.next(),
+				"element (forward traversal)");
+			i++;
+		}
+		// index is actually past the end of the list (last index is
+		// list.size() - 1 but we've incremented again)
+		assertEquals(list.size(), i, "index == size after forward traversal");
+		assertFalse(itr.hasNext(), "no hasNext at end");
+		assertTrue(itr.hasPrevious(), "hasPrevious at end");
+
+		// and backwards!
+		i = list.size() - 1;
+		while(itr.hasPrevious()) {
+			assertEquals(i, itr.previousIndex(),
+				"index (backwards traversal)");
+			assertEquals((Object) input.get(i), itr.previous(),
+				"element (backward traversal)");
+			i--;
+		}
+		assertEquals(-1, i, "index after backwards traversal");
+		assertFalse(itr.hasPrevious(),
+			"no hasPrevious at start after backwards traversal");
+		assertTrue(itr.hasNext(),
+			"hasNext at start after backwards traversal");
+	}
+
 }

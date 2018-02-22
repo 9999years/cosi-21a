@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.Iterator;
 
 public class UnoGame {
 	public static final String NAME_QUERY = "What's your name? ";
@@ -110,12 +111,12 @@ public class UnoGame {
 			+ p.handSize() + " cards left");
 		// pick up any cards from a previous draw 2 or draw 4 card
 		// 4.a
-		p.hand.pickUpOwed();
+		p.hand.pickUpOwed(deck);
 		// 4.b and 4.c
 		UnoCard card = getCard(p);
+		Action ret = Action.None;
 		if(card != null) {
 			// 4.d
-			Action ret = Action.None;
 			deck.discardCard(p.hand.remove(card));
 			// state to return; actions for the next player
 			if(card.special == UnoCard.Special.Skip) {

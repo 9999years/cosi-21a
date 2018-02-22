@@ -32,7 +32,7 @@ public class Hand implements Iterable<UnoCard> {
 	 * found and null if it wasnt
 	 */
 	public UnoCard get(String card) {
-		for(Card c : this) {
+		for(UnoCard c : this) {
 			if(c.toString().compareToIgnoreCase(card) == 0) {
 				return c;
 			}
@@ -45,7 +45,7 @@ public class Hand implements Iterable<UnoCard> {
 	 * card if it was found and return null if it wasnt
 	 */
 	public UnoCard remove(UnoCard card) {
-		Iterator<UnoCard> hand = cards;
+		Iterator<UnoCard> hand = cards.iterator();
 		while(hand.hasNext()) {
 			UnoCard c = hand.next();
 			if(c.equals(card)) {
@@ -68,6 +68,11 @@ public class Hand implements Iterable<UnoCard> {
 	 * removes and returns the given card
 	 */
 	public UnoCard remove(String card) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void add(UnoCard c) {
+		cards.insert(c);
 	}
 
 	public void clearHand() {
@@ -90,7 +95,7 @@ public class Hand implements Iterable<UnoCard> {
 		}
 
 		for(int i = 0; i < UnoGame.UNO_STARTING_HAND_SIZE; i++) {
-			addToHand(deck.drawCard());
+			add(deck.drawCard());
 		}
 	}
 
@@ -99,7 +104,7 @@ public class Hand implements Iterable<UnoCard> {
 	 */
 	public void pickUpOwed(UnoDeck deck) {
 		while(deck.cardsOwed() > 0) {
-			addToHand(deck.drawOwedCard());
+			add(deck.drawOwedCard());
 		}
 	}
 

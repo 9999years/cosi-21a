@@ -2,7 +2,9 @@ import java.lang.Iterable;
 import java.util.Iterator;
 
 public class PlayerCircle implements Iterable<Player> {
-	CircularOrderedList<Player> players = new CircularOrderedList<>();
+	protected CircularOrderedList<Player> players = new CircularOrderedList<>();
+	protected ListIterator<Player> itr = players.infiniteIterator();
+	protected boolean reversed = false;
 
 	public Player getFirstPlayer() {
 		return players.getFront();
@@ -43,5 +45,30 @@ public class PlayerCircle implements Iterable<Player> {
 
 	public Iterator<Player> iterator() {
 		return players.iterator();
+	}
+
+	/**
+	 * gets the next player
+	 */
+	public Player advance() {
+		if(reversed) {
+			return itr.previous();
+		} else {
+			return itr.next();
+		}
+	}
+
+	/**
+	 * skips the next player
+	 */
+	public void skip() {
+		advance();
+	}
+
+	/**
+	 * reverses the direction of play
+	 */
+	public void reverse() {
+		reversed = !reversed;
 	}
 }
