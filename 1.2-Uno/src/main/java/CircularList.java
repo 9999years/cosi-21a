@@ -63,7 +63,7 @@ public class CircularList<T> implements Iterable<T> {
 			throw new UnsupportedOperationException();
 		}
 
-		public int add() {
+		public void add(T t) {
 			throw new UnsupportedOperationException();
 		}
 	}

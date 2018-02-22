@@ -1,5 +1,6 @@
 import java.lang.Iterable;
 import java.util.Iterator;
+import java.util.ListIterator;
 
 public class PlayerCircle implements Iterable<Player> {
 	protected CircularOrderedList<Player> players = new CircularOrderedList<>();
@@ -47,15 +48,23 @@ public class PlayerCircle implements Iterable<Player> {
 		return players.iterator();
 	}
 
+	public int nextIndex() {
+		return reversed ? itr.previousIndex() : itr.nextIndex();
+	}
+
 	/**
 	 * gets the next player
 	 */
 	public Player advance() {
-		if(reversed) {
-			return itr.previous();
-		} else {
-			return itr.next();
-		}
+		return reversed ? itr.previous() : itr.next();
+	}
+
+	/**
+	 * true if the next player returned by advance() is the first player in
+	 * the circle
+	 */
+	public boolean nextIsFirst() {
+		return nextIndex() == 0;
 	}
 
 	/**
