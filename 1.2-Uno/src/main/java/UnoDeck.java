@@ -87,7 +87,13 @@ public class UnoDeck {
 			discard = deck;
 			deck = oldDiscard;
 		}
-		return deck.removeHead();
+		UnoCard ret = deck.removeHead();
+		if(isEmpty() && cardsOwed > 0) {
+			// special scenario where we can nullify the card debt;
+			// no cards to draw from
+			cardsOwed = 0;
+		}
+		return ret;
 	}
 
 	/**

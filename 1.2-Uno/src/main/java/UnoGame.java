@@ -76,7 +76,11 @@ public class UnoGame {
 		Hand playable = p.hand.playable(deck.getLastDiscarded());
 		if(playable.isEmpty()) {
 			System.out.println(NO_PLAYABLE_CARDS);
-			System.out.println("You picked up a " + p.hand.draw(deck) + ".");
+			if(deck.isEmpty()) {
+				System.out.println("The Uno deck is empty; there's no cards to draw!");
+			} else {
+				System.out.println("You picked up a " + p.hand.draw(deck) + ".");
+			}
 			return null;
 		}
 		while(true) {
@@ -113,7 +117,7 @@ public class UnoGame {
 			System.out.println("You need to draw " + deck.cardsOwed()
 				+ " cards before you can play!");
 			p.hand.pickUpOwed(deck);
-			System.out.println("Your hand is now: " + p.hand);
+			System.out.println("Your hand is now " + p.hand.size() + " cards.");
 		}
 		// 4.b and 4.c
 		UnoCard card = getCard(p);
