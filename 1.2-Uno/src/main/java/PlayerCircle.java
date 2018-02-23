@@ -66,7 +66,7 @@ public class PlayerCircle implements Iterable<Player> {
 	}
 
 	public String toString() {
-		return players.toString();
+		return Iterables.englishToString(players);
 	}
 
 	/**

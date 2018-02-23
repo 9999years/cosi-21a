@@ -32,8 +32,9 @@ public class Hand implements Iterable<UnoCard> {
 	 * found and null if it wasnt
 	 */
 	public UnoCard get(String card) {
+		String trimmed = card.trim();
 		for(UnoCard c : this) {
-			if(c.toString().compareToIgnoreCase(card) == 0) {
+			if(c.toString().trim().compareToIgnoreCase(trimmed) == 0) {
 				return c;
 			}
 		}

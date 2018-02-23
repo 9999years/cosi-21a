@@ -104,7 +104,8 @@ public class UnoGame {
 	 * @return true if p won
 	 */
 	public static boolean play(Player p) {
-		System.out.println("It is " + p + "'s turn! They have "
+		// indent to help pick out first turns
+		System.out.println("        It is " + p + "'s turn! They have "
 			+ p.handSize() + " cards left");
 		// pick up any cards from a previous draw 2 or draw 4 card
 		// 4.a
@@ -146,21 +147,19 @@ public class UnoGame {
 			p.hand.reset(deck);
 			System.out.println(p + ": " + p.hand);
 		}
-		System.out.println();
 		//end step 2
+
+		System.out.println("The order of play is: " + players);
 
 		// step 3
 		deck.discardCard();
-		System.out.println("The top card is a " + deck.getLastDiscarded());
+		System.out.println("The top card is a " + deck.getLastDiscarded() + "\n");
 		// end step 3
 
 		// step 4
-		while(true) {
-			Player p = players.advance();
-			if(play(p)) {
-				// p won
-				return;
-			}
+		Player p = players.advance();
+		while(!play(p)) {
+			p = players.advance();
 		}
 	}
 
@@ -178,10 +177,15 @@ public class UnoGame {
 		// player got to play; in reality, one or two players armed
 		// with sufficient skips and reverses can dominate play
 		System.out.println("Round won in about " + (int) players.turnsPerPlayer()
-			+ " turns per player.");
-		System.out.println("Swapping " + players.loser()
-			+ " for " + extraPlayers.peek() + " in the circle.");
-		extraPlayers.enqueue(players.swapLoser(extraPlayers.dequeue()));
+			+ " turns per player.\n\n"
+			+ "--------------------\n\nNew game!");
+		if(!extraPlayers.isEmpty()) {
+			// we have at least one other player to swap in
+			System.out.println("Swapping "
+				+ players.loser() + " for " + extraPlayers.peek()
+				+ " in the circle.");
+			extraPlayers.enqueue(players.swapLoser(extraPlayers.dequeue()));
+		}
 	}
 
 	public static void main(String[] args) {

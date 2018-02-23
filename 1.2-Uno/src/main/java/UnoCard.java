@@ -61,7 +61,8 @@ public class UnoCard implements Comparable<UnoCard> {
 	public boolean canBePlacedOn(UnoCard other){
 		if(other == null) {
 			return false;
-		} else if(color == other.color || color == Color.Wild) {
+		} else if(color == other.color || color == Color.Wild
+				|| other.color == Color.Wild) {
 			// same color is OK, wild can be placed on anything
 			return true;
 		} else if(special != Special.None) {
