@@ -50,8 +50,8 @@ public class SinglyLinkedListTest {
 	public void getHeadTest() {
 		SinglyLinkedList<Integer> list = new SinglyLinkedList<>();
 		list.regularInsert(100);
-		assertEquals(100, (int) list.getHead().getData());
-		assertEquals(null, list.getHead().getNext());
+		assertEquals(100, (int) list.getHead());
+		assertEquals(null, list.head.getNext());
 	}
 
 	/**
@@ -107,8 +107,8 @@ public class SinglyLinkedListTest {
 		// uhh maybe we should have a get(index) method but
 		// i'm really working on not doing a ton more than the
 		// assignment asks for no reason. so we're doing this
-		assertEquals(100, (int) list.getHead().getData());
-		assertEquals(1, (int) list.getHead().getNext().getData());
+		assertEquals(100, (int) list.getHead());
+		assertEquals(1, (int) list.head.getNext().getData());
 
 		assertEquals(2, list.size());
 
