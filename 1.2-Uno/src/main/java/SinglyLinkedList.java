@@ -212,7 +212,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 		SinglyLinkedNode<T> curr = head;
 		while(itr.hasNext()) {
 			curr = itr.next();
-			if(Equality.nullableEquals(data, curr.data)) {
+			if(Objects.equals(data, curr.data)) {
 				if(size == 1) {
 					removeHead();
 				} else {

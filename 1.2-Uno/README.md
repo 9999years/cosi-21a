@@ -67,10 +67,6 @@ usability and extensibility to implement arbitrary guidelines.
   fashion for as long as you’d like. Make sure the list isn't empty, though, if
   you’re using one, because you can get some weird effects. These are used to
   implement the `PlayerCircle` class.
-* `Equality` contains one method, `nullableEquals(a, b)`. Java documentation
-  often contains [this snippet][nullableEquals]:
-  `(key==null ? k==null : key.equals(k))`. `Equality` factors this behavior out,
-  because it’s easy to forget and mess up.
 * `Hand` represents an Uno hand and is used within the `Player` class; it seemed
   natural to avoid joining the concept of a player and their hand, so I factored
   it out. I think it makes the API a lot clearer and makes it obvious what

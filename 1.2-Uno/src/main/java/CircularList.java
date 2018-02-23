@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Spliterator;
 
+import java.util.Objects;
+
 import java.util.NoSuchElementException;
 import java.lang.UnsupportedOperationException;
 
@@ -362,7 +364,7 @@ public class CircularList<T> implements Iterable<T> {
 		Iterator<T> itr = iterator();
 		while(itr.hasNext()) {
 			T t = itr.next();
-			if(Equality.nullableEquals(data, t)) {
+			if(Objects.equals(data, t)) {
 				itr.remove();
 				return true;
 			}
