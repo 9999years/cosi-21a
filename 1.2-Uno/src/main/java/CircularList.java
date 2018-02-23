@@ -97,36 +97,23 @@ public class CircularList<T> implements Iterable<T> {
 		protected int inx = -1;
 
 		/**
-		 * decrements the index safely. it seems like this is a
-		 * use-case for mod but that can return negative numbers in
-		 * java soooo
+		 * these are factored out into methods so that we can override
+		 * them in the InfiniteIterator to loop the indicies around
 		 */
 		protected void decrementIndex() {
 			inx--;
-			if(inx < 0) {
-				// such that inx = -1 goes to inx = size
-				// - 1 (last el in list)
-				inx += CircularList.this.size;
-			}
 		}
 
 		protected void incrementIndex() {
 			inx++;
-			if(inx >= CircularList.this.size) {
-				// such that inx = size goes to 0
-				inx -= CircularList.this.size;
-			}
 		}
 
 		public boolean hasNext() {
-			return inx < CircularList.this.size;
+			return inx < CircularList.this.size - 1;
 		}
 
 		public boolean hasPrevious() {
-			// we must be able to get the ListIterator to the
-			// position "before" the first element, which is, in
-			// our case, where curent == head
-			return inx > 0;
+			return inx >= 0;
 		}
 
 		/**
@@ -188,7 +175,7 @@ public class CircularList<T> implements Iterable<T> {
 		}
 
 		public long estimateSize() {
-			return size;
+			return CircularList.this.size;
 		}
 
 		/**
@@ -204,6 +191,28 @@ public class CircularList<T> implements Iterable<T> {
 	 * https://i.imgur.com/JRQ5S3v.jpg
 	 */
 	protected class InfiniteIterator extends SingleIterator {
+		/**
+		 * decrements the index safely. it seems like this is a
+		 * use-case for mod but that can return negative numbers in
+		 * java soooo
+		 */
+		protected void decrementIndex() {
+			inx--;
+			if(inx < 0) {
+				// such that inx = -1 goes to inx = size
+				// - 1 (last el in list)
+				inx += CircularList.this.size;
+			}
+		}
+
+		protected void incrementIndex() {
+			inx++;
+			if(inx >= CircularList.this.size) {
+				// such that inx = size goes to 0
+				inx -= CircularList.this.size;
+			}
+		}
+
 		public boolean hasNext() {
 			return true;
 		}
@@ -300,15 +309,16 @@ public class CircularList<T> implements Iterable<T> {
 		T ret = n.data;
 		if(size == 0) {
 			first = null;
-		} else {
-			// bridge over n
-			n.prev.next = n.next;
-			n.next.prev = n.prev;
+			return ret;
 		}
 
-		if(n == first && size > 1) {
-			// if we've removed the first node and there's more
-			// than one node
+		// bridge over n
+		n.prev.next = n.next;
+		n.next.prev = n.prev;
+
+		if(n == first) {
+			// if we've removed the first node and the list isn't
+			// empty
 			first = first.next;
 		}
 
