@@ -318,4 +318,21 @@ public class QueueTest {
 			inx++;
 		}
 	}
+
+	@Test
+	void englishToStringTest() {
+		Queue<String> queue = new Queue<>();
+		assertEquals("", Iterables.englishToString(queue));
+		queue.enqueue("marx");
+		assertEquals("marx", Iterables.englishToString(queue));
+		queue.enqueue("engels");
+		assertEquals("marx and engels",
+			Iterables.englishToString(queue));
+		queue.enqueue("hegel");
+		assertEquals("marx, engels, and hegel",
+			Iterables.englishToString(queue));
+		queue.enqueue("stirner");
+		assertEquals("marx, engels, hegel, and stirner",
+			Iterables.englishToString(queue));
+	}
 }

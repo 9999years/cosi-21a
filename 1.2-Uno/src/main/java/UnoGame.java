@@ -1,6 +1,8 @@
 import java.util.Scanner;
 import java.util.Iterator;
 
+import java.util.Arrays;
+
 public class UnoGame {
 	public static final String NAME_QUERY = "What's your name? ";
 	public static final String INTRO = "Welcome to Uno!\nPlease enter the player names --- one per line, and a blank line to stop.";
@@ -9,7 +11,7 @@ public class UnoGame {
 	public static final String BAD_CARD_CHOICE = "You don't have that card or misspelled its name! Try again?";
 	public static final String NO_PLAYABLE_CARDS = "You don't have any cards to play! Drawing a card and skipping your turn.";
 	/**
-	 * Why is this line approx. a billion characters long? Well, take it
+	 * Why is this line approx. a billion (370) characters long? Well, take it
 	 * from the masters:
 	 *
 	 * Statements longer than 80 columns will be broken into sensible
@@ -20,10 +22,10 @@ public class UnoGame {
 	 * (https://www.kernel.org/doc/html/v4.10/process/coding-style.html)
 	 */
 	public static final String HELP =
-		"Welcome to Uno!\nWhen asked for a card name, just type the card as you see it; to play a red reverse, just type \"red reverse\" (card names are case-insensitive). Any card can be placed on a wild card (and wild cards can be placed on any card); this differs from regular Uno.\nOptions:\n\n"
-		+ "     -p populate the player names with communist\nphilosophers\n"
+		"Welcome to Uno!\nWhen asked for a card name, just type the card as you see it; to play a red reverse, just type \"red reverse\" (card names are case-insensitive). Any card can be placed on a wild card (and wild cards can be placed on any card); this differs from regular Uno.\n\nOptions:\n"
+		+ "     -p populate the player names with communist philosophers\n"
 		+ "     --help show this help text\n"
-		+ " Options are mutually-exclusive because I think if I write one more unnecessary class the TAs will kill me.";
+		+ "Options are mutually-exclusive because I think if I write one more unnecessary class the TAs will kill me.\n";
 	public static final String UNRECOGNIZED_OPTION = "Unrecognized option!";
 	public static final String USAGE = "Usage: java -jar rebeccaturner-PA1-Part2.jar [-p|--help]";
 	public static final String POPULATE = "Populating player circle automatically!";
@@ -32,7 +34,7 @@ public class UnoGame {
 		"Friedrich Engels",
 		"Max Stirner",
 		"Georg Wilhelm Friedrich Hegel",
-		"Пётр Кропо́ткин",
+		"Pyotr Kropotkin",
 		"Louis Althusser",
 		"Monsieur Dupont"
 	};
@@ -68,6 +70,12 @@ public class UnoGame {
 		} else {
 			extraPlayers.enqueue(p);
 			return false;
+		}
+	}
+
+	public static void populatePlayers() {
+		for(String name : DEFAULT_PLAYERS) {
+			addPlayer(name);
 		}
 	}
 
@@ -155,7 +163,7 @@ public class UnoGame {
 	public static boolean play(Player p) {
 		// indent to help pick out first turns
 		System.out.println("        It is " + p + "'s turn! They have "
-			+ p.handSize() + " cards left");
+			+ p.handSize() + " cards left.");
 		// pick up any cards from a previous draw 2 or draw 4 card
 		// 4.a
 		if(deck.cardsOwed() > 0) {
@@ -203,6 +211,7 @@ public class UnoGame {
 		// step 3
 		deck.discardCard();
 		System.out.println("The top card is a " + deck.getLastDiscarded() + "\n");
+		System.out.println(HORIZONTAL_RULE + "\n");
 		// end step 3
 
 		// step 4
@@ -239,17 +248,17 @@ public class UnoGame {
 
 	public static void parseArgs(String[] args) {
 		if(args.length > 0) {
-			if(args[0] == "-p") {
+			String arg = args[0];
+			if(arg.equals("-p")) {
 				System.out.println(POPULATE);
-				for(String name : DEFAULT_PLAYERS) {
-					addPlayer(name);
-				}
+				populatePlayers();
 			} else {
-				if(args[0] != "--help") {
+				if(!arg.equals("--help")) {
 					System.out.println(UNRECOGNIZED_OPTION);
-					System.out.println(USAGE);
 				}
+				System.out.println(USAGE);
 				System.out.println(HELP);
+				System.exit(-1);
 			}
 		}
 	}
