@@ -1,3 +1,8 @@
+/**
+ * Rebecca Turner (rebeccaturner@brandeis.edu)
+ * license: GPLv3
+ */
+
 import java.lang.Exception;
 import java.util.NoSuchElementException;
 

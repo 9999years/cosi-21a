@@ -1,7 +1,16 @@
+/**
+ * Rebecca Turner (rebeccaturner@brandeis.edu)
+ * license: GPLv3
+ */
+
 import java.lang.Iterable;
 import java.util.Comparator;
 import java.util.Iterator;
 
+/**
+ * utility class for operations on iterables i.e. finding minima and prettily
+ * converting to strings
+ */
 public class Iterables {
 	/**
 	 * slices `len` code units from the end of sb

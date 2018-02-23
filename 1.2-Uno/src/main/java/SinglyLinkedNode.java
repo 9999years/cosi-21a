@@ -1,3 +1,8 @@
+/**
+ * Rebecca Turner (rebeccaturner@brandeis.edu)
+ * license: GPLv3
+ */
+
 public class SinglyLinkedNode<T> {
 	public final T data;
 	protected SinglyLinkedNode<T> next;

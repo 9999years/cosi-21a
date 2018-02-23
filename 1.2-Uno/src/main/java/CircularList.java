@@ -1,3 +1,8 @@
+/**
+ * Rebecca Turner (rebeccaturner@brandeis.edu)
+ * license: GPLv3
+ */
+
 import java.lang.Iterable;
 import java.util.Iterator;
 import java.util.ListIterator;
