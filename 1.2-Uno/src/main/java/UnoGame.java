@@ -99,9 +99,12 @@ public class UnoGame {
 			getPlayers();
 		}
 
+		if(name.isEmpty()) {
+			return;
+		}
+
 		// > 5 players; add to the aux. queue
-		// we already have another name in the `name` variable! if it's
-		// empty we never enter this loop
+		name = getName();
 		while(!name.isEmpty()) {
 			addPlayer(name);
 			name = getName();
@@ -252,6 +255,8 @@ public class UnoGame {
 			if(arg.equals("-p")) {
 				System.out.println(POPULATE);
 				populatePlayers();
+				System.out.println(playing());
+				System.out.println();
 			} else {
 				if(!arg.equals("--help")) {
 					System.out.println(UNRECOGNIZED_OPTION);
