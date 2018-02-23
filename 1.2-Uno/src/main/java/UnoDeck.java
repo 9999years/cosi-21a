@@ -27,7 +27,7 @@ public class UnoDeck {
 	 * cards; and two Reverse cards.  In addition there are four Wild cards
 	 * and four Wild Draw Four cards.
 	 *
-	 * @url http://play-k.kaserver5.org/Uno.html
+	 * http://play-k.kaserver5.org/Uno.html
 	 */
 	public UnoDeck() {
 		initDeck();
@@ -42,6 +42,16 @@ public class UnoDeck {
 		deck.randomInsert(card);
 	}
 
+	/**
+	 * runs in like uhh.... O(1) time but really it's closer to O(108^2/4)
+	 * so keep that in mind. so it's constant but a pretty large constant,
+	 * but not enough to actually matter
+	 *
+	 * anyways, each randomInsert is O(n) and we randomInsert 108 times
+	 * where our length varies directly from 0 to 108; therefore we perform
+	 * abouuuut 108^2 / 2 link travels (avg. of n / 2 per insert and an
+	 * average length of 108 / 2)
+	 */
 	protected void initDeck() {
 		for(UnoCard.Color color : UnoCard.Color.values()) {
 			if(color == UnoCard.Color.Wild) {
@@ -64,16 +74,23 @@ public class UnoDeck {
 		addTwice(new UnoCard(UnoCard.Color.Wild, UnoCard.Special.DrawFour));
 	}
 
-	// all cards are out of the deck and in hands
+	/**
+	 * O(1) time
+	 * @return true if all cards are out of the deck and in hands
+	 */
 	public boolean isEmpty() {
 		return deck.isEmpty() && discard.isEmpty();
 	}
 
+	/**
+	 * returns the last-discarded card; O(1) time
+	 */
 	public UnoCard getLastDiscarded() {
 		return lastDiscarded;
 	}
 
 	/**
+	 * O(1) time (not amortized!)
 	 * @throws IllegalStateException if the deck is empty, ie all the cards
 	 * have been drawn and none have been discarded back into the deck
 	 */
@@ -85,9 +102,8 @@ public class UnoDeck {
 				throw new IllegalStateException();
 			}
 			// no reason to actually move 108 cards around when we
-			// can just move the lists; one is completely empty and
-			// one is completely full, so a simple swap is all we
-			// need!
+			// can just move the lists; one is completely empty so
+			// a simple swap is all we need!
 			SinglyLinkedList<UnoCard> oldDiscard = discard;
 			discard = deck;
 			deck = oldDiscard;
@@ -102,7 +118,7 @@ public class UnoDeck {
 	}
 
 	/**
-	 * cards owed to the next player as the result of a draw 2 or draw 4
+	 * @return cards owed to the next player as the result of a draw 2 or draw 4
 	 */
 	public int cardsOwed() {
 		return cardsOwed;
@@ -121,6 +137,9 @@ public class UnoDeck {
 		return card;
 	}
 
+	/**
+	 * O(1) time (O(n) w/r/t the list size but our list size is constant, so...)
+	 */
 	public void discardCard(UnoCard c) {
 		if(!c.canBePlacedOn(lastDiscarded)) {
 			throw new IllegalArgumentException();
@@ -138,7 +157,7 @@ public class UnoDeck {
 
 	/**
 	 * draws a card from the deck and places it on the discard pile; can be
-	 * used for starting a game
+	 * used for starting a game. O(1) time
 	 */
 	public void discardCard() {
 		// circumvent our regular discardCard method to avoid
@@ -147,6 +166,9 @@ public class UnoDeck {
 		discard.randomInsert(lastDiscarded);
 	}
 
+	/**
+	 * O(1) with the disclaimer from discardCard(UnoCard)
+	 */
 	public String toString() {
 		return "UnoDeck[lastDiscarded=" + lastDiscarded + ", "
 			+ "discard=" + discard.size() + ", "

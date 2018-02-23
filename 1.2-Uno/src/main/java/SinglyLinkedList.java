@@ -81,11 +81,10 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 	}
 
 	/**
-	 * uhh, what? isn't half the point of java encapsulation? is this meant
-	 * to return a plain T?
+	 * O(1) time
 	 */
-	public SinglyLinkedNode<T> getHead() {
-		return head;
+	public T getHead() {
+		return head.data;
 	}
 
 	/**
@@ -96,6 +95,8 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 	 * the cool doubly linked list trick
 	 *
 	 * anyways this inserts at the end
+	 *
+	 * O(1) time
 	 */
 	public void regularInsert(T data) {
 		if(size == 0) {
@@ -107,6 +108,8 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 
 	/**
 	 * insert at the front of the list
+	 *
+	 * O(1) time
 	 */
 	protected void insertHead(T data) {
 		if(size == 0) {
@@ -133,6 +136,8 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 	/**
 	 * insert at a given index such that `index` is the new index of
 	 * `data`; used to implement randomInsert
+	 *
+	 * O(n) time
 	 */
 	public void insert(T data, final int index) {
 		if(index < 0 || index > size) {
@@ -163,6 +168,8 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 	/**
 	 * insert data randomly in the list, anywhere between before the head
 	 * and after the tail
+	 *
+	 * O(n) time
 	 */
 	public void randomInsert(T data) {
 		if(size == 0) {
@@ -195,6 +202,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 
 	/**
 	 * remove the first occurance of `data` in the list
+	 * O(n) time
 	 * @return true if data was removed
 	 */
 	public boolean remove(T data) {
@@ -218,7 +226,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 	}
 
 	/**
-	 * removes and returns the list's first node
+	 * removes and returns the list's first node; O(1) time
 	 */
 	public T removeHead() {
 		if(size == 0) {
@@ -232,7 +240,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 	}
 
 	/**
-	 * the number of nodes currently in the list
+	 * the number of nodes currently in the list; O(1) time
 	 */
 	public int size() {
 		return size;
@@ -242,6 +250,9 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 		return size == 0;
 	}
 
+	/**
+	 * O(n) time
+	 */
 	public String toString() {
 		return Iterables.toString(this);
 	}

@@ -8,6 +8,13 @@ import java.util.Iterator;
 
 import java.util.Arrays;
 
+/**
+ * most methods here are either
+ * 1. O(n) time w/r/t the number of players, which is ≤ 5, so really constant
+ * time
+ * or 2. O(n) time w/r/t the number of times the user takes to type valid input
+ * so time complexity analysis is a little bit irrelevant
+ */
 public class UnoGame {
 	public static final String NAME_QUERY = "What's your name? ";
 	public static final String INTRO = "Welcome to Uno!\nPlease enter the player names --- one per line, and a blank line to stop.";
@@ -61,6 +68,7 @@ public class UnoGame {
 	}
 
 	/**
+	 * O(1) time amortized
 	 * @return true if the player was added to the circle, false if they
 	 * were added to the extraPlayers queue
 	 */
@@ -78,6 +86,10 @@ public class UnoGame {
 		}
 	}
 
+	/**
+	 * O(n) time w/r/t the size of DEFAULT_PLAYERS, but that's technically
+	 * constant so this is technically O(1) time
+	 */
 	public static void populatePlayers() {
 		for(String name : DEFAULT_PLAYERS) {
 			addPlayer(name);
@@ -130,7 +142,8 @@ public class UnoGame {
 	}
 
 	/**
-	 * step 4.b and 4.c
+	 * step 4.b and 4.c. time complexity is proportional to how bad the
+	 * user is at spelling the card they want
 	 */
 	public static UnoCard getCard(Player p) {
 		UnoCard ret = null;
@@ -157,6 +170,11 @@ public class UnoGame {
 
 			if(ret == null) {
 				System.out.println(BAD_CARD_CHOICE);
+				System.out.println("To play your "
+					+ playable.first()
+					+ ", just type \""
+					+ playable.first().toString().toLowerCase()
+					+ "\".");
 			} else {
 				break;
 			}
@@ -166,6 +184,7 @@ public class UnoGame {
 
 	/**
 	 * processes step 4 from p. 2 of the spec
+	 * O(1) time, but the caveat in getCard still applies
 	 * @return true if p won
 	 */
 	public static boolean play(Player p) {

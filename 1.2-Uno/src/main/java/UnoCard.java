@@ -7,7 +7,7 @@ import java.lang.IllegalArgumentException;
 import java.lang.Comparable;
 
 /**
- * Rebecca Turner, 2018
+ * All operations in O(1) time
  */
 public class UnoCard implements Comparable<UnoCard> {
 	public enum Color {
@@ -105,9 +105,13 @@ public class UnoCard implements Comparable<UnoCard> {
 
 	public int compareTo(UnoCard other) {
 		int ret = color.compareTo(other.color);
-		if(ret != 0) { return ret; }
+		if(ret != 0) {
+			return ret;
+		}
 		ret = special.compareTo(other.special);
-		if(ret != 0) { return ret; }
+		if(ret != 0) {
+			return ret;
+		}
 		return number - other.number;
 	}
 }
