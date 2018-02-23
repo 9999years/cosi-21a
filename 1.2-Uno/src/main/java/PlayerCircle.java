@@ -5,6 +5,12 @@ import java.util.ListIterator;
 public class PlayerCircle implements Iterable<Player> {
 	protected CircularOrderedList<Player> players = new CircularOrderedList<>();
 	protected ListIterator<Player> itr = players.infiniteIterator();
+	/**
+	 * amount of turns taken so far; because Uno allows order reversal and
+	 * skipping, "count of times play has passed the first player" is a
+	 * fairly useless metric
+	 */
+	protected int turnsTaken = 0;
 	protected boolean reversed = false;
 
 	public Player getFirstPlayer() {
@@ -30,10 +36,13 @@ public class PlayerCircle implements Iterable<Player> {
 	 * remove the loser from the circle and add newPlayer in their place;
 	 * note that the player circle is still alphabetically ordered so the
 	 * placement might not be the same
+	 * @return the loser
 	 */
-	public void swapLoser(Player newPlayer) {
-		players.remove(loser());
+	public Player swapLoser(Player newPlayer) {
+		Player loser = loser();
+		players.remove(loser);
 		players.add(newPlayer);
+		return loser;
 	}
 
 	public int getSize() {
@@ -56,6 +65,7 @@ public class PlayerCircle implements Iterable<Player> {
 	 * gets the next player
 	 */
 	public Player advance() {
+		turnsTaken++;
 		return reversed ? itr.previous() : itr.next();
 	}
 
@@ -71,6 +81,7 @@ public class PlayerCircle implements Iterable<Player> {
 	 * skips the next player
 	 */
 	public void skip() {
+		turnsTaken--;
 		advance();
 	}
 
@@ -79,5 +90,9 @@ public class PlayerCircle implements Iterable<Player> {
 	 */
 	public void reverse() {
 		reversed = !reversed;
+	}
+
+	public float turnsPerPlayer() {
+		return (float) turnsTaken / players.size();
 	}
 }

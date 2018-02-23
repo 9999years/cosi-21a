@@ -13,10 +13,6 @@ public class UnoGame {
 
 	public static final int UNO_STARTING_HAND_SIZE = 7;
 
-	protected enum Action {
-		None, Skip, Reverse, Win
-	}
-
 	protected static Scanner in = new Scanner(System.in);
 	protected static PlayerCircle players = new PlayerCircle();
 	protected static Queue<Player> extraPlayers = new Queue<Player>();
@@ -105,8 +101,9 @@ public class UnoGame {
 
 	/**
 	 * processes step 4 from p. 2 of the spec
+	 * @return true if p won
 	 */
-	public static Action play(Player p) {
+	public static boolean play(Player p) {
 		System.out.println("It is " + p + "'s turn! They have "
 			+ p.handSize() + " cards left");
 		// pick up any cards from a previous draw 2 or draw 4 card
@@ -114,39 +111,21 @@ public class UnoGame {
 		p.hand.pickUpOwed(deck);
 		// 4.b and 4.c
 		UnoCard card = getCard(p);
-		Action ret = Action.None;
 		if(card != null) {
 			// 4.d
 			deck.discardCard(p.hand.remove(card));
-			// state to return; actions for the next player
 			if(card.special == UnoCard.Special.Skip) {
-				ret = Action.Skip;
+				players.skip();
 			} else if(card.special == UnoCard.Special.Reverse) {
-				ret = Action.Reverse;
+				players.reverse();
 			}
 		}
 		if(p.winner()) {
 			System.out.println(p + " won!");
-			return Action.Win;
+			return true;
+		} else {
+			return false;
 		}
-		return ret;
-	}
-
-	public static Action processTurn() {
-		Iterator<Player> ps = players.iterator();
-		while(ps.hasNext()) {
-			Player p = ps.next();
-			Action act = p.play();
-			if(act == Action.win) {
-				return Action.Win;
-			}
-			if(act == Action.Skip) {
-				p.next();
-			} else if(act == Action.Reverse) {
-				// reverse order
-			}
-		}
-		return Action.None;
 	}
 
 	public static void processRound() {
@@ -156,20 +135,24 @@ public class UnoGame {
 		// step 2
 		System.out.println("The hands are as follows:");
 		for(Player p : players) {
-			p.drawHand(deck);
-			System.out.println(p + ": " + p.handString());
+			p.hand.init(deck);
+			System.out.println(p + ": " + p.hand);
 		}
 		System.out.println();
 		//end step 2
 
 		// step 3
 		deck.discardCard();
-		System.out.println("The top card is a" + deck.lastDiscarded());
+		System.out.println("The top card is a" + deck.getLastDiscarded());
 		// end step 3
 
+		// step 4
 		while(true) {
-			turns++;
-			processTurn();
+			Player p = players.advance();
+			if(play(p)) {
+				// p won
+				return;
+			}
 		}
 	}
 
@@ -181,8 +164,23 @@ public class UnoGame {
 		System.out.println();
 		// end step 1
 	}
+	
+	public static void endRound() {
+		// truncate to int; this is the average number of times each
+		// player got to play; in reality, one or two players armed
+		// with sufficient skips and reverses can dominate play
+		System.out.println("Round won in about " + (int) players.turnsPerPlayer()
+			+ " turns per player.");
+		System.out.println("Swapping " + players.loser()
+			+ " for " + extraPlayers.peek() + " in the circle.");
+		extraPlayers.enqueue(players.swapLoser(extraPlayers.dequeue()));
+	}
 
 	public static void main(String[] args) {
 		setup();
+		while(true) {
+			processRound();
+			endRound();
+		}
 	}
 }

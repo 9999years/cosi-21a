@@ -101,12 +101,11 @@ public class CircularListTest {
 		assertEquals(0, (int) list.get(31));
 	}
 
-	@ParameterizedTest
-	@MethodSource("numbersProvider")
-	void listIteratorTest(List<Integer> input) {
+	@Test
+	void listIteratorTest() {
 		CircularList<Integer> list = new CircularList<>();
-		list.addAll(input);
-		ListIterator<Integer> itr = list.listIterator();
+		list.addAll(boxed(nums1));
+		ListIterator<Integer> itr = list.iterator();
 		assertFalse(itr.hasPrevious(), "no hasPrevious at start");
 		assertEquals(-1, itr.previousIndex(), "previousIndex at start");
 		assertEquals(0, itr.nextIndex(), "nextIndex at start");
@@ -124,7 +123,7 @@ public class CircularListTest {
 		while(itr.hasNext()) {
 			assertEquals(i, itr.nextIndex(),
 				"index (forward traversal)");
-			assertEquals((Object) input.get(i), itr.next(),
+			assertEquals((Object) nums1[i], itr.next(),
 				"element (forward traversal)");
 			i++;
 		}
@@ -139,7 +138,7 @@ public class CircularListTest {
 		while(itr.hasPrevious()) {
 			assertEquals(i, itr.previousIndex(),
 				"index (backwards traversal)");
-			assertEquals((Object) input.get(i), itr.previous(),
+			assertEquals((Object) nums1[i], itr.previous(),
 				"element (backward traversal)");
 			i--;
 		}
