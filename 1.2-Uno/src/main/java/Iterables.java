@@ -13,6 +13,11 @@ import java.util.Iterator;
  */
 public class Iterables {
 	/**
+	 * makes the class uninstantiatable
+	 */
+	private Iterables() { }
+
+	/**
 	 * slices `len` code units from the end of sb
 	 */
 	protected static void sliceEnd(StringBuilder sb, int len) {

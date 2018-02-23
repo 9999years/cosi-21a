@@ -14,6 +14,11 @@
  * lot in any generic data structure
  */
 public class Equality {
+	/**
+	 * makes the class uninstantiatable
+	 */
+	private Equality() { }
+
 	public static boolean nullableEquals(Object a, Object b) {
 		return a == null ? b == null : a.equals(b);
 	}

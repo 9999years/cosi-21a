@@ -15,6 +15,9 @@ public class Player implements Comparable<Player>, Iterable<UnoCard> {
 	protected static int players = 0;
 
 	public final String name;
+	/**
+	 * facilitates players with the same name
+	 */
 	public final int id;
 	public final Hand hand = new Hand();
 
@@ -26,10 +29,6 @@ public class Player implements Comparable<Player>, Iterable<UnoCard> {
 
 	public Iterator<UnoCard> iterator() {
 		return hand.iterator();
-	}
-
-	public int handSize() {
-		return hand.size();
 	}
 
 	public boolean winner() {
@@ -56,6 +55,6 @@ public class Player implements Comparable<Player>, Iterable<UnoCard> {
 	 * you can use this in place of the default alphabetical comparison
 	 */
 	public static Comparator<Player> handSizeComparator() {
-		return Comparator.comparingInt(p -> p.handSize());
+		return Comparator.comparingInt(p -> p.hand.size());
 	}
 }

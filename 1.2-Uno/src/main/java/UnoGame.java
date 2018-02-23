@@ -171,7 +171,7 @@ public class UnoGame {
 	public static boolean play(Player p) {
 		// indent to help pick out first turns
 		System.out.println("        It is " + p + "'s turn! They have "
-			+ p.handSize() + " cards left.");
+			+ p.hand.size() + " cards left.");
 		// pick up any cards from a previous draw 2 or draw 4 card
 		// 4.a
 		if(deck.cardsOwed() > 0) {
