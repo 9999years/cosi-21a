@@ -94,7 +94,7 @@ public class UnoDeck {
 	 * cards owed to the next player as the result of a draw 2 or draw 4
 	 */
 	public int cardsOwed() {
-		return cardsOwed();
+		return cardsOwed;
 	}
 
 	/**
@@ -130,7 +130,10 @@ public class UnoDeck {
 	 * used for starting a game
 	 */
 	public void discardCard() {
-		discardCard(drawCard());
+		// circumvent our regular discardCard method to avoid
+		// IllegalArgumentExceptions
+		lastDiscarded = drawCard();
+		discard.randomInsert(lastDiscarded);
 	}
 
 	public String toString() {

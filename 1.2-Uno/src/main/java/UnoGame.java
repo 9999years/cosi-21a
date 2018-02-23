@@ -76,11 +76,11 @@ public class UnoGame {
 		Hand playable = p.hand.playable(deck.getLastDiscarded());
 		if(playable.isEmpty()) {
 			System.out.println(NO_PLAYABLE_CARDS);
-			System.out.println("You picked up a " + p.hand.draw(deck));
+			System.out.println("You picked up a " + p.hand.draw(deck) + ".");
 			return null;
 		}
 		while(true) {
-			System.out.println("You can play any of " + playable);
+			System.out.println("You can play any of: " + playable);
 			System.out.print(CHOOSE_CARD);
 			String choice = in.nextLine();
 
@@ -108,12 +108,20 @@ public class UnoGame {
 			+ p.handSize() + " cards left");
 		// pick up any cards from a previous draw 2 or draw 4 card
 		// 4.a
-		p.hand.pickUpOwed(deck);
+		if(deck.cardsOwed() > 0) {
+			System.out.println("You need to draw " + deck.cardsOwed()
+				+ " cards before you can play!");
+			p.hand.pickUpOwed(deck);
+			System.out.println("Your hand is now: " + p.hand);
+		}
 		// 4.b and 4.c
 		UnoCard card = getCard(p);
 		if(card != null) {
+			// they've played a card
 			// 4.d
 			deck.discardCard(p.hand.remove(card));
+			System.out.println("You've played a " + card + " and now have " + p.hand.size()
+				+ " cards left.");
 			if(card.special == UnoCard.Special.Skip) {
 				players.skip();
 			} else if(card.special == UnoCard.Special.Reverse) {
@@ -135,7 +143,7 @@ public class UnoGame {
 		// step 2
 		System.out.println("The hands are as follows:");
 		for(Player p : players) {
-			p.hand.init(deck);
+			p.hand.reset(deck);
 			System.out.println(p + ": " + p.hand);
 		}
 		System.out.println();
@@ -143,7 +151,7 @@ public class UnoGame {
 
 		// step 3
 		deck.discardCard();
-		System.out.println("The top card is a" + deck.getLastDiscarded());
+		System.out.println("The top card is a " + deck.getLastDiscarded());
 		// end step 3
 
 		// step 4

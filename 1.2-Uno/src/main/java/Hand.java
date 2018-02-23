@@ -85,15 +85,8 @@ public class Hand implements Iterable<UnoCard> {
 		return card;
 	}
 
-	/**
-	 * @throws IllegalStateException if the player doesn't have an empty
-	 * hand
-	 */
-	public void init(UnoDeck deck) {
-		if(!cards.isEmpty()) {
-			throw new IllegalStateException();
-		}
-
+	public void reset(UnoDeck deck) {
+		cards.clear();
 		for(int i = 0; i < UnoGame.UNO_STARTING_HAND_SIZE; i++) {
 			add(deck.drawCard());
 		}
