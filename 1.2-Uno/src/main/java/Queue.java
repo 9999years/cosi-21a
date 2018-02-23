@@ -96,7 +96,7 @@ public class Queue<T> implements Iterable<T> {
 		return arr;
 	}
 
-	public int getSize() {
+	public int size() {
 		return size;
 	}
 

@@ -8,9 +8,38 @@ public class UnoGame {
 	public static final String CHOOSE_CARD = "Which card would you like to play? (Press enter for first choice) ";
 	public static final String BAD_CARD_CHOICE = "You don't have that card or misspelled its name! Try again?";
 	public static final String NO_PLAYABLE_CARDS = "You don't have any cards to play! Drawing a card and skipping your turn.";
+	/**
+	 * Why is this line approx. a billion characters long? Well, take it
+	 * from the masters:
+	 *
+	 * Statements longer than 80 columns will be broken into sensible
+	 * chunks, unless exceeding 80 columns significantly increases
+	 * readability and does not hide information. [...] However, never
+	 * break user-visible strings such as printk messages, because that
+	 * breaks the ability to grep for them.
+	 * (https://www.kernel.org/doc/html/v4.10/process/coding-style.html)
+	 */
+	public static final String HELP =
+		"Welcome to Uno!\nWhen asked for a card name, just type the card as you see it; to play a red reverse, just type \"red reverse\" (card names are case-insensitive). Any card can be placed on a wild card (and wild cards can be placed on any card); this differs from regular Uno.\nOptions:\n\n"
+		+ "     -p populate the player names with communist\nphilosophers\n"
+		+ "     --help show this help text\n"
+		+ " Options are mutually-exclusive because I think if I write one more unnecessary class the TAs will kill me.";
+	public static final String UNRECOGNIZED_OPTION = "Unrecognized option!";
+	public static final String USAGE = "Usage: java -jar rebeccaturner-PA1-Part2.jar [-p|--help]";
+	public static final String POPULATE = "Populating player circle automatically!";
+	public static final String[] DEFAULT_PLAYERS = new String[] {
+		"Karl Marx",
+		"Friedrich Engels",
+		"Max Stirner",
+		"Georg Wilhelm Friedrich Hegel",
+		"Пётр Кропо́ткин",
+		"Louis Althusser",
+		"Monsieur Dupont"
+	};
+	public static final String HORIZONTAL_RULE = "------------------***------------------";
+
 	public static final int MIN_PLAYERS_IN_CIRCLE = 2;
 	public static final int MAX_PLAYERS_IN_CIRCLE = 5;
-
 	public static final int UNO_STARTING_HAND_SIZE = 7;
 
 	protected static Scanner in = new Scanner(System.in);
@@ -25,8 +54,26 @@ public class UnoGame {
 	}
 
 	/**
+	 * @return true if the player was added to the circle, false if they
+	 * were added to the extraPlayers queue
+	 */
+	public static boolean addPlayer(String name) {
+		if(name.isEmpty()) {
+			return false;
+		}
+		Player p = new Player(name);
+		if(players.size() < MAX_PLAYERS_IN_CIRCLE) {
+			players.addToCircle(p);
+			return true;
+		} else {
+			extraPlayers.enqueue(p);
+			return false;
+		}
+	}
+
+	/**
 	 * we're mucking with the fields anyways so this operates via
-	 * side-effects. sorry!
+	 * side-effects. sorry functional programmers!
 	 */
 	public static void getPlayers() {
 		// get names and add them to the circle while the name exists
@@ -34,14 +81,12 @@ public class UnoGame {
 		// strict less than because we already call getName outside the
 		// loop
 		String name = getName();
-		while(!name.isEmpty() &&
-				players.getSize() < MAX_PLAYERS_IN_CIRCLE) {
-			players.addToCircle(name);
+		while(addPlayer(name)) {
 			name = getName();
 		}
 
 		// < 2 players? we need to get more!
-		if(players.getSize() < MIN_PLAYERS_IN_CIRCLE) {
+		if(players.size() < MIN_PLAYERS_IN_CIRCLE) {
 			System.out.println(LESS_THAN_2_PLAYERS);
 			getPlayers();
 		}
@@ -50,7 +95,7 @@ public class UnoGame {
 		// we already have another name in the `name` variable! if it's
 		// empty we never enter this loop
 		while(!name.isEmpty()) {
-			extraPlayers.enqueue(new Player(name));
+			addPlayer(name);
 			name = getName();
 		}
 	}
@@ -182,7 +227,7 @@ public class UnoGame {
 		// with sufficient skips and reverses can dominate play
 		System.out.println("Round won in about " + (int) players.turnsPerPlayer()
 			+ " turns per player.\n\n"
-			+ "--------------------\n\nNew game!");
+			+ HORIZONTAL_RULE + "\n\nNew game!");
 		if(!extraPlayers.isEmpty()) {
 			// we have at least one other player to swap in
 			System.out.println("Swapping "
@@ -192,8 +237,31 @@ public class UnoGame {
 		}
 	}
 
+	public static void parseArgs(String[] args) {
+		if(args.length > 0) {
+			if(args[0] == "-p") {
+				System.out.println(POPULATE);
+				for(String name : DEFAULT_PLAYERS) {
+					addPlayer(name);
+				}
+			} else {
+				if(args[0] != "--help") {
+					System.out.println(UNRECOGNIZED_OPTION);
+					System.out.println(USAGE);
+				}
+				System.out.println(HELP);
+			}
+		}
+	}
+
 	public static void main(String[] args) {
-		setup();
+		parseArgs(args);
+
+		if(players.size() == 0) {
+			// players not autopopulated
+			setup();
+		}
+
 		while(true) {
 			processRound();
 			endRound();

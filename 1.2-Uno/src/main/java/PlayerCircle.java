@@ -58,10 +58,13 @@ public class PlayerCircle implements Iterable<Player> {
 	}
 
 	public boolean isEmpty() {
-		return getSize() == 0;
+		return size() == 0;
 	}
 
-	public int getSize() {
+	/**
+	 * conformant with every other java api in the history of the world
+	 */
+	public int size() {
 		return players.size();
 	}
 

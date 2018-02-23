@@ -167,22 +167,22 @@ public class QueueTest {
 		assertEquals(0, queue.back);
 
 		// enqueue, checking size
-		assertEquals(0, queue.getSize());
+		assertEquals(0, queue.size());
 
 		queue.enqueue(999);
 		assertEquals(0, queue.front);
 		assertEquals(0, queue.back);
-		assertEquals(1, queue.getSize(), "size");
+		assertEquals(1, queue.size(), "size");
 
 		queue.enqueue(1);
 		assertEquals(0, queue.front);
 		assertEquals(1, queue.back);
-		assertEquals(2, queue.getSize(), "size");
+		assertEquals(2, queue.size(), "size");
 
 		queue.enqueue(39);
 		assertEquals(0, queue.front);
 		assertEquals(2, queue.back);
-		assertEquals(3, queue.getSize(), "size");
+		assertEquals(3, queue.size(), "size");
 
 		assertEquals(999, (int) queue.get(0));
 		assertEquals(1, (int) queue.get(1));
@@ -190,19 +190,19 @@ public class QueueTest {
 
 		// dequeue, checking size
 		assertEquals(999, (int) queue.dequeue(), "dequeue");
-		assertEquals(2, queue.getSize(), "size");
+		assertEquals(2, queue.size(), "size");
 
 		assertEquals(1, queue.front);
 		assertEquals(2, queue.back);
 
 		assertEquals(1, (int) queue.dequeue(), "dequeue");
-		assertEquals(1, queue.getSize(), "size");
+		assertEquals(1, queue.size(), "size");
 
 		assertEquals(2, queue.front);
 		assertEquals(2, queue.back);
 
 		assertEquals(39, (int) queue.dequeue(), "dequeue");
-		assertEquals(0, queue.getSize(), "size");
+		assertEquals(0, queue.size(), "size");
 
 		assertEquals(2, queue.front);
 		assertEquals(2, queue.back);
@@ -244,7 +244,7 @@ public class QueueTest {
 		for(int i : input) {
 			queue.enqueue(i);
 		}
-		assertEquals(input.size(), queue.getSize());
+		assertEquals(input.size(), queue.size());
 		assertEquals(input.toString(), queue.toString());
 		for(int i : input) {
 			assertEquals(i, (int) queue.peek());
@@ -286,7 +286,7 @@ public class QueueTest {
 		queue.enqueue(2);
 		queue.enqueue(3);
 		queue.enqueue(4);
-		assertEquals(4, queue.getSize());
+		assertEquals(4, queue.size());
 		assertEquals("[1, 2, 3, 4]", queue.toString());
 		Iterator<Integer> itr = queue.iterator();
 		assertTrue(itr.hasNext());
