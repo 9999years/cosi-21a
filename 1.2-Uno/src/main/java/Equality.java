@@ -19,6 +19,9 @@ public class Equality {
 	 */
 	private Equality() { }
 
+	/**
+	 * O(1) time
+	 */
 	public static boolean nullableEquals(Object a, Object b) {
 		return a == null ? b == null : a.equals(b);
 	}

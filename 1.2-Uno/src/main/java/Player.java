@@ -31,20 +31,29 @@ public class Player implements Comparable<Player>, Iterable<UnoCard> {
 		return hand.iterator();
 	}
 
+	/**
+	 * O(1) time
+	 */
 	public boolean winner() {
 		return hand.isEmpty();
 	}
 
+	/**
+	 * O(1) time
+	 */
 	public String toString() {
 		return name;
 	}
 
+	/**
+	 * O(1) time
+	 */
 	public boolean equals(Player p) {
 		return p.id == id;
 	}
 
 	/**
-	 * compares names alphabetically
+	 * compares names alphabetically. O(n) comparison time w/r/t the name length
 	 */
 	public int compareTo(Player p) {
 		return name.compareTo(p.name);
@@ -52,7 +61,8 @@ public class Player implements Comparable<Player>, Iterable<UnoCard> {
 
 	/**
 	 * if you'd like to eg. find the player with the most or least cards,
-	 * you can use this in place of the default alphabetical comparison
+	 * you can use this in place of the default alphabetical comparison.
+	 * O(1) comparison time
 	 */
 	public static Comparator<Player> handSizeComparator() {
 		return Comparator.comparingInt(p -> p.hand.size());

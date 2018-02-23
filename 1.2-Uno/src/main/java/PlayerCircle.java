@@ -25,18 +25,24 @@ public class PlayerCircle implements Iterable<Player> {
 		return players.getFront();
 	}
 
+	/**
+	 * O(n) time to maintain the circle's asciibetical sortedness
+	 */
 	public void addToCircle(Player p) {
 		itr = null;
 		players.add(p);
 	}
 
+	/**
+	 * O(n) time to maintain the circle's asciibetical sortedness
+	 */
 	public void addToCircle(String name) {
 		itr = null;
 		players.add(new Player(name));
 	}
 
 	/**
-	 * returns player with most cards
+	 * returns player with most cards; O(n) time
 	 */
 	public Player loser() {
 		return Iterables.max(players, Player.handSizeComparator());
@@ -45,7 +51,7 @@ public class PlayerCircle implements Iterable<Player> {
 	/**
 	 * remove the loser from the circle and add newPlayer in their place;
 	 * note that the player circle is still alphabetically ordered so the
-	 * placement might not be the same; this restarts the game
+	 * placement might not be the same; this restarts the game. O(n) time
 	 * @return the loser
 	 */
 	public Player swapLoser(Player newPlayer) {
@@ -67,12 +73,16 @@ public class PlayerCircle implements Iterable<Player> {
 	}
 
 	/**
-	 * conformant with every other java api in the history of the world
+	 * conformant with every other java api in the history of the world.
+	 * O(1) time
 	 */
 	public int size() {
 		return players.size();
 	}
 
+	/**
+	 * O(n) time
+	 */
 	public String toString() {
 		return Iterables.englishToString(players);
 	}
@@ -87,13 +97,16 @@ public class PlayerCircle implements Iterable<Player> {
 		}
 	}
 
+	/**
+	 * O(1) time
+	 */
 	public int nextIndex() {
 		ensureIterator();
 		return reversed ? itr.previousIndex() : itr.nextIndex();
 	}
 
 	/**
-	 * gets the next player
+	 * gets the next player; O(1) time
 	 * @throws IllegalStateException if the circle is empty
 	 */
 	public Player advance() {
@@ -104,7 +117,7 @@ public class PlayerCircle implements Iterable<Player> {
 
 	/**
 	 * true if the next player returned by advance() is the first player in
-	 * the circle
+	 * the circle. O(1) time
 	 */
 	public boolean nextIsFirst() {
 		throwIfEmpty();
@@ -112,7 +125,7 @@ public class PlayerCircle implements Iterable<Player> {
 	}
 
 	/**
-	 * skips the next player
+	 * skips the next player; O(1) time
 	 */
 	public void skip() {
 		throwIfEmpty();
@@ -122,7 +135,7 @@ public class PlayerCircle implements Iterable<Player> {
 	}
 
 	/**
-	 * reverses the direction of play
+	 * reverses the direction of play; O(1) time
 	 */
 	public void reverse() {
 		reversed = !reversed;
@@ -130,6 +143,9 @@ public class PlayerCircle implements Iterable<Player> {
 		advance();
 	}
 
+	/**
+	 * the average amount of turns each player has taken
+	 */
 	public float turnsPerPlayer() {
 		return (float) turnsTaken / players.size();
 	}

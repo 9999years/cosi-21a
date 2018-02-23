@@ -17,7 +17,7 @@ import java.util.Objects;
 public class CircularOrderedList<T extends Comparable<T>>
 		extends CircularList<T> {
 	/**
-	 * illegal operation on a sorted list!
+	 * illegal operation on a sorted list! always throws an exception
 	 * @throws UnsupportedOperationException
 	 */
 	public void add(T t, int i) throws UnsupportedOperationException {
@@ -25,7 +25,7 @@ public class CircularOrderedList<T extends Comparable<T>>
 	}
 
 	/**
-	 * adds a non-null element into the list
+	 * adds a non-null element into the list; O(n) amortized time
 	 * @param t a non-null T
 	 * @throws NullPointerException if t is null
 	 */

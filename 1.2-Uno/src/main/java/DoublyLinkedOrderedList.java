@@ -100,6 +100,9 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>>
 		return new DoublyLinkedOrderedListNodeIterator();
 	}
 
+	/**
+	 * all operations in O(1) time
+	 */
 	public Iterator<T> iterator() {
 		return new DoublyLinkedOrderedListIterator();
 	}
@@ -125,32 +128,6 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>>
 		addAfter(n.prev, t);
 	}
 
-	// DEQUE METHODS:
-
-	/**
-	 * true if size == 0
-	 */
-	public boolean isEmpty() {
-		return size == 0;
-	}
-
-	/**
-	 * the list's size; O(1) time
-	 */
-	public int size() {
-		return size;
-	}
-
-	// MUTATORS
-
-	public void clear() {
-		head = new DoublyLinkedNode<T>();
-		tail = new DoublyLinkedNode<T>();
-		head.next = tail;
-		tail.prev = head;
-		size = 0;
-	}
-
 	/**
 	 * removes a list node
 	 */
@@ -166,8 +143,34 @@ public class DoublyLinkedOrderedList<T extends Comparable<T>>
 		return data;
 	}
 
-	// PUBLIC INTERFACE
+	/**
+	 * true if size == 0
+	 */
+	public boolean isEmpty() {
+		return size == 0;
+	}
 
+	/**
+	 * the list's size; O(1) time
+	 */
+	public int size() {
+		return size;
+	}
+
+	/**
+	 * O(1) time
+	 */
+	public void clear() {
+		head = new DoublyLinkedNode<T>();
+		tail = new DoublyLinkedNode<T>();
+		head.next = tail;
+		tail.prev = head;
+		size = 0;
+	}
+
+	/**
+	 * O(1) time
+	 */
 	public T getHead() {
 		// no need to check for size really here for our impl. but
 		// thems the breaks if youve gotta deal with nulls

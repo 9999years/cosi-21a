@@ -83,7 +83,7 @@ public class CircularList<T> implements Iterable<T> {
 
 	/**
 	 * iterates over the list ONCE; starts with the cursor before the first
-	 * element
+	 * element; all methods are O(1)
 	 */
 	protected class SingleIterator implements ListIterator<T> {
 		/**
@@ -279,6 +279,8 @@ public class CircularList<T> implements Iterable<T> {
 	 * inserts the T before the first element in the list / after the tail
 	 *
 	 * don't think about it too hard or your head will hurt
+	 *
+	 * O(1) time
 	 */
 	public void add(T t) {
 		addBefore(first, t);
@@ -287,6 +289,7 @@ public class CircularList<T> implements Iterable<T> {
 	/**
 	 * inserts the T after the given element in the list
 	 * allows negative indicies because why not? that's your problem.
+	 * O(n) amortized time
 	 * @param i index to insert at; this is the new element's index
 	 * @throws NoSuchElementException if the list is empty or if |i| >= the
 	 * list's size
@@ -301,7 +304,8 @@ public class CircularList<T> implements Iterable<T> {
 	}
 
 	/**
-	 * adds all the elements in the given collection at the end of the list
+	 * adds all the elements in the given collection at the end of the list.
+	 * O(n) time
 	 */
 	public void addAll(Iterable<T> collection) {
 		for(T t : collection) {
@@ -337,18 +341,21 @@ public class CircularList<T> implements Iterable<T> {
 	}
 
 	/**
-	 * removes and returns the first element in the list
+	 * removes and returns the first element in the list. O(1) time
 	 */
 	public T removeFront() {
 		return remove(first);
 	}
 
+	/**
+	 * O(n) amortized time
+	 */
 	public T remove(int i) {
 		return remove(node(i));
 	}
 
 	/**
-	 * removes the given data from the list
+	 * removes the given data from the list. O(n) amortized time
 	 * @return if any elements were deleted
 	 */
 	public boolean remove(T data) {
@@ -385,7 +392,7 @@ public class CircularList<T> implements Iterable<T> {
 
 	/**
 	 * get an element at a specified index; allows negative indicies
-	 * because why not? that's your problem.
+	 * because why not? that's your problem. O(n) amortized time
 	 * @param i index
 	 * @throws NoSuchElementException if the list is empty or if |i| &gt;=
 	 * the list's size
@@ -394,6 +401,9 @@ public class CircularList<T> implements Iterable<T> {
 		return node(i).data;
 	}
 
+	/**
+	 * O(1) time
+	 */
 	public T getFront() {
 		if(isEmpty()) {
 			throw new NoSuchElementException();
@@ -401,6 +411,9 @@ public class CircularList<T> implements Iterable<T> {
 		return first.data;
 	}
 
+	/**
+	 * O(n) time
+	 */
 	public String toString() {
 		return Iterables.toString(this);
 	}

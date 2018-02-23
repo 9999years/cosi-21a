@@ -9,7 +9,7 @@ import java.util.Iterator;
 
 /**
  * utility class for operations on iterables i.e. finding minima and prettily
- * converting to strings
+ * converting to strings. all methods run in linear (O(n)) time
  */
 public class Iterables {
 	/**

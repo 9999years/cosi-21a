@@ -101,6 +101,9 @@ public class Queue<T> implements Iterable<T> {
 		return arr;
 	}
 
+	/**
+	 * O(1) time
+	 */
 	public int size() {
 		return size;
 	}
@@ -109,12 +112,15 @@ public class Queue<T> implements Iterable<T> {
 		return size == 0;
 	}
 
+	/**
+	 * O(1) time
+	 */
 	public boolean isFull() {
 		return size == arr.length;
 	}
 
 	/**
-	 * grow internal array by a factor of 2
+	 * grow internal array by a factor of 2; O(n) time
 	 */
 	protected void expand() {
 		T[] oldArr = arr;
@@ -128,7 +134,7 @@ public class Queue<T> implements Iterable<T> {
 	}
 
 	/**
-	 * ensures the internal array can add another element
+	 * ensures the internal array can add another element; O(1) time amortized
 	 */
 	protected void ensureAddable() {
 		// length and capacity are in terms of elements and not indicies
@@ -168,24 +174,39 @@ public class Queue<T> implements Iterable<T> {
 		back = index(size);
 	}
 
+	/**
+	 * O(1) time
+	 */
 	public void set(T t, int inx) {
 		throwIfOOB(inx);
 		arr[index(inx)] = t;
 	}
 
+	/**
+	 * O(1) time
+	 */
 	public T get(int inx) {
 		throwIfOOB(inx);
 		return arr[index(inx)];
 	}
 
+	/**
+	 * O(1) time
+	 */
 	public T peek() {
 		return get(0);
 	}
 
+	/**
+	 * O(1) time
+	 */
 	public T peekBack() {
 		return get(size - 1);
 	}
 
+	/**
+	 * O(1) amortized time
+	 */
 	public void enqueue(T data) {
 		// ensure we have space for another element, expanding the
 		// array if necessary
@@ -198,6 +219,9 @@ public class Queue<T> implements Iterable<T> {
 		arr[back] = data;
 	}
 
+	/**
+	 * O(1) amortized time
+	 */
 	public T dequeue() {
 		if(isEmpty()) {
 			// cannot dequeue from empty queue!
@@ -217,6 +241,9 @@ public class Queue<T> implements Iterable<T> {
 		return ret;
 	}
 
+	/**
+	 * O(n) time
+	 */
 	public String toString() {
 		return Iterables.toString(this);
 	}
