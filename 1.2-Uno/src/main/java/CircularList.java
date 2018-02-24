@@ -6,7 +6,6 @@
 import java.lang.Iterable;
 import java.util.Iterator;
 import java.util.ListIterator;
-import java.util.Spliterator;
 
 import java.util.Objects;
 
@@ -173,24 +172,6 @@ public class CircularList<T> implements Iterable<T> {
 
 		public void set(T t) {
 			replace(last, t);
-		}
-
-		// spliterator methods
-
-		public int characteristics() {
-			return Spliterator.SIZED;
-		}
-
-		public long estimateSize() {
-			return CircularList.this.size;
-		}
-
-		/**
-		 * this doesn't do anything, ever. sorry threads!
-		 */
-		public Spliterator<T> trySplit() {
-			// lol
-			return null;
 		}
 	}
 

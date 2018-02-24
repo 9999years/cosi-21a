@@ -12,6 +12,14 @@ import java.lang.Iterable;
 import java.util.Iterator;
 
 public class Player implements Comparable<Player>, Iterable<UnoCard> {
+	/**
+	 * if you'd like to eg. find the player with the most or least cards,
+	 * you can use this in place of the default alphabetical comparison.
+	 * O(1) comparison time
+	 */
+	public static final Comparator<Player> HAND_SIZE_COMPARATOR =
+		Comparator.comparingInt(p -> p.hand.size());
+
 	protected static int players = 0;
 
 	public final String name;
@@ -57,14 +65,5 @@ public class Player implements Comparable<Player>, Iterable<UnoCard> {
 	 */
 	public int compareTo(Player p) {
 		return name.compareTo(p.name);
-	}
-
-	/**
-	 * if you'd like to eg. find the player with the most or least cards,
-	 * you can use this in place of the default alphabetical comparison.
-	 * O(1) comparison time
-	 */
-	public static Comparator<Player> handSizeComparator() {
-		return Comparator.comparingInt(p -> p.hand.size());
 	}
 }

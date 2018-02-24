@@ -32,20 +32,4 @@ public class IterablesTest {
 		assertEquals("A, B, C, and D", Iterables.englishToString(
 			Arrays.asList("A", "B", "C", "D")));
 	}
-
-	@Test
-	void minTest() {
-		assertEquals(1, (int)    apply(Iterables::min, 1));
-		assertEquals(1, (int)    apply(Iterables::min, 1, 2, 10));
-		assertEquals(-111, (int) apply(Iterables::min, 1, -111, 10));
-		assertEquals(-200, (int) apply(Iterables::min, 1, -111, -200));
-	}
-
-	@Test
-	void maxTest() {
-		assertEquals(1, (int)   apply(Iterables::max, 1));
-		assertEquals(10, (int)  apply(Iterables::max, 1, 2, 10));
-		assertEquals(999, (int) apply(Iterables::max, 1, 999, 10));
-		assertEquals(200, (int) apply(Iterables::max, 1, -111, 200));
-	}
 }

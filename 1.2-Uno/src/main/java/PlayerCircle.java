@@ -7,6 +7,8 @@ import java.lang.Iterable;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import java.util.stream.StreamSupport;
+
 import java.lang.IllegalStateException;
 
 public class PlayerCircle implements Iterable<Player> {
@@ -20,6 +22,15 @@ public class PlayerCircle implements Iterable<Player> {
 	protected int turnsTaken = 0;
 	protected boolean reversed = false;
 
+	protected void throwIfEmpty() {
+		if(isEmpty()) {
+			throw new IllegalStateException();
+		}
+	}
+
+	/**
+	 * @throws IllegalStateException if the circle is empty
+	 */
 	public Player getFirstPlayer() {
 		throwIfEmpty();
 		return players.getFront();
@@ -43,9 +54,12 @@ public class PlayerCircle implements Iterable<Player> {
 
 	/**
 	 * returns player with most cards; O(n) time
+	 * @throws IllegalStateException if the circle is empty
 	 */
 	public Player loser() {
-		return Iterables.max(players, Player.handSizeComparator());
+		return StreamSupport.stream(players.spliterator(), false)
+			.max(Player.HAND_SIZE_COMPARATOR)
+			.orElseThrow(IllegalStateException::new);
 	}
 
 	/**
@@ -60,12 +74,6 @@ public class PlayerCircle implements Iterable<Player> {
 		players.add(newPlayer);
 		itr = null;
 		return loser;
-	}
-
-	protected void throwIfEmpty() {
-		if(isEmpty()) {
-			throw new IllegalStateException();
-		}
 	}
 
 	public boolean isEmpty() {
@@ -99,6 +107,7 @@ public class PlayerCircle implements Iterable<Player> {
 
 	/**
 	 * O(1) time
+	 * @throws IllegalStateException if the circle is empty
 	 */
 	public int nextIndex() {
 		ensureIterator();
@@ -118,6 +127,7 @@ public class PlayerCircle implements Iterable<Player> {
 	/**
 	 * true if the next player returned by advance() is the first player in
 	 * the circle. O(1) time
+	 * @throws IllegalStateException if the circle is empty
 	 */
 	public boolean nextIsFirst() {
 		throwIfEmpty();
@@ -126,6 +136,7 @@ public class PlayerCircle implements Iterable<Player> {
 
 	/**
 	 * skips the next player; O(1) time
+	 * @throws IllegalStateException if the circle is empty
 	 */
 	public void skip() {
 		throwIfEmpty();
