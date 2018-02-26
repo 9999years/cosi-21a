@@ -1,5 +1,3 @@
-package org.becca.cosi21a;
-
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
