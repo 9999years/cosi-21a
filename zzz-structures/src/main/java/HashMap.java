@@ -1,5 +1,3 @@
-package org.becca.cosi21a;
-
 import java.lang.Iterable;
 
 import java.util.Collection;

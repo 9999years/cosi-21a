@@ -1,12 +1,14 @@
-package org.becca.cosi21a;
-
 import java.lang.ArrayIndexOutOfBoundsException;
+import java.lang.ClassCastException;
 import java.lang.Iterable;
 
+import java.util.Collection;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class ArrayList<T> implements Iterable<T> {
+public class ArrayList<T> extends AbstractCollection<T> {
 	public static final int DEFAULT_INITIAL_CAPACITY = 10;
 
 	protected class ArrayListIterator
@@ -45,6 +47,11 @@ public class ArrayList<T> implements Iterable<T> {
 	ArrayList(int capacity) {
 		arr = constructArray(capacity);
 		size = 0;
+	}
+
+	ArrayList(Collection<? extends T> c) {
+		this(c.size());
+		addAll(c);
 	}
 
 	public Iterator<T> iterator() {
@@ -106,10 +113,11 @@ public class ArrayList<T> implements Iterable<T> {
 		}
 	}
 
-	public void add(T t) {
+	public boolean add(T t) {
 		ensureAddable();
 		arr[size] = t;
 		size++;
+		return true;
 	}
 
 	/**
@@ -140,17 +148,25 @@ public class ArrayList<T> implements Iterable<T> {
 		return arr[inx];
 	}
 
-	public String toString() {
-		StringBuilder ret = new StringBuilder();
-		ret.append("[");
-		Iterator<T> itr = iterator();
-		while(itr.hasNext()) {
-			ret.append(itr.next());
-			if(itr.hasNext()) {
-				ret.append(", ");
+	/**
+	 * uh oh
+	 */
+	@Override
+	public <E> E[] toArray(E[] a) {
+		Objects.requireNonNull(a);
+
+		if(a.length < size) {
+			a = Arrays.copyOf(a, size);
+		}
+
+		for(int i = 0; i < size(); i++) {
+			try {
+				a[i] = (E) get(i);
+			} catch(ClassCastException ex) {
+				throw new ArrayStoreException();
 			}
 		}
-		ret.append("]");
-		return ret.toString();
+
+		return a;
 	}
 }

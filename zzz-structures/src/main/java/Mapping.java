@@ -1,5 +1,3 @@
-package org.becca.cosi21a;
-
 import java.util.Map;
 import java.lang.UnsupportedOperationException;
 
