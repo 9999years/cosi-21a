@@ -39,20 +39,24 @@ public class UnoCard implements Comparable<UnoCard> {
 	public static final int NO_NUMBER = -1;
 
 	protected UnoCard(Color color, int number, Special special) {
+		if(
+			// wild cards can only be draw four or none
+			((special != Special.DrawFour
+				&& special != Special.None)
+				|| number != NO_NUMBER
+				&& color == Color.Wild)
+			// special cards and wild cards cant have numbers
+			|| (special != Special.None && number != NO_NUMBER)
+			// no numbers not in [0..9] in an uno deck
+			// but they can also be NO_NUMBER in some scenarios
+			|| ((number < 0 || number > 9) && number != NO_NUMBER)
+			{
+			throw new IllegalArgumentException();
+		}
+
 		this.color = color;
 		this.number = number;
 		this.special = special;
-
-		if(special == Special.DrawFour && color != Color.Wild) {
-			throw new IllegalArgumentException();
-		} else if(color == Color.Wild && number != NO_NUMBER) {
-			// construct wild cards with the other constructor!
-			// also, they can't have a number!
-			throw new IllegalArgumentException();
-		} else if(number < -1 || number > 9) {
-			// no numbers > 9 in an uno deck
-			throw new IllegalArgumentException();
-		}
 	}
 
 	public UnoCard(Color color, int number) {

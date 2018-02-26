@@ -11,6 +11,9 @@ import java.util.stream.StreamSupport;
 
 import java.lang.IllegalStateException;
 
+/**
+ * a circle of uno players backed by a CircularOrderedList
+ */
 public class PlayerCircle implements Iterable<Player> {
 	protected CircularOrderedList<Player> players = new CircularOrderedList<>();
 	protected ListIterator<Player> itr;
