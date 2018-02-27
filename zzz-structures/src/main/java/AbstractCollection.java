@@ -21,6 +21,8 @@ public abstract class AbstractCollection<E> implements Collection<E> {
 	 */
 	public abstract int size();
 
+	AbstractCollection() {}
+
 	/**
 	 * Ensures that this collection contains the specified element
 	 * (optional operation).

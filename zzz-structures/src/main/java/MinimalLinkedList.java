@@ -8,7 +8,7 @@ import java.util.Objects;
  * minimal linked list implementation; no iterators, no fancy methods, just the
  * basics; adding, peeking, removing at both ends
  */
-public class MinimalLinkedList<E> {
+public abstract class MinimalLinkedList<E> extends AbstractCollection<E> {
 	protected class Node<E> {
 		E value;
 		Node<E> previous;
@@ -61,16 +61,13 @@ public class MinimalLinkedList<E> {
 
 	// DEQUE METHODS:
 
-	public boolean isEmpty() {
-		return size == 0;
-	}
-
 	public int size() {
 		return size;
 	}
 
 	// MUTATORS
 
+	@Override
 	public void clear() {
 		head = new Node<E>();
 		tail = new Node<E>();

@@ -240,11 +240,6 @@ public class LinkedList<E> extends MinimalLinkedList<E>
 		addAll(c);
 	}
 
-	LinkedList(Iterable<? extends E> c) {
-		this();
-		addAll(c);
-	}
-
 	/**
 	 * optional operation; if o is in this list, applies operation on it
 	 *
@@ -254,7 +249,7 @@ public class LinkedList<E> extends MinimalLinkedList<E>
 	 */
 	public boolean operateOnFirst(Object o, Consumer<E> operation) {
 		for(E e : this) {
-			if(equals(e, o)) {
+			if(Objects.equals(e, o)) {
 				operation.accept(e);
 				return true;
 			}
@@ -280,93 +275,18 @@ public class LinkedList<E> extends MinimalLinkedList<E>
 		return new LinkedListIterator(head, -1);
 	}
 
-	protected boolean equals(E e, Object o) {
-		return (e == null && o == null) || e.equals(o);
-	}
-
-	public boolean contains(Object o) {
-		for(E e : this) {
-			if(equals(e, o)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T[] toArray(T[] a) {
-		Objects.requireNonNull(a);
-
-		if(a.length < size) {
-			a = (T[]) new Object[size];
-		}
-
-		int i = 0;
-		for(E e : this) {
-			try {
-				a[i] = (T) e;
-			} catch(ClassCastException err) {
-				throw new ArrayStoreException();
-			}
-			i++;
-		}
-
-		if(i < a.length - 1) {
-			a[i] = null;
-		}
-
-		return a;
-	}
-
-	@SuppressWarnings("unchecked")
-	public E[] toArray() {
-		return toArray((E[]) new Object[size]);
-	}
-
-	public String toString() {
-		StringBuilder ret = new StringBuilder();
-		ret.append("[");
-		ListIterator<E> itr = listIterator();
-		while(itr.hasNext()) {
-			ret.append(itr.next());
-			if(itr.hasNext()) {
-				ret.append(", ");
-			}
-		}
-		ret.append("]");
-		return ret.toString();
-	}
-
 	// MUTATORS
 
-	public boolean addAll(Iterable<? extends E> c) {
-		for(E e : c) {
-			add(e);
-		}
-		return true;
-	}
-
-	public boolean addAll(Collection<? extends E> c) {
-		for(E e : c) {
-			add(e);
-		}
-		return true;
-	}
-
-	public boolean remove(Object o, Iterator<E> itr) {
+	protected boolean remove(Object o, Iterator<E> itr) {
 		E e;
 		while(itr.hasNext()) {
 			e = itr.next();
-			if(equals(e, o)) {
+			if(Objects.equals(e, o)) {
 				itr.remove();
 				return true;
 			}
 		}
 		return false;
-	}
-
-	public boolean remove(Object o) {
-		return remove(o, iterator());
 	}
 
 	public boolean removeFirstOccurrence(Object o) {
@@ -428,6 +348,7 @@ public class LinkedList<E> extends MinimalLinkedList<E>
 
 	// insertion
 
+	@Override
 	public boolean add(E e) {
 		addLast(e);
 		return true;
@@ -452,19 +373,5 @@ public class LinkedList<E> extends MinimalLinkedList<E>
 
 	public E peekLast() {
 		return nullIfEmpty(() -> tail.previous.value);
-	}
-
-	// COLLECTION METHODS
-
-	public boolean retainAll(Collection<?> c) {
-		throw new UnsupportedOperationException();
-	}
-
-	public boolean removeAll(Collection<?> c) {
-		throw new UnsupportedOperationException();
-	}
-
-	public boolean containsAll(Collection<?> c) {
-		throw new UnsupportedOperationException();
 	}
 }
