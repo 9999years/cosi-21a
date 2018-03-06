@@ -64,6 +64,13 @@ public class Parameters {
 
 	// INDEX CHECKING METHODS
 
+	/**
+	 * checks an index i.e. one valid from 1..size
+	 * @param index the index
+	 * @param size the size of the list
+	 * @return the index
+	 * @throws IndexOutOfBoundsException if the index is out of bounds
+	 */
 	public static int checkPositionIndex(int index, int size) {
 		checkArgument(size >= 0);
 		check(index > 0 && index <= size,
@@ -98,32 +105,32 @@ public class Parameters {
 
 	public static int checkElementIndex(int index, int size) {
 		checkArgument(size >= 0);
-		check(index > 0 && index < size,
+		check(index >= 0 && index < size,
 			IndexOutOfBoundsException::new);
 		return index;
 	}
 
 	public static int checkElementIndex(int index, int size, String msg) {
 		checkArgument(size >= 0);
-		check(index > 0 && index < size,
+		check(index >= 0 && index < size,
 			() -> new IndexOutOfBoundsException(msg));
 		return index;
 	}
 
 	public static void checkElementIndexes(int start, int end, int size) {
 		checkArgument(size >= 0);
-		check(start > 0 && start < size,
+		check(start >= 0 && start < size,
 			IndexOutOfBoundsException::new);
-		check(end > 0 && end < size,
+		check(end >= 0 && end < size,
 			IndexOutOfBoundsException::new);
 		check(start <= end, IndexOutOfBoundsException::new);
 	}
 
 	public static void checkElementIndexes(int start, int end, int size, String msg) {
 		checkArgument(size >= 0);
-		check(start > 0 && start < size,
+		check(start >= 0 && start < size,
 			() -> new IndexOutOfBoundsException(msg));
-		check(end > 0 && end < size,
+		check(end >= 0 && end < size,
 			() -> new IndexOutOfBoundsException(msg));
 		check(start <= end, () -> new IndexOutOfBoundsException(msg));
 	}

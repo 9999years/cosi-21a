@@ -52,6 +52,7 @@ public abstract class AbstractCollection<E> implements Collection<E> {
 	public void clear() {
 		Iterator<E> itr = iterator();
 		while(itr.hasNext()) {
+			itr.next();
 			itr.remove();
 		}
 	}
