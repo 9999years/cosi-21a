@@ -112,21 +112,39 @@ class AbstractCollectionTest {
 
     @Test
     void removeAll() {
+        Collection<Integer> col = new RealCollection<>(Arrays.asList(1, 2, 3, 4, 5));
+        col.removeAll(Arrays.asList(2, 3, 5, 849));
+        assertArrayEquals(new Object[] {1, 4}, col.toArray());
     }
 
     @Test
     void retainAll() {
+        Collection<Integer> col = new RealCollection<>(Arrays.asList(1, 2, 3, 4, 5));
+        col.retainAll(Arrays.asList(2, 3, 5, 849));
+        assertArrayEquals(new Object[] {2, 3, 5}, col.toArray());
     }
 
     @Test
     void toArray() {
+        Collection<Integer> col = new RealCollection<>(Arrays.asList(1, 2, 3, 4, 5));
+        assertArrayEquals(new Object[] {1, 2, 3, 4, 5}, col.toArray());
     }
 
     @Test
     void toArray1() {
+        Collection<Integer> col = new RealCollection<>(Arrays.asList(1, 2, 3, 4, 5));
+        assertArrayEquals(new Integer[] {1, 2, 3, 4, 5}, col.toArray(new Integer[0]));
     }
 
     @Test
     void toStringTest() {
+        Collection<Integer> col = new RealCollection<>(Arrays.asList(1, 2, 3, 4, 5));
+        assertEquals("[1, 2, 3, 4, 5]", col.toString());
+        col.clear();
+        assertEquals("[]", col.toString());
+        col.add(3);
+        assertEquals("[3]", col.toString());
+        col.add(3);
+        assertEquals("[3, 3]", col.toString());
     }
 }

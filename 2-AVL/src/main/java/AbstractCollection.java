@@ -175,7 +175,7 @@ public abstract class AbstractCollection<E> implements Collection<E> {
 		}
 
 		// trim to length
-		a = Arrays.copyOf(a, i + 1);
+		a = Arrays.copyOf(a, i);
 
 		return a;
 	}
