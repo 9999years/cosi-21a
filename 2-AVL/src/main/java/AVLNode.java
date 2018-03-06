@@ -56,6 +56,13 @@ public class AVLNode<T> {
     }
 
     /**
+     * a lower bound on the tree's height; actual height of bottom leaves may be greater than this by 1
+     */
+    public int approximateHeight() {
+        return 1 + leftChild.approximateHeight();
+    }
+
+    /**
      * This should return the new root of the tree
      * make sure to update the balance factor and right weight
      * and use rotations to maintain AVL condition
