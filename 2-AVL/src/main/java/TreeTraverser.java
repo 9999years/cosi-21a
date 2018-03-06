@@ -19,9 +19,11 @@ public class TreeTraverser {
             } else if (tree.hasRightChild()) {
                 tree = tree.getRightChild();
                 return true;
-            } else {
+            } else if (tree.hasParent()) {
                 // no children; ie tree is a bottom node; try its parents
                 tree = tree.getParent();
+                return hasNext();
+            } else {
                 return false;
             }
         }

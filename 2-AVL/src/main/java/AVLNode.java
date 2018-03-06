@@ -18,11 +18,9 @@ public class AVLNode<T> {
     private int balanceFactor;
 
     public AVLNode(T data, double value) {
-        //TODO
-    }
-
-    protected AVLNode<T> getParent() {
-        return parent;
+        Objects.requireNonNull(data);
+        this.data = data;
+        this.value = value;
     }
 
     protected boolean hasLeftChild() {
@@ -33,12 +31,28 @@ public class AVLNode<T> {
         return rightChild != null;
     }
 
+    protected boolean hasParent() {
+        return parent != null;
+    }
+
     protected AVLNode<T> getLeftChild() {
         return leftChild;
     }
 
     protected AVLNode<T> getRightChild() {
         return rightChild;
+    }
+
+    protected AVLNode<T> getParent() {
+        return parent;
+    }
+
+    protected boolean isRightChild() {
+        return parent.rightChild == this;
+    }
+
+    protected boolean isLeftChild() {
+        return parent.leftChild == this;
     }
 
     /**
@@ -85,5 +99,19 @@ public class AVLNode<T> {
             ret += rightChild.toString();
         }
         return ret;
+    }
+
+    private String toStringDotUnwrapped() {
+        return data.toString() + " -> " + leftChild.toString() + ";\n"
+            + data.toString() + " -> " + rightChild.toString() + ";\n";
+    }
+
+    /**
+     * creates a GraphViz dot representation of this tree
+     */
+    public String toStringDot() {
+        return toStringDotUnwrapped()
+                + leftChild.toStringDotUnwrapped()
+                + rightChild.toStringDotUnwrapped();
     }
 }
