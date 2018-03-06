@@ -24,7 +24,7 @@ import java.lang.UnsupportedOperationException;
  * and one insertion method. the default iterator only traverses the list once,
  * but an infiniteIterator is supplied which never ends
  */
-public class CircularList<T> implements Iterable<T> {
+public class CircularList<T> extends AbstractCollection<T> {
 	protected class Node {
 		final T data;
 		Node next;
@@ -265,8 +265,9 @@ public class CircularList<T> implements Iterable<T> {
 	 *
 	 * O(1) time
 	 */
-	public void add(T t) {
+	public boolean add(T t) {
 		addBefore(first, t);
+		return true;
 	}
 
 	/**
@@ -341,7 +342,7 @@ public class CircularList<T> implements Iterable<T> {
 	 * removes the given data from the list. O(n) amortized time
 	 * @return if any elements were deleted
 	 */
-	public boolean remove(T data) {
+	public boolean remove(Object data) {
 		Iterator<T> itr = iterator();
 		while(itr.hasNext()) {
 			T t = itr.next();

@@ -11,7 +11,7 @@ import java.lang.Comparable;
  */
 public class UnoCard implements Comparable<UnoCard> {
 	public enum Color {
-		Blue, Green, Red, Yellow, Wild;
+		Blue, Green, Red, Yellow, Wild
 	}
 
 	public enum Special {
@@ -49,7 +49,7 @@ public class UnoCard implements Comparable<UnoCard> {
 			|| (special != Special.None && number != NO_NUMBER)
 			// no numbers not in [0..9] in an uno deck
 			// but they can also be NO_NUMBER in some scenarios
-			|| ((number < 0 || number > 9) && number != NO_NUMBER)
+			|| ((number < 0 || number > 9) && number != NO_NUMBER))
 			{
 			throw new IllegalArgumentException();
 		}

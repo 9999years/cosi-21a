@@ -18,7 +18,7 @@ public class CircularOrderedList<T extends Comparable<T>>
 		extends CircularList<T> {
 	/**
 	 * illegal operation on a sorted list! always throws an exception
-	 * @throws UnsupportedOperationException
+	 * @throws UnsupportedOperationException always
 	 */
 	public void add(T t, int i) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
@@ -29,7 +29,7 @@ public class CircularOrderedList<T extends Comparable<T>>
 	 * @param t a non-null T
 	 * @throws NullPointerException if t is null
 	 */
-	public void add(T t) {
+	public boolean add(T t) {
 		Objects.requireNonNull(t);
 		if(isEmpty() || t.compareTo(getFront()) <= 0) {
 			// case where the list is empty or the natural ordering
@@ -48,12 +48,13 @@ public class CircularOrderedList<T extends Comparable<T>>
 			while(curr != super.first) {
 				if(t.compareTo(curr.data) <= 0) {
 					addBefore(curr, t);
-					return;
+                    return false;
 				}
 				curr = curr.next;
 			}
 			// add at end
 			addBefore(super.first, t);
 		}
-	}
+        return false;
+    }
 }

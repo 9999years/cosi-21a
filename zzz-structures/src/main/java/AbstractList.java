@@ -1,16 +1,11 @@
 import java.lang.UnsupportedOperationException;
 import java.lang.ClassCastException;
 import java.lang.Iterable;
-import java.lang.NoSuchElementException;
+import java.util.NoSuchElementException;
 
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
-import static Parameters.*;
+import static Preconditions.*;
 
 public abstract class AbstractList<E>
 		extends AbstractCollection<E> implements List<E> {
@@ -109,6 +104,7 @@ public abstract class AbstractList<E>
 			add(index, e);
 			index++;
 		}
+		return true;
 	}
 
 	@Override
@@ -129,8 +125,9 @@ public abstract class AbstractList<E>
 	public int hashCode() {
 		int hashCode = 1;
 		for (E e : this) {
-			hashCode = 31 * hashCode + Objects.hashCode(e);
+			hashCode = 0b11111 * hashCode + Objects.hashCode(e);
 		}
+		return hashCode;
 	}
 
 	protected void removeRange(int fromIndex, int toIndex) {
@@ -156,12 +153,7 @@ public abstract class AbstractList<E>
 			}
 		}
 
-		if(thisItr.hasNext() || otherItr.hasNext()) {
-			// unequal lengths
-			return false;
-		}
-
-		return true;
+		return !thisItr.hasNext() && !otherItr.hasNext();
 	}
 
 	public int indexOf(Object o) {

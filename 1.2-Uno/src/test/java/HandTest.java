@@ -11,6 +11,7 @@ public class HandTest {
 		ret.add(new UnoCard(UnoCard.Color.Blue, UnoCard.Special.Skip));
 		ret.add(new UnoCard(UnoCard.Color.Wild, UnoCard.Special.None));
 		ret.add(new UnoCard(UnoCard.Color.Wild, UnoCard.Special.DrawFour));
+		return ret;
 	}
 
 	@Test
