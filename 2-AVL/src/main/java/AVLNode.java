@@ -55,6 +55,10 @@ public class AVLNode<T> {
         return parent.leftChild == this;
     }
 
+    public T getData() {
+        return data;
+    }
+
     /**
      * a lower bound on the tree's height; actual height of bottom leaves may be greater than this by 1
      */
@@ -113,6 +117,9 @@ public class AVLNode<T> {
     /**
      * this should return the tree of names with parentheses separating subtrees
      * eg "((bob)alice(bill))"
+     *
+     * implementation note: this allocates and immediately destroys a whole
+     * BUNCHA strings
      */
     public String treeString() {
         String ret = "";

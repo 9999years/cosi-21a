@@ -6,6 +6,7 @@
 import java.lang.Iterable;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.function.Supplier;
 
 /**
  * utility class for operations on iterables i.e. finding minima and prettily
@@ -76,5 +77,13 @@ public class Iterables {
 			count++;
 		}
 		return ret.toString();
+	}
+
+	public static <T> T[] toArray(Iterable<T> itr, Supplier<T[]> sup) {
+		Deque<T> ret = new Deque<>();
+		for (T t : itr) {
+			ret.add(t);
+		}
+		return ret.toArray(sup.get());
 	}
 }
