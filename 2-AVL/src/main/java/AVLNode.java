@@ -18,13 +18,6 @@
 import java.util.Comparator;
 import java.util.Objects;
 
-/**
- * Your code goes in this file
- * fill in the empty methods to allow for the required
- * operations. You can add any fields or methods you want
- * to help in your implementations.
- */
-
 public class AVLNode<T> {
     private T data;
     private double value;
@@ -101,6 +94,7 @@ public class AVLNode<T> {
             } else {
                 // no left child
                 leftChild = new AVLNode<>(newData, value);
+                leftChild.parent = this;
             }
         } else {
             // value >= this.value
@@ -110,6 +104,7 @@ public class AVLNode<T> {
             } else {
                 // no left child
                 rightChild = new AVLNode<>(newData, value);
+                rightChild.parent = this;
             }
         }
         return this;
@@ -184,5 +179,15 @@ public class AVLNode<T> {
         AVLNode<?> n = (AVLNode<?>) o;
         return Objects.equals(data, n.data)
                 && Doubles.equals(value, n.value, 0.000001);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(data, value);
+    }
+
+    @Override
+    public String toString() {
+        return "AVLNode[" + value + " -> " + data + "]";
     }
 }

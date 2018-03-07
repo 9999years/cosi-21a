@@ -42,7 +42,7 @@ class AVLNodeTest {
     @Test
     void hasParent() {
         AVLNode<Integer> n = new AVLNode<>(100, 9.9);
-        // insert on left
+        // insert on right
         n.insert(100, 20.0);
         assertTrue(n.getRightChild().hasParent());
     }
@@ -58,17 +58,27 @@ class AVLNodeTest {
     @Test
     void getParent() {
         AVLNode<Integer> n = new AVLNode<>(100, 9.9);
-        // insert on left
+        // insert on right
         n.insert(100, 20.0);
-        assertEquals(new AVLNode<>(100, 20.0), n.getRightChild().getParent());
+        assertEquals(n, n.getRightChild().getParent());
     }
 
     @Test
     void isRightChild() {
+        AVLNode<Integer> n = new AVLNode<>(100, 9.9);
+        // insert on right
+        n.insert(100, 20.0);
+        assertTrue(n.getRightChild().isRightChild());
+        assertFalse(n.getRightChild().isLeftChild());
     }
 
     @Test
     void isLeftChild() {
+        AVLNode<Integer> n = new AVLNode<>(100, 9.9);
+        // insert on left
+        n.insert(100, 0.0);
+        assertFalse(n.getLeftChild().isRightChild());
+        assertTrue(n.getLeftChild().isLeftChild()) ;
     }
 
     @Test
@@ -89,5 +99,18 @@ class AVLNodeTest {
 
     @Test
     void toStringDot() {
+    }
+
+    @Test
+    void equals() {
+        assertEquals(new AVLNode<>(100, 20.0),
+                new AVLNode<>(100, 20.0));
+        assertEquals(new AVLNode<>(-33.2, 0.0),
+                new AVLNode<>(-33.2, 0.0));
+        assertNotEquals(new AVLNode<>(100, 20.0), new AVLNode<>(100, 21.0));
+        assertNotEquals(new AVLNode<>(102, 20.0),
+                new AVLNode<>(100, 20.0));
+        assertNotEquals(new AVLNode<>(102, 20.000000000001),
+                new AVLNode<>(100, 20.0), "checking within epsilon");
     }
 }

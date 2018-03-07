@@ -83,6 +83,6 @@ public class TreeTraverser {
     }
 
     public static <T> Iterator<T> preOrder(AVLNode<T> tree) {
-        return Iterators.map(preOrderNodes(tree), t -> t.getData());
+        return Iterators.map(preOrderNodes(tree), AVLNode::getData);
     }
 }
