@@ -1,3 +1,4 @@
+import java.util.Comparator;
 import java.util.Objects;
 
 /**
@@ -8,7 +9,6 @@ import java.util.Objects;
  */
 
 public class AVLNode<T> {
-
     private T data;
     private double value;
     private AVLNode<T> parent;
@@ -68,8 +68,26 @@ public class AVLNode<T> {
      * and use rotations to maintain AVL condition
      */
     public AVLNode<T> insert(T newData, double value) {
-        //TODO
-        return null;
+        Objects.requireNonNull(newData);
+        if(value < this.value) {
+            if(hasLeftChild()) {
+                // recurse
+                leftChild.insert(newData, value);
+            } else {
+                // no left child
+                leftChild = new AVLNode<>(newData, value);
+            }
+        } else {
+            // value >= this.value
+            if(hasRightChild()) {
+                // recurse
+                rightChild.insert(newData, value);
+            } else {
+                // no left child
+                rightChild = new AVLNode<>(newData, value);
+            }
+        }
+        return this;
     }
 
     /**

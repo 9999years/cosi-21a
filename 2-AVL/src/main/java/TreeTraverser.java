@@ -1,5 +1,4 @@
 import java.util.Iterator;
-import java.util.function.Consumer;
 
 public class TreeTraverser {
     protected static class PreOrderIterator<T> implements Iterator<AVLNode<T>> {
@@ -55,13 +54,11 @@ public class TreeTraverser {
             if(!hasNext()) {
                 throw new UnsupportedOperationException();
             }
-            AVLNode<T> ret = next;
-            next = null;
-            return ret;
+            return null;
         }
     }
 
-    public static <E> Iterator<AVLNode<E>> preOrder(AVLNode<E> tree) {
-        return new PreOrderIterator<E>(tree);
+    public static <T> Iterator<AVLNode<T>> preOrder(AVLNode<T> tree) {
+        return new PreOrderIterator<>(tree);
     }
 }
