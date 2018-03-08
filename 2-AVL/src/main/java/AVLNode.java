@@ -19,13 +19,17 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class AVLNode<T> {
+	private enum Decision {
+		Left, Right
+	}
+
 	private T data;
 	private double value;
 	private AVLNode<T> parent;
 	private AVLNode<T> leftChild;
 	private AVLNode<T> rightChild;
-	// ???
 	private int rightWeight;
+
 	private int balanceFactor;
 
 	public AVLNode(T data, double value) {
@@ -70,12 +74,16 @@ public class AVLNode<T> {
 		return parent;
 	}
 
+	protected boolean isRoot() {
+		return parent == null;
+	}
+
 	protected boolean isRightChild() {
-		return parent.rightChild == this;
+		return !isRoot() && parent.rightChild == this;
 	}
 
 	protected boolean isLeftChild() {
-		return parent.leftChild == this;
+		return !isRoot() && parent.leftChild == this;
 	}
 
 	public T getData() {
@@ -107,13 +115,26 @@ public class AVLNode<T> {
 	 */
 	public int height() {
 		int leftHeight = 0;
-		if(hasLeftChild()) {
+		if (hasLeftChild()) {
 			leftHeight = leftChild.height();
 		}
-		if(hasRightChild()) {
+		if (hasRightChild()) {
 			return Math.max(leftHeight, rightChild.height());
 		} else {
 			return leftHeight;
+		}
+	}
+
+	private void updateBalanceFactor() {
+		balanceFactor = 0;
+		if (hasLeftChild()) {
+			balanceFactor = 1 + leftChild.balanceFactor;
+		}
+		if (hasRightChild()) {
+			balanceFactor -= 1 + rightChild.balanceFactor;
+		}
+		if (hasParent()) {
+			parent.updateBalanceFactor();
 		}
 	}
 
@@ -121,26 +142,57 @@ public class AVLNode<T> {
 		return balanceFactor;
 	}
 
-	public AVLNode<T> insert(AVLNode<T> n) {
+	public AVLNode<T> insert(
+			AVLNode<T> n, Decision decision, boolean inside) {
+		boolean inserted = false;
 		if (n.value < value) {
 			if (hasLeftChild()) {
 				// recurse
-				leftChild.insert(n);
+				if(decision != Decision.Left) {
+					inside = false;
+				}
+				leftChild.insert(n, Decision.Left, inside);
 			} else {
 				// no left child
 				setLeftChild(n);
+				inserted = true;
 			}
 		} else {
 			// newValue >= value
 			if (hasRightChild()) {
 				// recurse
-				rightChild.insert(n);
+				if(decision != Decision.Right) {
+					inside = false;
+				}
+				rightChild.insert(n, Decision.Right, inside);
 			} else {
-				// no left child
+				// no right child
 				setRightChild(n);
+				inserted = true;
+			}
+		}
+
+		if (inserted) {
+			n.updateBalanceFactor();
+			if(inside) {
+				// double rotation
+				rotateLeft();
+				rotateRight();
+			} else {
+				// single rotation; outside
+				if(isRightChild()) {
+					rotateLeft();
+				} else {
+					rotateRight();
+				}
 			}
 		}
 		return this;
+	}
+
+
+	public AVLNode<T> insert(AVLNode<T> n) {
+		return insert(n, null, false);
 	}
 
 	/**
@@ -169,7 +221,7 @@ public class AVLNode<T> {
 	 * @throws IllegalStateException if this is not a left child
 	 */
 	private boolean rotateRight() {
-		Parameters.checkState(isLeftChild());
+		Parameters.checkState(isRoot() || isLeftChild());
 
 		/* cases to consider:
 		 * 1. pivot is root
@@ -177,20 +229,23 @@ public class AVLNode<T> {
 		 * 3. par is null
 		 * 4. par.rightchild is null
 		 */
-		boolean ret = false;
+		boolean changedRoot = false;
 		AVLNode<T> left = leftChild;
 
 		// move rightChild of left to be this node's new
 		// left child
+		if (left == null) {
+			//TODO ???
+		}
 		leftChild = left.rightChild;
 		// move left into this node's position
-		if(left.rightChild != null) {
+		if (left.rightChild != null) {
 			left.rightChild.parent = this;
 		}
 		left.parent = parent;
-		if(parent == null) {
-			 ret = true;
-		} else if(this == parent.rightChild) {
+		if (parent == null) {
+			changedRoot = true;
+		} else if (this == parent.rightChild) {
 			parent.rightChild = left;
 		} else {
 			parent.leftChild = left;
@@ -198,14 +253,36 @@ public class AVLNode<T> {
 		// move this node to become the rightChild of left
 		left.rightChild = this;
 		parent = left;
-		return ret;
+		return changedRoot;
 	}
 
 	/**
 	 * remember to maintain rightWeight
 	 */
-	private void rotateLeft() {
-		//TODO: rotateLeft method
+	private boolean rotateLeft() {
+		Parameters.checkState(isRoot() || isRightChild());
+		boolean changedRoot = false;
+		// this = pivot = v
+		AVLNode<T> pivot = this;
+		// y
+		AVLNode<T> right = rightChild;
+		rightChild = right.leftChild;
+		// rightChild might be null
+		if (right.leftChild != null) {
+			right.leftChild.parent = this;
+		}
+		right.parent = parent;
+		if(parent == null) {
+			// root = right
+			changedRoot = true;
+		} else if(isLeftChild()) {
+			parent.leftChild = this;
+		} else {
+			parent.rightChild = this;
+		}
+		right.leftChild = this;
+		parent = rightChild;
+		return changedRoot;
 	}
 
 	/**

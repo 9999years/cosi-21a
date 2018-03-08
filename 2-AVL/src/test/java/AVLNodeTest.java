@@ -139,15 +139,11 @@ class AVLNodeTest {
 
     @Test
     void balanceTest() {
-        // by choosing a root node with a value of -10_000 we ensure that, if
-        // the tree isn't self-balanced, the generator's nodes between -1000 and
-        // 1000 will surely make the tree incredibly right-heavy
         AVLNode<Integer> root = new AVLNode<>(0, -10_000.0);
         for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(100)) {
             root.insert(n);
             int bf = root.getBalanceFactor();
-            assertTrue(-1 <= bf, "balance factor " + bf);
-            assertTrue(1 >= bf, "balance factor " + bf);
+            assertTrue(-1 <= bf && bf <= 1, "balance factor " + bf);
         }
         System.out.println(DotDigraph.toString(root,
                 n -> Integer.toString(n.getBalanceFactor())));
