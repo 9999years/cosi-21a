@@ -16,6 +16,7 @@
  */
 
 import java.util.Objects;
+import java.util.function.Function;
 
 public class AVLNode<T> {
 	private T data;
@@ -100,26 +101,34 @@ public class AVLNode<T> {
 	 * the tree's height; O(n) time
 	 */
 	public int height() {
-		return isLeaf()
-				? 0
-				: Math.max(leftChild.height(), rightChild.height());
-	}
-
-	public int getBalanceFactor() {
-		// TODO actually implement the BF
 		if(isLeaf()) {
-			return 0
+			return 0;
 		}
 		int leftHeight = 0;
 		if(hasLeftChild()) {
 			leftHeight = leftChild.height();
 		}
 		if(hasRightChild()) {
+			return Math.max(leftHeight, rightChild.height());
+		} else {
+			return leftHeight;
+		}
+	}
+
+	public int getBalanceFactor() {
+		// TODO actually implement the BF
+		if(isLeaf()) {
+			return 0;
+		}
+		int leftHeight = 0;
+		// branches to avoid NPE
+		if(hasLeftChild()) {
+			leftHeight = leftChild.height();
+		}
+		if(hasRightChild()) {
 			leftHeight -= rightChild.height();
 		}
-		return isLeaf()
-			? 0
-			: leftChild.height() - rightChild.height();
+		return leftHeight;
 	}
 
 	public AVLNode<T> insert(AVLNode<T> n) {
@@ -242,7 +251,7 @@ public class AVLNode<T> {
 	 * headline coming soon to a paper near you: rebecca turner arrested for
 	 * Ternary Crimes
 	 */
-	private String dotStringNoWrapper() {
+	private String dotStringNoWrapper(Function<AVLNode<T>, String> nodeText) {
 		StringBuilder sb = new StringBuilder();
 		if(hasLeftChild()) {
 			sb.append(dotNodeString()).append(" -> ")
@@ -253,10 +262,10 @@ public class AVLNode<T> {
 					.append(rightChild.dotNodeString()).append(";\n");
 		}
 		if(hasLeftChild()) {
-			sb.append(leftChild.dotStringNoWrapper());
+			sb.append(leftChild.dotStringNoWrapper(nodeText));
 		}
 		if(hasRightChild()) {
-			sb.append(rightChild.dotStringNoWrapper());
+			sb.append(rightChild.dotStringNoWrapper(nodeText));
 		}
 		return sb.toString();
 	}
@@ -265,8 +274,16 @@ public class AVLNode<T> {
 	 * creates a GraphViz dot representation of this tree
 	 */
 	public String toStringDot() {
+		return toStringDot(AVLNode::dotNodeString);
+	}
+
+	/**
+	 * creates a GraphViz dot representation of this tree with each node's text
+	 * created with the specified nodeText function
+	 */
+	public String toStringDot(Function<AVLNode<T>, String> nodeText) {
 		return "digraph {\nnode[shape=box];\n"
-				+ dotStringNoWrapper()
+				+ dotStringNoWrapper(nodeText)
 				+ "}\n";
 	}
 

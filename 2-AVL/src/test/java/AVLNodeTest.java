@@ -17,6 +17,8 @@
 
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Function;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class AVLNodeTest {
@@ -151,5 +153,7 @@ class AVLNodeTest {
             assertTrue(-1 <= bf, "balance factor " + bf);
             assertTrue(1 >= bf, "balance factor " + bf);
         }
+        System.out.println(root.toStringDot(
+                n -> Integer.toString(n.getBalanceFactor())));
     }
 }
