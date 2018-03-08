@@ -28,7 +28,8 @@ public class AVLNode<T> {
 	private AVLNode<T> parent;
 	private AVLNode<T> leftChild;
 	private AVLNode<T> rightChild;
-	private int rightWeight;
+	//seems irrelevant if we have balanceFactor...
+	//private int rightWeight;
 
 	private int balanceFactor;
 
@@ -174,23 +175,7 @@ public class AVLNode<T> {
 
 		if (inserted) {
 			n.updateBalanceFactor();
-			if(inside) {
-				if (decision == Decision.Right) {
-					// double rotation
-					rotateLeft();
-					rotateRight();
-				} else {
-					rotateRight();
-					rotateLeft();
-				}
-			} else {
-				// single rotation; outside
-				if(isRightChild()) {
-					rotateLeft();
-				} else {
-					rotateRight();
-				}
-			}
+			rebalance(inside, decision);
 		}
 		return this;
 	}
@@ -217,6 +202,38 @@ public class AVLNode<T> {
 		//TODO: write standard vanilla BST delete method
 		//Extra Credit: use rotations to maintain the AVL condition
 		return null;
+	}
+
+	private void rebalance(boolean inside, Decision insertedOn) {
+		if(-1 <= balanceFactor && balanceFactor <= 1) {
+			// node is well-balanced; try the parent
+			if(hasParent()) {
+				System.out.println("skipping " + this + " (bf " + balanceFactor + ")\n");
+				parent.rebalance(inside, insertedOn);
+			}
+			return;
+		}
+
+		System.out.println("rebalancing " + this + " (bf + " + balanceFactor + ")\n");
+		System.out.println(DotDigraph.toString(this));
+
+		if(inside) {
+			if (insertedOn == Decision.Right) {
+				// double rotation
+				rotateLeft();
+				rotateRight();
+			} else {
+				rotateRight();
+				rotateLeft();
+			}
+		} else {
+			// single rotation; outside
+			if (isRightChild()) {
+				rotateLeft();
+			} else {
+				rotateRight();
+			}
+		}
 	}
 
 	/**
