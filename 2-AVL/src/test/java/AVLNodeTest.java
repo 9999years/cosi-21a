@@ -84,6 +84,17 @@ class AVLNodeTest {
 
     @Test
     void approximateHeight() {
+        AVLNode<Integer> n = new AVLNode<>(1, 9.9);
+        assertEquals(0, n.approximateHeight());
+        // left
+        n.insert(2, 0.0);
+        assertEquals(1, n.approximateHeight());
+        // right
+        n.insert(3, 20.0);
+        assertEquals(1, n.approximateHeight());
+        // right right
+        n.insert(4, 40.0);
+        assertEquals(1, n.approximateHeight());
     }
 
     @Test
@@ -114,21 +125,6 @@ class AVLNodeTest {
     }
 
     @Test
-    void toStringDot() {
-        AVLNode<Integer> n = new AVLNode<>(1, 9.9);
-        // left
-        n.insert(2, 0.0);
-        // right
-        n.insert(3, 20.0);
-        // left left
-        n.insert(4, -1.0);
-        assertEquals("digraph {\nnode[shape=box];\n"
-                + "\"9.9 &#x2192; 1\" -> \"0.0 &#x2192; 2\";\n"
-                + "\"9.9 &#x2192; 1\" -> \"20.0 &#x2192; 3\";\n"
-                + "\"0.0 &#x2192; 2\" -> \"-1.0 &#x2192; 4\";\n}\n", n.toStringDot());
-    }
-
-    @Test
     void equals() {
         assertEquals(new AVLNode<>(100, 20.0),
                 new AVLNode<>(100, 20.0));
@@ -153,7 +149,54 @@ class AVLNodeTest {
             assertTrue(-1 <= bf, "balance factor " + bf);
             assertTrue(1 >= bf, "balance factor " + bf);
         }
-        System.out.println(root.toStringDot(
+        System.out.println(DotDigraph.toString(root,
                 n -> Integer.toString(n.getBalanceFactor())));
+    }
+
+    @Test
+    void setLeftChild() {
+    }
+
+    @Test
+    void setRightChild() {
+    }
+
+    @Test
+    void getData() {
+    }
+
+    @Test
+    void getValue() {
+    }
+
+    @Test
+    void isLeaf() {
+    }
+
+    @Test
+    void height() {
+        AVLNode<Integer> n = new AVLNode<>(1, 9.9);
+        assertEquals(0, n.height());
+        // left
+        n.insert(2, 0.0);
+        assertEquals(1, n.height());
+        // right
+        n.insert(3, 20.0);
+        assertEquals(1, n.height());
+        // right right
+        n.insert(4, 40.0);
+        assertEquals(2, n.height());
+    }
+
+    @Test
+    void getBalanceFactor() {
+    }
+
+    @Test
+    void hashCodeTest() {
+    }
+
+    @Test
+    void toStringTest() {
     }
 }
