@@ -15,179 +15,281 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.Comparator;
 import java.util.Objects;
 
 public class AVLNode<T> {
-    private T data;
-    private double value;
-    private AVLNode<T> parent;
-    private AVLNode<T> leftChild;
-    private AVLNode<T> rightChild;
-    private int rightWeight;
-    private int balanceFactor;
+	private T data;
+	private double value;
+	private AVLNode<T> parent;
+	private AVLNode<T> leftChild;
+	private AVLNode<T> rightChild;
+	// ???
+	private int rightWeight;
+	private int balanceFactor;
 
-    public AVLNode(T data, double value) {
-        Objects.requireNonNull(data);
-        this.data = data;
-        this.value = value;
-    }
+	public AVLNode(T data, double value) {
+		Objects.requireNonNull(data);
+		this.data = data;
+		this.value = value;
+	}
 
-    protected boolean hasLeftChild() {
-        return leftChild != null;
-    }
+	protected boolean hasLeftChild() {
+		return leftChild != null;
+	}
 
-    protected boolean hasRightChild() {
-        return rightChild != null;
-    }
+	protected boolean hasRightChild() {
+		return rightChild != null;
+	}
 
-    protected boolean hasParent() {
-        return parent != null;
-    }
+	protected boolean hasParent() {
+		return parent != null;
+	}
 
-    protected AVLNode<T> getLeftChild() {
-        return leftChild;
-    }
+	protected AVLNode<T> getLeftChild() {
+		return leftChild;
+	}
 
-    protected AVLNode<T> getRightChild() {
-        return rightChild;
-    }
+	protected AVLNode<T> getRightChild() {
+		return rightChild;
+	}
 
-    protected AVLNode<T> getParent() {
-        return parent;
-    }
+	protected void setLeftChild(AVLNode<T> n) {
+		Objects.requireNonNull(n);
+		leftChild = n;
+		n.parent = this;
+	}
 
-    protected boolean isRightChild() {
-        return parent.rightChild == this;
-    }
+	protected void setRightChild(AVLNode<T> n) {
+		Objects.requireNonNull(n);
+		rightChild = n;
+		n.parent = this;
+	}
 
-    protected boolean isLeftChild() {
-        return parent.leftChild == this;
-    }
+	protected AVLNode<T> getParent() {
+		return parent;
+	}
 
-    public T getData() {
-        return data;
-    }
+	protected boolean isRightChild() {
+		return parent.rightChild == this;
+	}
 
-    /**
-     * a lower bound on the tree's height; actual height of bottom leaves may be
-     * greater than this by 1
-     *
-     * O(log n) time because there's no way in hell i'm adding another field to
-     * this bloated class
-     */
-    public int approximateHeight() {
-        return 1 + leftChild.approximateHeight();
-    }
+	protected boolean isLeftChild() {
+		return parent.leftChild == this;
+	}
 
-    /**
-     * This should return the new root of the tree
-     * make sure to update the balance factor and right weight
-     * and use rotations to maintain AVL condition
-     */
-    public AVLNode<T> insert(T newData, double value) {
-        Objects.requireNonNull(newData);
-        if(value < this.value) {
-            if(hasLeftChild()) {
-                // recurse
-                leftChild.insert(newData, value);
-            } else {
-                // no left child
-                leftChild = new AVLNode<>(newData, value);
-                leftChild.parent = this;
-            }
-        } else {
-            // value >= this.value
-            if(hasRightChild()) {
-                // recurse
-                rightChild.insert(newData, value);
-            } else {
-                // no left child
-                rightChild = new AVLNode<>(newData, value);
-                rightChild.parent = this;
-            }
-        }
-        return this;
-    }
+	public T getData() {
+		return data;
+	}
 
-    /**
-     * This should return the new root of the tree
-     * remember to update the right weight
-     */
-    public AVLNode<T> delete(double value) {
-        //TODO: write standard vanilla BST delete method
-        //Extra Credit: use rotations to maintain the AVL condition
-        return null;
-    }
+	public boolean isLeaf() {
+		return leftChild == null && rightChild == null;
+	}
 
-    //remember to maintain rightWeight
-    private void rotateRight() {
-        //TODO
-    }
+	/**
+	 * a lower bound on the tree's height; actual height of bottom leaves may be
+	 * greater than this by 1
+	 * <p>
+	 * O(log n) time because there's no way in hell i'm adding another field to
+	 * this bloated class
+	 */
+	public int approximateHeight() {
+		return 1 + leftChild.approximateHeight();
+	}
 
-    //remember to maintain rightWeight
-    private void rotateLeft() {
-        //TODO
-    }
+	/**
+	 * the tree's height; O(n) time
+	 */
+	public int height() {
+		return isLeaf()
+				? 0
+				: Math.max(leftChild.height(), rightChild.height());
+	}
 
-    /**
-     * this should return the tree of names with parentheses separating subtrees
-     * eg "((bob)alice(bill))"
-     *
-     * implementation note: this allocates and immediately destroys a whole
-     * BUNCHA strings
-     */
-    public String treeString() {
-        String ret = "";
-        if (leftChild != null) {
-            ret += leftChild.toString();
-        }
-        ret += Objects.toString(data);
-        if (rightChild != null) {
-            ret += rightChild.toString();
-        }
-        return ret;
-    }
+	public int getBalanceFactor() {
+		// TODO actually implement the BF
+		if(isLeaf()) {
+			return 0
+		}
+		int leftHeight = 0;
+		if(hasLeftChild()) {
+			leftHeight = leftChild.height();
+		}
+		if(hasRightChild()) {
+			leftHeight -= rightChild.height();
+		}
+		return isLeaf()
+			? 0
+			: leftChild.height() - rightChild.height();
+	}
 
-    private String toStringDotUnwrapped() {
-        return "\"" + data.toString()
-                + "\" -> \"" + leftChild.toString() + "\";\n"
-                + "\"" + data.toString()
-                + "\" -> \"" + rightChild.toString() + "\";\n";
-    }
+	public AVLNode<T> insert(AVLNode<T> n) {
+		if (n.value < value) {
+			if (hasLeftChild()) {
+				// recurse
+				leftChild.insert(n);
+			} else {
+				// no left child
+				setLeftChild(n);
+			}
+		} else {
+			// newValue >= value
+			if (hasRightChild()) {
+				// recurse
+				rightChild.insert(n);
+			} else {
+				// no left child
+				setRightChild(n);
+			}
+		}
+		return this;
+	}
 
-    /**
-     * creates a GraphViz dot representation of this tree
-     */
-    public String toStringDot() {
-        return "digraph {\nnode[shape=box];"
-                + toStringDotUnwrapped()
-                + leftChild.toStringDotUnwrapped()
-                + rightChild.toStringDotUnwrapped()
-                + "}\n";
-    }
+	/**
+	 * This should return the new root of the tree
+	 * make sure to update the balance factor and right weight
+	 * and use rotations to maintain AVL condition
+	 */
+	public AVLNode<T> insert(T data, double value) {
+		return insert(new AVLNode<T>(data, value));
+	}
 
-    /**
-     * uses a fairly large epsilon for comparing `data` fields
-     *
-     */
-    @Override
-    public boolean equals(Object o) {
-        if(!(o instanceof AVLNode)) {
-            return false;
-        }
-        AVLNode<?> n = (AVLNode<?>) o;
-        return Objects.equals(data, n.data)
-                && Doubles.equals(value, n.value, 0.000001);
-    }
+	/**
+	 * This should return the new root of the tree
+	 * remember to update the right weight
+	 */
+	public AVLNode<T> delete(double value) {
+		//TODO: write standard vanilla BST delete method
+		//Extra Credit: use rotations to maintain the AVL condition
+		return null;
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(data, value);
-    }
+	/**
+	 * remember to maintain rightWeight
+	 *
+	 * @return true if the tree's root is changed
+	 * @throws IllegalStateException if this is not a left child
+	 */
+	private boolean rotateRight() {
+		Parameters.checkState(isLeftChild());
 
-    @Override
-    public String toString() {
-        return "AVLNode[" + value + " -> " + data + "]";
-    }
+		/* cases to consider:
+		 * 1. pivot is root
+		 * 2. par is root
+		 * 3. par is null
+		 * 4. par.rightchild is null
+		 */
+		boolean ret = false;
+		AVLNode<T> left = leftChild;
+
+		// move rightChild of left to be this node's new
+		// left child
+		leftChild = left.rightChild;
+		// move left into this node's position
+		if(left.rightChild != null) {
+			left.rightChild.parent = this;
+		}
+		left.parent = parent;
+		if(parent == null) {
+			 ret = true;
+		} else if(this == parent.rightChild) {
+			parent.rightChild = left;
+		} else {
+			parent.leftChild = left;
+		}
+		// move this node to become the rightChild of left
+		left.rightChild = this;
+		parent = left;
+		return ret;
+	}
+
+	/**
+	 * remember to maintain rightWeight
+	 */
+	private void rotateLeft() {
+		//TODO: rotateLeft method
+	}
+
+	/**
+	 * this should return the tree of names with parentheses separating subtrees
+	 * eg "((bob)alice(bill))"
+	 * <p>
+	 * implementation note: this allocates and immediately destroys a whole
+	 * BUNCHA strings
+	 */
+	public String treeString() {
+		String ret = "";
+		if (leftChild != null) {
+			ret += leftChild.toString();
+		}
+		ret += Objects.toString(data);
+		if (rightChild != null) {
+			ret += rightChild.toString();
+		}
+		return ret;
+	}
+
+	/**
+	 * @return "value -> data" (quotes are included in result string)
+	 */
+	private String dotNodeString() {
+		return "\"" + value + " &#x2192; " + data + "\"";
+	}
+
+	/**
+	 * returns the "unwrapped" (no `digraph { ... }` boilerplate) GraphViz dot
+	 * representation of this node
+	 * <p>
+	 * headline coming soon to a paper near you: rebecca turner arrested for
+	 * Ternary Crimes
+	 */
+	private String dotStringNoWrapper() {
+		StringBuilder sb = new StringBuilder();
+		if(hasLeftChild()) {
+			sb.append(dotNodeString()).append(" -> ")
+					.append(leftChild.dotNodeString()).append(";\n");
+		}
+		if(hasRightChild()) {
+			sb.append(dotNodeString()).append(" -> ")
+					.append(rightChild.dotNodeString()).append(";\n");
+		}
+		if(hasLeftChild()) {
+			sb.append(leftChild.dotStringNoWrapper());
+		}
+		if(hasRightChild()) {
+			sb.append(rightChild.dotStringNoWrapper());
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * creates a GraphViz dot representation of this tree
+	 */
+	public String toStringDot() {
+		return "digraph {\nnode[shape=box];\n"
+				+ dotStringNoWrapper()
+				+ "}\n";
+	}
+
+	/**
+	 * uses a fairly large epsilon for comparing `data` fields
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof AVLNode)) {
+			return false;
+		}
+		AVLNode<?> n = (AVLNode<?>) o;
+		return Objects.equals(data, n.data)
+				&& Doubles.equals(value, n.value, 0.000001);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(data, value);
+	}
+
+	@Override
+	public String toString() {
+		return "AVLNode[" + value + " -> " + data + "]";
+	}
 }
