@@ -19,10 +19,6 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class AVLNode<T> {
-	private enum Decision {
-		Left, Right
-	}
-
 	private T data;
 	private double value;
 	private AVLNode<T> parent;
@@ -62,15 +58,17 @@ public class AVLNode<T> {
 	}
 
 	protected void setLeftChild(AVLNode<T> n) {
-		Objects.requireNonNull(n);
 		leftChild = n;
-		n.parent = this;
+		if (n != null) {
+			n.parent = this;
+		}
 	}
 
 	protected void setRightChild(AVLNode<T> n) {
-		Objects.requireNonNull(n);
 		rightChild = n;
-		n.parent = this;
+		if(n != null) {
+			n.parent = this;
+		}
 	}
 
 	protected AVLNode<T> getParent() {
@@ -149,16 +147,13 @@ public class AVLNode<T> {
 		return balanceFactor < -1 || balanceFactor > 1;
 	}
 
-	public AVLNode<T> insert(
-			AVLNode<T> n, Decision decision, boolean inside) {
+
+	private AVLNode<T> insert(
+			AVLNode<T> n, boolean onLeft, boolean inside) {
 		boolean inserted = false;
 		if (n.value < value) {
 			if (hasLeftChild()) {
-				// recurse
-				if(decision != Decision.Left) {
-					inside = false;
-				}
-				leftChild.insert(n, Decision.Left, inside);
+				leftChild.insert(n, true, inside && onLeft);
 			} else {
 				// no left child
 				setLeftChild(n);
@@ -167,11 +162,7 @@ public class AVLNode<T> {
 		} else {
 			// newValue >= value
 			if (hasRightChild()) {
-				// recurse
-				if(decision != Decision.Right) {
-					inside = false;
-				}
-				rightChild.insert(n, Decision.Right, inside);
+				rightChild.insert(n, false, inside && !onLeft);
 			} else {
 				// no right child
 				setRightChild(n);
@@ -181,13 +172,15 @@ public class AVLNode<T> {
 
 		if (inserted) {
 			n.updateBalanceFactor();
+			rebalance(onLeft, inside);
+			n.updateBalanceFactor();
 		}
 		return this;
 	}
 
 
 	public AVLNode<T> insert(AVLNode<T> n) {
-		return insert(n, null, false);
+		return insert(n, false, true);
 	}
 
 	/**
@@ -209,36 +202,37 @@ public class AVLNode<T> {
 		return null;
 	}
 
-	private void rebalance(boolean inside, Decision insertedOn) {
-		if(-1 <= balanceFactor && balanceFactor <= 1) {
+	private AVLNode<T> rebalance(boolean onLeft, boolean inside) {
+		if(!unbalanced()) {
 			// node is well-balanced; try the parent
 			if(hasParent()) {
 				System.out.println("skipping " + this + " (bf " + balanceFactor + ")\n");
-				parent.rebalance(inside, insertedOn);
+				return parent.rebalance(onLeft, inside);
 			}
-			return;
+			return this;
 		}
 
 		System.out.println("rebalancing " + this + " (bf + " + balanceFactor + ")\n");
 		System.out.println(DotDigraph.toString(this));
 
+		AVLNode<T> newThis = this;
 		if (inside) {
-			if (n == leftChild) {
-				parent.rotateRight();
-				parent.rotateLeft();
+			if (onLeft) {
+				newThis = newThis.rotateRight();
+				newThis = newThis.rotateLeft();
 			} else {
-				parent.rotateLeft();
-				parent.rotateRight();
+				newThis = newThis.rotateLeft();
+				newThis = newThis.rotateRight();
 			}
 		} else {
 			// outside case
-			if (parent.hasRightChild()) {
-				parent.rotateLeft();
+			if (onLeft) {
+				newThis = newThis.rotateRight();
 			} else {
-				System.out.println(DotDigraph.toString(parent));
-				parent.rotateRight();
+				newThis = newThis.rotateLeft();
 			}
 		}
+		return newThis;
 	}
 
 	/**
