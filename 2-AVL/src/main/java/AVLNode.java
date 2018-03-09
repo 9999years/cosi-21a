@@ -28,8 +28,10 @@ public class AVLNode<T> {
 	private AVLNode<T> parent;
 	private AVLNode<T> leftChild;
 	private AVLNode<T> rightChild;
-	//seems irrelevant if we have balanceFactor...
-	//private int rightWeight;
+	/**
+	 * number of nodes in right subTree
+	 */
+	private int rightWeight;
 
 	private int balanceFactor;
 
@@ -143,6 +145,10 @@ public class AVLNode<T> {
 		return balanceFactor;
 	}
 
+	public boolean unbalanced() {
+		return balanceFactor < -1 || balanceFactor > 1;
+	}
+
 	public AVLNode<T> insert(
 			AVLNode<T> n, Decision decision, boolean inside) {
 		boolean inserted = false;
@@ -175,7 +181,6 @@ public class AVLNode<T> {
 
 		if (inserted) {
 			n.updateBalanceFactor();
-			rebalance(inside, decision);
 		}
 		return this;
 	}
@@ -217,43 +222,38 @@ public class AVLNode<T> {
 		System.out.println("rebalancing " + this + " (bf + " + balanceFactor + ")\n");
 		System.out.println(DotDigraph.toString(this));
 
-		if(inside) {
-			if (insertedOn == Decision.Right) {
-				// double rotation
-				rotateLeft();
-				rotateRight();
+		if (inside) {
+			if (n == leftChild) {
+				parent.rotateRight();
+				parent.rotateLeft();
 			} else {
-				rotateRight();
-				rotateLeft();
+				parent.rotateLeft();
+				parent.rotateRight();
 			}
 		} else {
-			// single rotation; outside
-			if (isRightChild()) {
-				rotateLeft();
+			// outside case
+			if (parent.hasRightChild()) {
+				parent.rotateLeft();
 			} else {
-				rotateRight();
+				System.out.println(DotDigraph.toString(parent));
+				parent.rotateRight();
 			}
 		}
 	}
 
 	/**
-	 * remember to maintain rightWeight
+	 * can only be called if hasLeftChild()
 	 *
 	 * @return true if the tree's root is changed
 	 * @throws IllegalStateException if this is not a left child
 	 */
-	private boolean rotateRight() {
-		Parameters.checkState(isRoot() || isLeftChild());
-		/* cases to consider:
-		 * 1. pivot is root
-		 * 2. par is root
-		 * 3. par is null
-		 * 4. par.rightchild is null
-		 */
-		boolean changedRoot = false;
+	private AVLNode<T> rotateRight() {
+		Parameters.checkState(hasLeftChild(),
+				"right rotate requires a left child!");
+		// TODO maintain rightWeight
 
-		//          ?
-		//         /
+		//         ?
+		//         |
 		//       root
 		//      /   \
 		//  pivot   rr
@@ -262,52 +262,80 @@ public class AVLNode<T> {
 		//
 		//      ↓
 		//
-		//          ?
-		//         /
+		//         ?
+		//         |
 		//       pivot
 		//      /    \
-		//    rr    root
+		//    pl    root
 		//   / \    /  \
-		//  ?  ?   pr  pl
+		//  ?  ?   pr  rr
 		//
 		// root: this
 		// pivot: pivot
 		// pl: pivot.leftChild
 		// pr: pivot.rightChild
 		// rr: rightChild
+		//
+		// unchanged: root -> rr
+		//            pivot -> pl
 
-		// root: this
-		// rs: right
-		// os: left
 		AVLNode<T> pivot = leftChild;
-		// root left = pr
-		leftChild = pivot.rightChild;
-		// pr = root
-		pivot.rightChild = this;
-		// rr on new pivot left
-		AVLNode<T> pivotLeft = pivot.leftChild;
-		pivot.leftChild = rightChild;
-		// right = pl
-		rightChild = pivotLeft;
-
-		// swap pivot and this
-		// this = pivot;
-		rightChild = pivot.leftChild;
 		if (hasParent()) {
-			parent.leftChild = pivot;
-			changedRoot = true;
+			if (isLeftChild()) {
+				parent.setLeftChild(pivot);
+			} else {
+				parent.setRightChild(pivot);
+			}
 		}
-		return changedRoot;
+		setLeftChild(pivot.rightChild);
+		pivot.setRightChild(this);
+		return pivot;
 	}
 
 	/**
 	 * remember to maintain rightWeight
 	 */
-	private boolean rotateLeft() {
-		Parameters.checkState(isRoot() || isRightChild());
-		boolean changedRoot = false;
-		// TODO
-		return changedRoot;
+	private AVLNode<T> rotateLeft() {
+		Parameters.checkState(hasRightChild(),
+				"left rotate requires right child!");
+		//         ?
+		//         |
+		//       root
+		//      /   \
+		//    rl   pivot
+		//  /  \   / \
+		// ?   ?  pl  pr
+		//
+		//      ↓
+		//
+		//        ?
+		//        |
+		//      pivot
+		//     /   \
+		//   root   pr
+		//  /  \
+		// rl  pl
+
+		// root: this
+		// pivot: rightChild
+		// pl: pivot.leftChild
+		// pr: pivot.rightChild
+		// rl: leftChild
+
+		// unchanged: pivot -> pr
+		//            root -> rl
+
+		AVLNode<T> pivot = rightChild;
+		if (hasParent()) {
+			if (isLeftChild()) {
+				parent.setLeftChild(pivot);
+			} else {
+				parent.setRightChild(pivot);
+			}
+		}
+		setRightChild(pivot.leftChild);
+		pivot.setLeftChild(this);
+		return pivot;
 	}
 
 	/**

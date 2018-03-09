@@ -139,11 +139,12 @@ class AVLNodeTest {
 
     @Test
     void balanceTest() {
-        AVLNode<Integer> root = new AVLNode<>(0, -10_000.0);
+        AVLNode<Integer> root = new AVLNode<>(0, 0.0);
         for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(100)) {
-            root.insert(n);
+            root = root.insert(n);
             int bf = root.getBalanceFactor();
-            assertTrue(-1 <= bf && bf <= 1, "balance factor " + bf);
+            assertTrue(-1 <= bf && bf <= 1, DotDigraph.toString(root,
+                    r -> Integer.toString(r.getBalanceFactor())));
         }
         System.out.println(DotDigraph.toString(root,
                 n -> Integer.toString(n.getBalanceFactor())));
