@@ -24,7 +24,11 @@ public class DotDigraph {
 	 * @return "value -> data" (quotes are included in result string)
 	 */
 	private static String dotNodeString(AVLNode n) {
-		return n.getValue() + " &#x2192; " + n.getData();
+		String ret = n.toString();
+		// AVLNode[...]
+		// ^      ^   ^
+		// 0      6   n-1
+		return ret.substring(6, ret.length() - 1);
 	}
 
 	/**
