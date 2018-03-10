@@ -82,8 +82,24 @@ public class AVLNode<T> {
 		return parent;
 	}
 
+	protected void detectTreeLoop() {
+		// for debugging a weird bug
+		if (hasParent() && parent.parent == this) {
+			throw new IllegalStateException("Tree loop detected --- something has gone disastrously wrong!");
+		}
+	}
+
 	protected boolean isRoot() {
 		return parent == null;
+	}
+
+	protected AVLNode<T> getRoot() {
+		AVLNode<T> root = this;
+		while (!root.isRoot()) {
+			detectTreeLoop();
+			root = root.parent;
+		}
+		return root;
 	}
 
 	protected boolean isRightChild() {
@@ -143,6 +159,8 @@ public class AVLNode<T> {
 		}
 		System.out.println("BF now " + balanceFactor);
 		if (hasParent()) {
+			detectTreeLoop();
+			System.out.println("moving from " + this + " to the parent " + parent);
 			parent.updateBalanceFactor();
 		}
 	}
@@ -182,6 +200,7 @@ public class AVLNode<T> {
 		if (inserted) {
 			n.updateBalanceFactor();
 			newThis = rebalance(onLeft, inside);
+			System.out.println(DotDigraph.toString(this));
 			n.updateBalanceFactor();
 		}
 		return newThis;
@@ -215,6 +234,7 @@ public class AVLNode<T> {
 		if(!unbalanced()) {
 			// node is well-balanced; try the parent
 			if(hasParent()) {
+				detectTreeLoop();
 				return parent.rebalance(onLeft, inside);
 			}
 			return this;
@@ -226,34 +246,30 @@ public class AVLNode<T> {
 		AVLNode<T> newThis = this;
 		if (inside) {
 			if (onLeft) {
-				System.out.println("rotating right");
 				newThis = newThis.rotateRight();
-				System.out.println("rotating left");
 				newThis = newThis.rotateLeft();
 			} else {
-				System.out.println("rotating left");
 				newThis = newThis.rotateLeft();
-				System.out.println("rotating right");
 				newThis = newThis.rotateRight();
 			}
 		} else {
 			// outside case
 			if (onLeft) {
-				System.out.println("rotating right");
 				newThis = newThis.rotateRight();
 			} else {
-				System.out.println("rotating left");
 				newThis = newThis.rotateLeft();
 			}
 		}
 
-		System.out.println(DotDigraph.toString(newThis));
+		System.out.println(DotDigraph.toString(newThis.getRoot()));
 
 		return newThis;
 	}
 
 	/**
 	 * can only be called if hasLeftChild()
+	 *
+	 * some isseue where nodes form a 2 el circ loop
 	 *
 	 * @return true if the tree's root is changed
 	 * @throws IllegalStateException if this is not a left child
@@ -289,17 +305,26 @@ public class AVLNode<T> {
 		//            pivot -> pl
 
 		AVLNode<T> pivot = leftChild;
+		System.out.println("RR");
+		System.out.println("pivot: " + pivot.debug());
+		System.out.println("root: " + debug());
 		if (hasParent()) {
 			if (isLeftChild()) {
 				parent.setLeftChild(pivot);
 			} else {
 				parent.setRightChild(pivot);
 			}
+		} else {
+			// this is the root node, and the pivot's new parent is null now
+			pivot.parent = null;
 		}
 		setLeftChild(pivot.rightChild);
 		// handles setting parent to pivot
 		pivot.setRightChild(this);
 		pivot.rightWeight = 1 + rightWeight;
+		System.out.println("finished RR");
+		System.out.println("pivot: " + pivot.debug());
+		System.out.println("root: " + debug());
 		return pivot;
 	}
 
@@ -343,6 +368,9 @@ public class AVLNode<T> {
 			} else {
 				parent.setRightChild(pivot);
 			}
+		} else {
+			// this is root
+			pivot.parent = null;
 		}
 		setRightChild(pivot.leftChild);
 		pivot.setLeftChild(this);
@@ -391,5 +419,13 @@ public class AVLNode<T> {
 	public String toString() {
 		return "AVLNode[" + value + " -> " + data
 				+ ", BF=" + balanceFactor + ", RW=" + rightWeight + "]";
+	}
+
+	protected String debug() {
+		return this.toString() + ":\n"
+				+ "    ID=" + System.identityHashCode(this) + "\n"
+				+ "    LC=" + leftChild + "\n"
+				+ "    RC=" + rightChild + "\n"
+				+ "   PAR="+ parent + "\n";
 	}
 }
