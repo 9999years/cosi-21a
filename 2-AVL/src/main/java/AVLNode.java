@@ -19,6 +19,8 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class AVLNode<T> {
+	public static final double EPSILON = 1e-10;
+
 	private T data;
 	private double value;
 	private AVLNode<T> parent;
@@ -28,7 +30,6 @@ public class AVLNode<T> {
 	 * number of nodes in right subTree
 	 */
 	private int rightWeight;
-
 	private int balanceFactor;
 
 	public AVLNode(T data, double value) {
@@ -58,15 +59,21 @@ public class AVLNode<T> {
 	}
 
 	protected void setLeftChild(AVLNode<T> n) {
-		leftChild = n;
+		if (hasLeftChild()) {
+			leftChild.parent = null;
+		}
 		if (n != null) {
+			leftChild = n;
 			n.parent = this;
 		}
 	}
 
 	protected void setRightChild(AVLNode<T> n) {
-		rightChild = n;
+		if(hasRightChild()) {
+			rightChild.parent = null;
+		}
 		if(n != null) {
+			rightChild = n;
 			n.parent = this;
 		}
 	}
@@ -254,8 +261,6 @@ public class AVLNode<T> {
 	private AVLNode<T> rotateRight() {
 		Parameters.checkState(hasLeftChild(),
 				"right rotate requires a left child!");
-		// TODO maintain rightWeight
-
 		//         ?
 		//         |
 		//       root
@@ -280,7 +285,7 @@ public class AVLNode<T> {
 		// pr: pivot.rightChild
 		// rr: rightChild
 		//
-		// unchanged: root -> rr
+		// unchanged: root  -> rr
 		//            pivot -> pl
 
 		AVLNode<T> pivot = leftChild;
@@ -292,6 +297,7 @@ public class AVLNode<T> {
 			}
 		}
 		setLeftChild(pivot.rightChild);
+		// handles setting parent to pivot
 		pivot.setRightChild(this);
 		pivot.rightWeight = 1 + rightWeight;
 		return pivot;
@@ -328,7 +334,7 @@ public class AVLNode<T> {
 		// rl: leftChild
 
 		// unchanged: pivot -> pr
-		//            root -> rl
+		//            root  -> rl
 
 		AVLNode<T> pivot = rightChild;
 		if (hasParent()) {
@@ -364,7 +370,7 @@ public class AVLNode<T> {
 	}
 
 	/**
-	 * uses a fairly large epsilon for comparing `data` fields
+	 * uses a fairly large epsilon (1e-10) for comparing `data` fields
 	 */
 	@Override
 	public boolean equals(Object o) {
@@ -373,7 +379,7 @@ public class AVLNode<T> {
 		}
 		AVLNode<?> n = (AVLNode<?>) o;
 		return Objects.equals(data, n.data)
-				&& Doubles.equals(value, n.value, 0.000001);
+				&& Doubles.equals(value, n.value, EPSILON);
 	}
 
 	@Override
