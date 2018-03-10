@@ -25,8 +25,10 @@ public class DotDigraph {
 	 */
 	private static String dotNodeString(AVLNode n) {
 		String ret = n.toString();
-		// uhh
-		return ret.substring(ret.indexOf('[') + 1, ret.lastIndexOf(']'));
+		// AVLNode[...]
+		// ^      ^   ^
+		// 0      6   n-1
+		return ret.substring(6, ret.length() - 1);
 	}
 
 	/**
