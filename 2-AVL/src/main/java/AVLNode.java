@@ -172,12 +172,13 @@ public class AVLNode<T> {
 			}
 		}
 
+		AVLNode<T> newThis = this;
 		if (inserted) {
 			n.updateBalanceFactor();
-			rebalance(onLeft, inside);
+			newThis = rebalance(onLeft, inside);
 			n.updateBalanceFactor();
 		}
-		return this;
+		return newThis;
 	}
 
 
@@ -213,26 +214,35 @@ public class AVLNode<T> {
 			return this;
 		}
 
-		System.out.println("rebalancing " + this + " (bf + " + balanceFactor + ")\n");
+		System.out.println("rebalancing " + this + " (bf " + balanceFactor + ")\n");
 		System.out.println(DotDigraph.toString(this));
 
 		AVLNode<T> newThis = this;
 		if (inside) {
 			if (onLeft) {
+				System.out.println("rotating right");
 				newThis = newThis.rotateRight();
+				System.out.println("rotating left");
 				newThis = newThis.rotateLeft();
 			} else {
+				System.out.println("rotating left");
 				newThis = newThis.rotateLeft();
+				System.out.println("rotating right");
 				newThis = newThis.rotateRight();
 			}
 		} else {
 			// outside case
 			if (onLeft) {
+				System.out.println("rotating right");
 				newThis = newThis.rotateRight();
 			} else {
+				System.out.println("rotating left");
 				newThis = newThis.rotateLeft();
 			}
 		}
+
+		System.out.println(DotDigraph.toString(newThis));
+
 		return newThis;
 	}
 
@@ -284,6 +294,7 @@ public class AVLNode<T> {
 		}
 		setLeftChild(pivot.rightChild);
 		pivot.setRightChild(this);
+		pivot.rightWeight = 1 + rightWeight;
 		return pivot;
 	}
 
@@ -330,6 +341,7 @@ public class AVLNode<T> {
 		}
 		setRightChild(pivot.leftChild);
 		pivot.setLeftChild(this);
+		rightWeight = hasRightChild() ? rightChild.rightWeight : 0;
 		return pivot;
 	}
 
@@ -372,6 +384,7 @@ public class AVLNode<T> {
 
 	@Override
 	public String toString() {
-		return "AVLNode[" + value + " -> " + data + "]";
+		return "AVLNode[" + value + " -> " + data
+				+ ", BF=" + balanceFactor + ", RW=" + rightWeight + "]";
 	}
 }
