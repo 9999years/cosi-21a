@@ -117,10 +117,10 @@ public class AVLNode<T> {
 	public int height() {
 		int leftHeight = 0;
 		if (hasLeftChild()) {
-			leftHeight = leftChild.height();
+			leftHeight = 1 + leftChild.height();
 		}
 		if (hasRightChild()) {
-			return Math.max(leftHeight, rightChild.height());
+			return Math.max(leftHeight, 1 + rightChild.height());
 		} else {
 			return leftHeight;
 		}
@@ -129,11 +129,12 @@ public class AVLNode<T> {
 	private void updateBalanceFactor() {
 		balanceFactor = 0;
 		if (hasLeftChild()) {
-			balanceFactor = 1 + leftChild.balanceFactor;
+			balanceFactor = leftChild.height();
 		}
 		if (hasRightChild()) {
-			balanceFactor -= 1 + rightChild.balanceFactor;
+			balanceFactor -= rightChild.height();
 		}
+		System.out.println("BF now " + balanceFactor);
 		if (hasParent()) {
 			parent.updateBalanceFactor();
 		}
@@ -206,7 +207,6 @@ public class AVLNode<T> {
 		if(!unbalanced()) {
 			// node is well-balanced; try the parent
 			if(hasParent()) {
-				System.out.println("skipping " + this + " (bf " + balanceFactor + ")\n");
 				return parent.rebalance(onLeft, inside);
 			}
 			return this;
