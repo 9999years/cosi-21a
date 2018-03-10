@@ -62,8 +62,8 @@ public class AVLNode<T> {
 		if (hasLeftChild()) {
 			leftChild.parent = null;
 		}
+		leftChild = n;
 		if (n != null) {
-			leftChild = n;
 			n.parent = this;
 		}
 	}
@@ -72,10 +72,21 @@ public class AVLNode<T> {
 		if(hasRightChild()) {
 			rightChild.parent = null;
 		}
+		rightChild = n;
 		if(n != null) {
-			rightChild = n;
 			n.parent = this;
 		}
+	}
+
+	protected void setParent(AVLNode<T> newParent) {
+		if (newParent != null) {
+			if (isLeftChild()) {
+				newParent.leftChild = this;
+			} else {
+				newParent.rightChild = this;
+			}
+		}
+		parent = newParent;
 	}
 
 	protected AVLNode<T> getParent() {
@@ -165,6 +176,17 @@ public class AVLNode<T> {
 		}
 	}
 
+	private void updateRightWeight() {
+		rightWeight =
+			hasRightChild()
+			? 1 + rightChild.rightWeight
+			: 0;
+		if(hasParent() && isRightChild()) {
+			detectTreeLoop();
+			parent.updateRightWeight();
+		}
+	}
+
 	public int getBalanceFactor() {
 		return balanceFactor;
 	}
@@ -198,10 +220,7 @@ public class AVLNode<T> {
 
 		AVLNode<T> newThis = this;
 		if (inserted) {
-			n.updateBalanceFactor();
 			newThis = rebalance(onLeft, inside);
-			System.out.println(DotDigraph.toString(this));
-			n.updateBalanceFactor();
 		}
 		return newThis;
 	}
@@ -231,11 +250,12 @@ public class AVLNode<T> {
 	}
 
 	private AVLNode<T> rebalance(boolean onLeft, boolean inside) {
+		updateBalanceFactor();
 		if(!unbalanced()) {
 			// node is well-balanced; try the parent
 			if(hasParent()) {
 				detectTreeLoop();
-				return parent.rebalance(onLeft, inside);
+				parent.rebalance(onLeft, inside);
 			}
 			return this;
 		}
@@ -263,6 +283,7 @@ public class AVLNode<T> {
 
 		System.out.println(DotDigraph.toString(newThis.getRoot()));
 
+		updateBalanceFactor();
 		return newThis;
 	}
 
@@ -308,20 +329,15 @@ public class AVLNode<T> {
 		System.out.println("RR");
 		System.out.println("pivot: " + pivot.debug());
 		System.out.println("root: " + debug());
-		if (hasParent()) {
-			if (isLeftChild()) {
-				parent.setLeftChild(pivot);
-			} else {
-				parent.setRightChild(pivot);
-			}
-		} else {
-			// this is the root node, and the pivot's new parent is null now
-			pivot.parent = null;
-		}
+
 		setLeftChild(pivot.rightChild);
+		// sets parent's child to pivot too;
+		// sets pivot's parent to null if it's the new root
+		pivot.setParent(parent);
 		// handles setting parent to pivot
 		pivot.setRightChild(this);
-		pivot.rightWeight = 1 + rightWeight;
+		pivot.updateRightWeight();
+
 		System.out.println("finished RR");
 		System.out.println("pivot: " + pivot.debug());
 		System.out.println("root: " + debug());
@@ -362,19 +378,10 @@ public class AVLNode<T> {
 		//            root  -> rl
 
 		AVLNode<T> pivot = rightChild;
-		if (hasParent()) {
-			if (isLeftChild()) {
-				parent.setLeftChild(pivot);
-			} else {
-				parent.setRightChild(pivot);
-			}
-		} else {
-			// this is root
-			pivot.parent = null;
-		}
 		setRightChild(pivot.leftChild);
+		pivot.setParent(parent);
 		pivot.setLeftChild(this);
-		rightWeight = hasRightChild() ? rightChild.rightWeight : 0;
+		updateRightWeight();
 		return pivot;
 	}
 
@@ -421,6 +428,10 @@ public class AVLNode<T> {
 				+ ", BF=" + balanceFactor + ", RW=" + rightWeight + "]";
 	}
 
+	/**
+	 * a debugging string that includes the value, data, balanceFactor,
+	 * rightWeight, parent, and information on both children
+	 */
 	protected String debug() {
 		return this.toString() + ":\n"
 				+ "    ID=" + System.identityHashCode(this) + "\n"
