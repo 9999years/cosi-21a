@@ -136,6 +136,7 @@ public class AVLNode<T> {
 		}
 		System.out.println("BF now " + balanceFactor);
 		if (hasParent()) {
+			System.out.println("moving from " + this + " to the parent " + parent);
 			parent.updateBalanceFactor();
 		}
 	}
