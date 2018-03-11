@@ -160,20 +160,42 @@ public class AVLNode<T> {
 		}
 	}
 
-	private void updateBalanceFactor() {
+	protected void manualUpdateBalanceFactor() {
 		balanceFactor = 0;
-		if (hasLeftChild()) {
-			balanceFactor = leftChild.height();
-		}
 		if (hasRightChild()) {
-			balanceFactor -= rightChild.height();
+			balanceFactor = rightChild.height();
 		}
-		System.out.println("BF now " + balanceFactor);
-		if (hasParent()) {
+		if (hasLeftChild()) {
+			balanceFactor -= leftChild.height();
+		}
+	}
+
+	/**
+	 * changes this node's balance factor by delta and updates its parents until
+	 * finding one that is unbalanced
+	 *
+	 * @param delta the delta by which to increase the balance factor
+	 * @return the first unbalanced node found
+	 */
+	private AVLNode<T> nextUnbalanced(int delta) {
+		balanceFactor += delta;
+		if (unbalanced()) {
+			return this;
+		} else if (hasParent()) {
 			detectTreeLoop();
-			System.out.println("moving from " + this + " to the parent " + parent);
-			parent.updateBalanceFactor();
+			return parent.nextUnbalanced(delta);
+		} else {
+			// root; tree still balanced
+			return null;
 		}
+	}
+
+	/**
+	 * @param leftInsert if the insertion was on the left
+	 * @return the delta to change the balance factor by
+	 */
+	private int balanceFactorDelta(boolean leftInsert) {
+		return leftInsert ? -1 : 1;
 	}
 
 	private void updateRightWeight() {
@@ -195,6 +217,77 @@ public class AVLNode<T> {
 		return balanceFactor < -1 || balanceFactor > 1;
 	}
 
+	/**
+	 * insertion at Z; ie Z.height += 1
+	 * @param Z
+	 * @return
+	 */
+	private AVLNode<T> wikipediaRebalance(AVLNode<T> Z) {
+		AVLNode<T> G;
+		AVLNode<T> N;
+		// X is Z's parent
+		for(AVLNode<T> X = Z.getParent(); Z.hasParent(); X = Z.getParent()) {
+			// BF(X) needs update
+			if(Z.isRightChild()) {
+				if(X.getBalanceFactor() > 0) {
+					// right-heavy
+					// temp BF = +2
+					G = X.getParent();
+					if(Z.getBalanceFactor() < 0) {
+						// RL case
+						// verify this
+						N = Z.rotateRight();
+						N = X.rotateLeft();
+					} else {
+						// right right
+						N = X.rotateLeft();
+					}
+				} else {
+					if (X.getBalanceFactor() < 0) {
+						X.balanceFactor = 0;
+						break;
+					}
+					X.balanceFactor += 1;
+					Z = X;
+					continue;
+				}
+			} else {
+				// left-child case
+				if (X.getBalanceFactor() < 0) {
+					G = X.getParent();
+					if (Z.getBalanceFactor() > 0) {
+						// LR case
+						N = Z.rotateLeft();
+						N = X.rotateRight();
+					} else {
+						// LL
+						N = X.rotateRight();
+					}
+				} else {
+					if (X.getBalanceFactor() > 0) {
+						X.balanceFactor = 0;
+						break;
+					}
+					X.balanceFactor = -1;
+					Z = X;
+					continue;
+				}
+			}
+			N.setParent(G);
+			if (G != null) {
+				if (X == G.getLeftChild()) {
+					G.setLeftChild(N);
+				} else {
+					G.setRightChild(N);
+				}
+				break;
+			} else {
+				// new root is N
+				return N;
+			}
+		}
+		return Z;
+	}
 
 	private AVLNode<T> insert(
 			AVLNode<T> n, boolean onLeft, boolean inside) {
@@ -220,7 +313,8 @@ public class AVLNode<T> {
 
 		AVLNode<T> newThis = this;
 		if (inserted) {
-			newThis = rebalance(onLeft, inside);
+//			newThis = rebalance(onLeft, inside);
+			newThis = wikipediaRebalance(n);
 		}
 		return newThis;
 	}
@@ -249,48 +343,38 @@ public class AVLNode<T> {
 		return null;
 	}
 
+	/**
+	 * @param onLeft was the insertion performed on the left or the right of
+	 *               a node?
+	 * @param inside was the insertion an inside case?
+	 * @return the new root of this tree or subtree
+	 */
 	private AVLNode<T> rebalance(boolean onLeft, boolean inside) {
-		updateBalanceFactor();
-		if(!unbalanced()) {
-			// node is well-balanced; try the parent
-			if(hasParent()) {
-				detectTreeLoop();
-				parent.rebalance(onLeft, inside);
-			}
-			return this;
-		}
-
 		System.out.println("rebalancing " + this + " (bf " + balanceFactor + ")\n");
 		System.out.println(DotDigraph.toString(this));
 
 		AVLNode<T> newThis = this;
+
+		if (onLeft) {
+			newThis = newThis.rotateRight();
+		} else {
+			newThis = newThis.rotateLeft();
+		}
 		if (inside) {
 			if (onLeft) {
-				newThis = newThis.rotateRight();
 				newThis = newThis.rotateLeft();
 			} else {
-				newThis = newThis.rotateLeft();
 				newThis = newThis.rotateRight();
-			}
-		} else {
-			// outside case
-			if (onLeft) {
-				newThis = newThis.rotateRight();
-			} else {
-				newThis = newThis.rotateLeft();
 			}
 		}
 
 		System.out.println(DotDigraph.toString(newThis.getRoot()));
 
-		updateBalanceFactor();
 		return newThis;
 	}
 
 	/**
 	 * can only be called if hasLeftChild()
-	 *
-	 * some isseue where nodes form a 2 el circ loop
 	 *
 	 * @return true if the tree's root is changed
 	 * @throws IllegalStateException if this is not a left child
@@ -298,38 +382,7 @@ public class AVLNode<T> {
 	private AVLNode<T> rotateRight() {
 		Parameters.checkState(hasLeftChild(),
 				"right rotate requires a left child!");
-		//         ?
-		//         |
-		//       root
-		//      /   \
-		//  pivot   rr
-		//  /  \   / \
-		// pl  pr ?  ?
-		//
-		//      ↓
-		//
-		//         ?
-		//         |
-		//       pivot
-		//      /    \
-		//    pl    root
-		//   / \    /  \
-		//  ?  ?   pr  rr
-		//
-		// root: this
-		// pivot: pivot
-		// pl: pivot.leftChild
-		// pr: pivot.rightChild
-		// rr: rightChild
-		//
-		// unchanged: root  -> rr
-		//            pivot -> pl
-
 		AVLNode<T> pivot = leftChild;
-		System.out.println("RR");
-		System.out.println("pivot: " + pivot.debug());
-		System.out.println("root: " + debug());
-
 		setLeftChild(pivot.rightChild);
 		// sets parent's child to pivot too;
 		// sets pivot's parent to null if it's the new root
@@ -337,46 +390,15 @@ public class AVLNode<T> {
 		// handles setting parent to pivot
 		pivot.setRightChild(this);
 		pivot.updateRightWeight();
-
-		System.out.println("finished RR");
-		System.out.println("pivot: " + pivot.debug());
-		System.out.println("root: " + debug());
 		return pivot;
 	}
 
 	/**
-	 * remember to maintain rightWeight
+	 * can only be called if hasRightChild()
 	 */
 	private AVLNode<T> rotateLeft() {
 		Parameters.checkState(hasRightChild(),
 				"left rotate requires right child!");
-		//         ?
-		//         |
-		//       root
-		//      /   \
-		//    rl   pivot
-		//  /  \   / \
-		// ?   ?  pl  pr
-		//
-		//      ↓
-		//
-		//        ?
-		//        |
-		//      pivot
-		//     /   \
-		//   root   pr
-		//  /  \
-		// rl  pl
-
-		// root: this
-		// pivot: rightChild
-		// pl: pivot.leftChild
-		// pr: pivot.rightChild
-		// rl: leftChild
-
-		// unchanged: pivot -> pr
-		//            root  -> rl
-
 		AVLNode<T> pivot = rightChild;
 		setRightChild(pivot.leftChild);
 		pivot.setParent(parent);
