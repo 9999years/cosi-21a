@@ -187,10 +187,12 @@ public class AVLNode<T> {
 	}
 
 	private AVLNode<T> insert(
-			AVLNode<T> n, boolean onLeft, boolean inside) {
+			AVLNode<T> n, boolean onLeft, boolean outside) {
 		if (n.value < value) {
 			if (hasLeftChild()) {
-				return leftChild.insert(n, true, inside && onLeft);
+				// it only remains an outside case if it was already and we're
+				// continuing in the same direction
+				return leftChild.insert(n, true, outside && onLeft);
 			} else {
 				// no left child
 				setLeftChild(n);
@@ -198,7 +200,7 @@ public class AVLNode<T> {
 		} else {
 			// newValue >= value
 			if (hasRightChild()) {
-				return rightChild.insert(n, false, inside && !onLeft);
+				return rightChild.insert(n, false, outside && !onLeft);
 			} else {
 				// no right child
 				setRightChild(n);
@@ -206,7 +208,7 @@ public class AVLNode<T> {
 		}
 
 		AVLNode<T> newThis = this;
-		newThis = rebalance();
+		newThis = rebalance(onLeft, outside);
 		return newThis;
 	}
 
@@ -236,39 +238,37 @@ public class AVLNode<T> {
 
 	/**
 	 * @return the new root of this tree or subtree
+	 * @param onLeft
+	 * @param outside
 	 */
-	private AVLNode<T> rebalance() {
+	private AVLNode<T> rebalance(boolean onLeft, boolean outside) {
 		updateHeight();
+		if (!unbalanced()) {
+			if (hasParent()) {
+				boolean isLeft = isLeftChild();
+				// remains outside case if it already was AND we keep going in
+				// the same path (i.e. up and left or down and right)
+				parent.rebalance(isLeft, outside && onLeft == isLeft);
+			}
+			return this;
+		}
+
+		System.out.println("onleft: " + onLeft + ", outside: " + outside + ", this: " + this);
 
 		AVLNode<T> newThis = this;
 
-		while (unbalanced()) {
-			System.out.println("rebalancing " + this + ")");
-			if (newThis.getBalanceFactor() > 0) {
-				// left-heavy
-				newThis = newThis.rotateRight();
-			} else {
+		if (onLeft) {
+			newThis = newThis.rotateRight();
+		} else {
+			newThis = newThis.rotateLeft();
+		}
+		if (!outside) {
+			if (onLeft) {
 				newThis = newThis.rotateLeft();
+			} else {
+				newThis = newThis.rotateRight();
 			}
 		}
-
-
-		if (newThis.hasParent()) {
-			newThis.parent.rebalance();
-		}
-
-//		if (onLeft) {
-//			newThis = newThis.rotateRight();
-//		} else {
-//			newThis = newThis.rotateLeft();
-//		}
-//		if (inside) {
-//			if (onLeft) {
-//				newThis = newThis.rotateLeft();
-//			} else {
-//				newThis = newThis.rotateRight();
-//			}
-//		}
 
 		updateHeights();
 
