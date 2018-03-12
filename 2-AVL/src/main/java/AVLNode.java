@@ -195,6 +195,7 @@ public class AVLNode<T> {
 				return leftChild.insert(n, true, outside && onLeft);
 			} else {
 				// no left child
+				onLeft = true;
 				setLeftChild(n);
 			}
 		} else {
@@ -203,9 +204,12 @@ public class AVLNode<T> {
 				return rightChild.insert(n, false, outside && !onLeft);
 			} else {
 				// no right child
+				onLeft = false;
 				setRightChild(n);
 			}
 		}
+
+		outside = outside && onLeft == isLeftChild();
 
 		AVLNode<T> newThis = this;
 		newThis = rebalance(onLeft, outside);
@@ -242,31 +246,36 @@ public class AVLNode<T> {
 	 * @param outside
 	 */
 	private AVLNode<T> rebalance(boolean onLeft, boolean outside) {
-		updateHeight();
-		if (!unbalanced()) {
-			if (hasParent()) {
-				boolean isLeft = isLeftChild();
-				// remains outside case if it already was AND we keep going in
-				// the same path (i.e. up and left or down and right)
-				parent.rebalance(isLeft, outside && onLeft == isLeft);
-			}
-			return this;
-		}
+//		updateHeight();
+//		if (!unbalanced()) {
+//			if (hasParent()) {
+//				boolean isLeft = isLeftChild();
+//				// remains outside case if it already was AND we keep going in
+//				// the same path (i.e. up and left or down and right)
+//				parent.rebalance(isLeft, outside && onLeft == isLeft);
+//			}
+//			return this;
+//		}
 
 		System.out.println("onleft: " + onLeft + ", outside: " + outside + ", this: " + this);
 
 		AVLNode<T> newThis = this;
 
-		if (onLeft) {
-			newThis = newThis.rotateRight();
-		} else {
-			newThis = newThis.rotateLeft();
-		}
 		if (!outside) {
+			// for an inside case we need a double rotation
 			if (onLeft) {
+				newThis = newThis.rotateRight();
 				newThis = newThis.rotateLeft();
 			} else {
+				newThis = newThis.rotateLeft();
 				newThis = newThis.rotateRight();
+			}
+		} else {
+			// outside cases
+			if (onLeft) {
+				newThis = newThis.rotateRight();
+			} else {
+				newThis = newThis.rotateLeft();
 			}
 		}
 
