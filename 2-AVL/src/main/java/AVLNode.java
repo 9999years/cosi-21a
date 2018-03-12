@@ -89,6 +89,25 @@ public class AVLNode<T> {
 		parent = newParent;
 	}
 
+	/**
+	 * whereas setParent ensures the parent points to the correct child (e.g. if
+	 * this is a left child parent.leftChild is set to this), this sets another
+	 * node's parent to this node's parent while ensuring this node's
+	 * parent/child directionality (rather than the new node's)
+	 */
+	protected void swapThisInParent(AVLNode<T> newThis) {
+		if (parent != null) {
+			if (isLeftChild()) {
+				parent.leftChild = newThis;
+			} else {
+				parent.rightChild = newThis;
+			}
+		}
+		if (newThis != null) {
+			newThis.parent = parent;
+		}
+	}
+
 	protected AVLNode<T> getParent() {
 		return parent;
 	}
@@ -169,31 +188,25 @@ public class AVLNode<T> {
 
 	private AVLNode<T> insert(
 			AVLNode<T> n, boolean onLeft, boolean inside) {
-		boolean inserted = false;
 		if (n.value < value) {
 			if (hasLeftChild()) {
-				leftChild.insert(n, true, inside && onLeft);
+				return leftChild.insert(n, true, inside && onLeft);
 			} else {
 				// no left child
 				setLeftChild(n);
-				inserted = true;
 			}
 		} else {
 			// newValue >= value
 			if (hasRightChild()) {
-				rightChild.insert(n, false, inside && !onLeft);
+				return rightChild.insert(n, false, inside && !onLeft);
 			} else {
 				// no right child
 				setRightChild(n);
-				inserted = true;
 			}
 		}
 
 		AVLNode<T> newThis = this;
-		if (inserted) {
-			updateHeights();
-			newThis = rebalance(onLeft, inside);
-		}
+		newThis = rebalance();
 		return newThis;
 	}
 
@@ -218,35 +231,30 @@ public class AVLNode<T> {
 	public AVLNode<T> delete(double value) {
 		//TODO: write standard vanilla BST delete method
 		//Extra Credit: use rotations to maintain the AVL condition
-		return null;
+		return this;
 	}
 
 	/**
-	 * @param onLeft was the insertion performed on the left or the right of
-	 *               a node?
-	 * @param inside was the insertion an inside case?
 	 * @return the new root of this tree or subtree
 	 */
-	private AVLNode<T> rebalance(boolean onLeft, boolean inside) {
-		if (!unbalanced()) {
-			if (hasParent()) {
-				parent.rebalance(isRightChild(), inside);
-			}
-			return this;
-		}
-
-		System.out.println("rebalancing " + this + ")\n");
-		System.out.println(DotDigraph.toString(this));
+	private AVLNode<T> rebalance() {
+		updateHeight();
 
 		AVLNode<T> newThis = this;
 
 		while (unbalanced()) {
-			if (getBalanceFactor() > 0) {
+			System.out.println("rebalancing " + this + ")");
+			if (newThis.getBalanceFactor() > 0) {
 				// left-heavy
-				newThis = rotateRight();
+				newThis = newThis.rotateRight();
 			} else {
-				newThis = rotateLeft();
+				newThis = newThis.rotateLeft();
 			}
+		}
+
+
+		if (newThis.hasParent()) {
+			newThis.parent.rebalance();
 		}
 
 //		if (onLeft) {
@@ -262,10 +270,7 @@ public class AVLNode<T> {
 //			}
 //		}
 
-//		updateBalanceFactors(-balanceFactorDelta(onLeft));
-
 		updateHeights();
-		System.out.println(DotDigraph.toString(newThis));
 
 		return newThis;
 	}
@@ -301,10 +306,9 @@ public class AVLNode<T> {
 		setLeftChild(pivot.rightChild);
 		// sets parent's child to pivot too;
 		// sets pivot's parent to null if it's the new root
-		pivot.setParent(parent);
+		swapThisInParent(pivot);
 		// handles setting parent to pivot
 		pivot.setRightChild(this);
-		// right subtree height += 1
 		updateHeight();
 		pivot.updateHeight();
 		return pivot;
@@ -332,7 +336,7 @@ public class AVLNode<T> {
 				"left rotate requires right child!");
 		AVLNode<T> pivot = rightChild;
 		setRightChild(pivot.leftChild);
-		pivot.setParent(parent);
+		swapThisInParent(pivot);
 		pivot.setLeftChild(this);
 		// height of pivot & root have changed (possibly)
 		updateHeight();
@@ -348,15 +352,15 @@ public class AVLNode<T> {
 	 * BUNCHA strings
 	 */
 	public String treeString() {
-		String ret = "";
-		if (leftChild != null) {
-			ret += leftChild.toString();
+		StringBuilder sb = new StringBuilder("(");
+		if (hasLeftChild()) {
+			sb.append(leftChild.treeString());
 		}
-		ret += Objects.toString(data);
-		if (rightChild != null) {
-			ret += rightChild.toString();
+		sb.append(data);
+		if (hasRightChild()) {
+			sb.append(rightChild.treeString());
 		}
-		return ret;
+		return sb.append(')').toString();
 	}
 
 	/**

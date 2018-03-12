@@ -44,11 +44,15 @@ public class DotDigraph {
 	}
 
 	private static int leftId(int id) {
-		return id * 2;
+		int ret = id * 2;
+		Parameters.checkState(id < ret, "Tree is too tall!");
+		return ret;
 	}
 
 	private static int rightId(int id) {
-		return id * 2 + 1;
+		int ret = id * 2 + 1;
+		Parameters.checkState(id < ret, "Tree is too tall!");
+		return ret;
 	}
 
 	/**
