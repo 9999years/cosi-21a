@@ -26,13 +26,11 @@ public class AVLNode<T> {
 	private AVLNode<T> leftChild;
 	private AVLNode<T> rightChild;
 	/**
-	 * number of nodes in right subTree
+	 * this replaces the balanceFactor field (which can be constructed from the
+	 * heights of the children) as well as the rightWeight field (which seemed
+	 * superfluous)
 	 */
-	private int rightWeight;
-	/**
-	 * height(leftChild) - height(rightChild)
-	 */
-	private int balanceFactor;
+	private int height;
 
 	public AVLNode(T data, double value) {
 		Objects.requireNonNull(data);
@@ -119,6 +117,20 @@ public class AVLNode<T> {
 		return leftChild == null && rightChild == null;
 	}
 
+	public int getBalanceFactor() {
+		int ret = 0;
+		if (hasLeftChild()) {
+			ret = 1 + leftChild.getHeight();
+		}
+		if (hasRightChild()) {
+			ret -= 1 + rightChild.getHeight();
+		}
+		return ret;
+	}
+
+	public int getHeight() {
+		return height;
+	}
 
 	/**
 	 * changes this node's balance factor by delta and updates its parents until
@@ -137,40 +149,21 @@ public class AVLNode<T> {
 		}
 	}
 
-	/**
-	 *
-	 * @param delta the delta to change the BF by; if the left subtree was
-	 * inserted on, delta = 1; for the right, -1
-	 */
-	private void updateBalanceFactors(int delta) {
-		balanceFactor += delta;
-		 if (hasParent()) {
-			if(isLeftChild()) {
-				// bf of this node has just increase by `delta`
-				// update parent to match
-				parent.updateBalanceFactors(delta);
-			} else {
-				// - delta because this is a right child
-				parent.updateBalanceFactors(-delta);
-			}
-		}
+	private void updateHeight() {
+		height = 1 + Math.max(
+				hasLeftChild()  ? leftChild.getHeight()  : 0,
+				hasRightChild() ? rightChild.getHeight() : 0);
 	}
 
-	private void updateRightWeight() {
-		rightWeight =
-			hasRightChild()
-			? 1 + rightChild.rightWeight
-			: 0;
-		if(hasParent() && isRightChild()) {
-			parent.updateRightWeight();
+	private void updateHeights() {
+		updateHeight();
+		if (hasParent()) {
+			parent.updateHeights();
 		}
-	}
-
-	public int getBalanceFactor() {
-		return balanceFactor;
 	}
 
 	public boolean unbalanced() {
+		int balanceFactor = getBalanceFactor();
 		return balanceFactor < -1 || balanceFactor > 1;
 	}
 
@@ -198,7 +191,7 @@ public class AVLNode<T> {
 
 		AVLNode<T> newThis = this;
 		if (inserted) {
-			updateBalanceFactors(onLeft ? 1 : -1);
+			updateHeights();
 			newThis = rebalance(onLeft, inside);
 		}
 		return newThis;
@@ -242,21 +235,19 @@ public class AVLNode<T> {
 			return this;
 		}
 
-		System.out.println("rebalancing " + this + " (bf " + balanceFactor + ")\n");
+		System.out.println("rebalancing " + this + ")\n");
 		System.out.println(DotDigraph.toString(this));
 
 		AVLNode<T> newThis = this;
 
-//		while (unbalanced()) {
-//			if (balanceFactor < 0) {
-//				// left-heavy
-//				rotateRight();
-//				balanceFactor += 1;
-//			} else {
-//				rotateLeft();
-//				balanceFactor -= 1;
-//			}
-//		}
+		while (unbalanced()) {
+			if (getBalanceFactor() > 0) {
+				// left-heavy
+				newThis = rotateRight();
+			} else {
+				newThis = rotateLeft();
+			}
+		}
 
 //		if (onLeft) {
 //			newThis = newThis.rotateRight();
@@ -272,6 +263,8 @@ public class AVLNode<T> {
 //		}
 
 //		updateBalanceFactors(-balanceFactorDelta(onLeft));
+
+		updateHeights();
 		System.out.println(DotDigraph.toString(newThis));
 
 		return newThis;
@@ -280,12 +273,30 @@ public class AVLNode<T> {
 	/**
 	 * can only be called if hasLeftChild()
 	 *
+	 * updates subtree heights but updating the heights of parent nodes i.e.
+	 * above root / pivot is on you
+	 *
 	 * @return true if the tree's root is changed
 	 * @throws IllegalStateException if this is not a left child
 	 */
 	private AVLNode<T> rotateRight() {
+		//         ?              ?
+		//         |              |
+		//       root    ==>    pivot
+		//      /   \          /    \
+		//  pivot   rr       pl    root
+		//  /  \    / \     / \    /  \
+		// pl  pr  ?  ?    ?  ?   pr  rr
+		//
+		// root: this
+		// unchanged: root  -> rr
+		//            pivot -> pl
+
+		System.out.println("rotating right about" + this);
+
 		Parameters.checkState(hasLeftChild(),
 				"right rotate requires a left child!");
+		// raises pivot, lowers this
 		AVLNode<T> pivot = leftChild;
 		setLeftChild(pivot.rightChild);
 		// sets parent's child to pivot too;
@@ -293,9 +304,9 @@ public class AVLNode<T> {
 		pivot.setParent(parent);
 		// handles setting parent to pivot
 		pivot.setRightChild(this);
-		pivot.updateRightWeight();
 		// right subtree height += 1
-		// parent.updateBalanceFactors(1);
+		updateHeight();
+		pivot.updateHeight();
 		return pivot;
 	}
 
@@ -303,15 +314,29 @@ public class AVLNode<T> {
 	 * can only be called if hasRightChild()
 	 */
 	private AVLNode<T> rotateLeft() {
+		//       ?                    ?
+		//       |                    |
+		//      root      ==>       pivot
+		//     /   \               /    \
+		//   rl   pivot          root    pr
+		//  /  \   / \           /  \
+		// ?   ?  pl  pr        rl  pl
+		//
+		// root: this
+		// unchanged: pivot -> pr
+		//            root  -> rl
+
+		System.out.println("rotating left about" + this);
+
 		Parameters.checkState(hasRightChild(),
 				"left rotate requires right child!");
 		AVLNode<T> pivot = rightChild;
 		setRightChild(pivot.leftChild);
 		pivot.setParent(parent);
 		pivot.setLeftChild(this);
-		updateRightWeight();
-		// left subtree height += 1
-		// parent.updateBalanceFactors(-1);
+		// height of pivot & root have changed (possibly)
+		updateHeight();
+		pivot.updateHeight();
 		return pivot;
 	}
 
@@ -355,7 +380,7 @@ public class AVLNode<T> {
 	@Override
 	public String toString() {
 		return "AVLNode[" + value + " -> " + data
-				+ ", BF=" + balanceFactor + ", RW=" + rightWeight + "]";
+				+ ", BF=" + getBalanceFactor() + ", Height=" + height + "]";
 	}
 
 	/**
