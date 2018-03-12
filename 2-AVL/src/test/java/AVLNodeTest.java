@@ -83,21 +83,6 @@ class AVLNodeTest {
     }
 
     @Test
-    void approximateHeight() {
-        AVLNode<Integer> n = new AVLNode<>(1, 9.9);
-        assertEquals(0, n.approximateHeight());
-        // left
-        n.insert(2, 0.0);
-        assertEquals(1, n.approximateHeight());
-        // right
-        n.insert(3, 20.0);
-        assertEquals(1, n.approximateHeight());
-        // right right
-        n.insert(4, 40.0);
-        assertEquals(1, n.approximateHeight());
-    }
-
-    @Test
     void insert() {
         AVLNode<Integer> n = new AVLNode<>(1, 9.9);
         // left
@@ -142,9 +127,20 @@ class AVLNodeTest {
         AVLNode<Integer> root = new AVLNode<>(0, 0.0);
         for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(100)) {
             root = root.insert(n);
-            root.manualUpdateBalanceFactor();
             assertFalse(root.unbalanced(), DotDigraph.toString(root));
         }
+        System.out.println(DotDigraph.toString(root));
+    }
+
+    @Test
+    void genericTest() {
+        AVLNode<Integer> root = new AVLNode<>(0, 0.0);
+        for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(100)) {
+            root = root.insert(n);
+        }
+//		for(int i = 0; i < 20; i++) {
+//			root = root.insert(0, (double) i);
+//		}
         System.out.println(DotDigraph.toString(root));
     }
 
@@ -168,22 +164,7 @@ class AVLNodeTest {
     void isLeaf() {
     }
 
-    @Test
-    void height() {
-        AVLNode<Integer> n = new AVLNode<>(1, 9.9);
-        assertEquals(0, n.height());
-        // left
-        n.insert(2, 0.0);
-        assertEquals(1, n.height());
-        // right
-        n.insert(3, 20.0);
-        assertEquals(1, n.height());
-        // right right
-        n.insert(4, 40.0);
-        assertEquals(2, n.height());
-    }
-
-    @Test
+	@Test
     void getBalanceFactor() {
     }
 

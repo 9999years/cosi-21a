@@ -32,7 +32,7 @@ public class TreeTraverser {
 
         PreOrderIterator(AVLNode<T> tree) {
             this.tree = tree;
-            decisions = new Deque<>(tree.approximateHeight());
+            decisions = new Deque<>();
         }
 
         public boolean hasNext() {

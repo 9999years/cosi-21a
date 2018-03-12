@@ -16,7 +16,6 @@
  */
 
 import java.util.Objects;
-import java.util.function.Function;
 
 public class AVLNode<T> {
 	public static final double EPSILON = 1e-10;
@@ -30,6 +29,9 @@ public class AVLNode<T> {
 	 * number of nodes in right subTree
 	 */
 	private int rightWeight;
+	/**
+	 * height(leftChild) - height(rightChild)
+	 */
 	private int balanceFactor;
 
 	public AVLNode(T data, double value) {
@@ -93,24 +95,8 @@ public class AVLNode<T> {
 		return parent;
 	}
 
-	protected void detectTreeLoop() {
-		// for debugging a weird bug
-		if (hasParent() && parent.parent == this) {
-			throw new IllegalStateException("Tree loop detected --- something has gone disastrously wrong!");
-		}
-	}
-
 	protected boolean isRoot() {
 		return parent == null;
-	}
-
-	protected AVLNode<T> getRoot() {
-		AVLNode<T> root = this;
-		while (!root.isRoot()) {
-			detectTreeLoop();
-			root = root.parent;
-		}
-		return root;
 	}
 
 	protected boolean isRightChild() {
@@ -133,57 +119,18 @@ public class AVLNode<T> {
 		return leftChild == null && rightChild == null;
 	}
 
-	/**
-	 * a lower bound on the tree's height; actual height of bottom leaves may be
-	 * greater than this by 1
-	 * <p>
-	 * O(log n) time because there's no way in hell i'm adding another field to
-	 * this bloated class
-	 */
-	public int approximateHeight() {
-		return 1 + leftChild.approximateHeight();
-	}
-
-	/**
-	 * the tree's height; O(n) time
-	 * 0 for a leaf
-	 */
-	public int height() {
-		int leftHeight = 0;
-		if (hasLeftChild()) {
-			leftHeight = 1 + leftChild.height();
-		}
-		if (hasRightChild()) {
-			return Math.max(leftHeight, 1 + rightChild.height());
-		} else {
-			return leftHeight;
-		}
-	}
-
-	protected void manualUpdateBalanceFactor() {
-		balanceFactor = 0;
-		if (hasRightChild()) {
-			balanceFactor = rightChild.height();
-		}
-		if (hasLeftChild()) {
-			balanceFactor -= leftChild.height();
-		}
-	}
 
 	/**
 	 * changes this node's balance factor by delta and updates its parents until
 	 * finding one that is unbalanced
 	 *
-	 * @param delta the delta by which to increase the balance factor
-	 * @return the first unbalanced node found
+	 * @return the first unbalanced node found or null if no nodes are unbalanced
 	 */
-	private AVLNode<T> nextUnbalanced(int delta) {
-		balanceFactor += delta;
+	private AVLNode<T> nextUnbalanced() {
 		if (unbalanced()) {
 			return this;
 		} else if (hasParent()) {
-			detectTreeLoop();
-			return parent.nextUnbalanced(delta);
+			return parent.nextUnbalanced();
 		} else {
 			// root; tree still balanced
 			return null;
@@ -191,11 +138,22 @@ public class AVLNode<T> {
 	}
 
 	/**
-	 * @param leftInsert if the insertion was on the left
-	 * @return the delta to change the balance factor by
+	 *
+	 * @param delta the delta to change the BF by; if the left subtree was
+	 * inserted on, delta = 1; for the right, -1
 	 */
-	private int balanceFactorDelta(boolean leftInsert) {
-		return leftInsert ? -1 : 1;
+	private void updateBalanceFactors(int delta) {
+		balanceFactor += delta;
+		 if (hasParent()) {
+			if(isLeftChild()) {
+				// bf of this node has just increase by `delta`
+				// update parent to match
+				parent.updateBalanceFactors(delta);
+			} else {
+				// - delta because this is a right child
+				parent.updateBalanceFactors(-delta);
+			}
+		}
 	}
 
 	private void updateRightWeight() {
@@ -204,7 +162,6 @@ public class AVLNode<T> {
 			? 1 + rightChild.rightWeight
 			: 0;
 		if(hasParent() && isRightChild()) {
-			detectTreeLoop();
 			parent.updateRightWeight();
 		}
 	}
@@ -215,78 +172,6 @@ public class AVLNode<T> {
 
 	public boolean unbalanced() {
 		return balanceFactor < -1 || balanceFactor > 1;
-	}
-
-	/**
-	 * insertion at Z; ie Z.height += 1
-	 * @param Z
-	 * @return
-	 */
-	private AVLNode<T> wikipediaRebalance(AVLNode<T> Z) {
-		AVLNode<T> G;
-		AVLNode<T> N;
-		// X is Z's parent
-		for(AVLNode<T> X = Z.getParent(); Z.hasParent(); X = Z.getParent()) {
-			// BF(X) needs update
-			if(Z.isRightChild()) {
-				if(X.getBalanceFactor() > 0) {
-					// right-heavy
-					// temp BF = +2
-					G = X.getParent();
-					if(Z.getBalanceFactor() < 0) {
-						// RL case
-						// verify this
-						N = Z.rotateRight();
-						N = X.rotateLeft();
-					} else {
-						// right right
-						N = X.rotateLeft();
-					}
-				} else {
-					if (X.getBalanceFactor() < 0) {
-						X.balanceFactor = 0;
-						break;
-					}
-					X.balanceFactor += 1;
-					Z = X;
-					continue;
-				}
-			} else {
-				// left-child case
-				if (X.getBalanceFactor() < 0) {
-					G = X.getParent();
-					if (Z.getBalanceFactor() > 0) {
-						// LR case
-						N = Z.rotateLeft();
-						N = X.rotateRight();
-					} else {
-						// LL
-						N = X.rotateRight();
-					}
-				} else {
-					if (X.getBalanceFactor() > 0) {
-						X.balanceFactor = 0;
-						break;
-					}
-					X.balanceFactor = -1;
-					Z = X;
-					continue;
-				}
-			}
-			N.setParent(G);
-			if (G != null) {
-				if (X == G.getLeftChild()) {
-					G.setLeftChild(N);
-				} else {
-					G.setRightChild(N);
-				}
-				break;
-			} else {
-				// new root is N
-				return N;
-			}
-		}
-		return Z;
 	}
 
 	private AVLNode<T> insert(
@@ -313,8 +198,8 @@ public class AVLNode<T> {
 
 		AVLNode<T> newThis = this;
 		if (inserted) {
-//			newThis = rebalance(onLeft, inside);
-			newThis = wikipediaRebalance(n);
+			updateBalanceFactors(onLeft ? 1 : -1);
+			newThis = rebalance(onLeft, inside);
 		}
 		return newThis;
 	}
@@ -350,25 +235,44 @@ public class AVLNode<T> {
 	 * @return the new root of this tree or subtree
 	 */
 	private AVLNode<T> rebalance(boolean onLeft, boolean inside) {
+		if (!unbalanced()) {
+			if (hasParent()) {
+				parent.rebalance(isRightChild(), inside);
+			}
+			return this;
+		}
+
 		System.out.println("rebalancing " + this + " (bf " + balanceFactor + ")\n");
 		System.out.println(DotDigraph.toString(this));
 
 		AVLNode<T> newThis = this;
 
-		if (onLeft) {
-			newThis = newThis.rotateRight();
-		} else {
-			newThis = newThis.rotateLeft();
-		}
-		if (inside) {
-			if (onLeft) {
-				newThis = newThis.rotateLeft();
-			} else {
-				newThis = newThis.rotateRight();
-			}
-		}
+//		while (unbalanced()) {
+//			if (balanceFactor < 0) {
+//				// left-heavy
+//				rotateRight();
+//				balanceFactor += 1;
+//			} else {
+//				rotateLeft();
+//				balanceFactor -= 1;
+//			}
+//		}
 
-		System.out.println(DotDigraph.toString(newThis.getRoot()));
+//		if (onLeft) {
+//			newThis = newThis.rotateRight();
+//		} else {
+//			newThis = newThis.rotateLeft();
+//		}
+//		if (inside) {
+//			if (onLeft) {
+//				newThis = newThis.rotateLeft();
+//			} else {
+//				newThis = newThis.rotateRight();
+//			}
+//		}
+
+//		updateBalanceFactors(-balanceFactorDelta(onLeft));
+		System.out.println(DotDigraph.toString(newThis));
 
 		return newThis;
 	}
@@ -390,6 +294,8 @@ public class AVLNode<T> {
 		// handles setting parent to pivot
 		pivot.setRightChild(this);
 		pivot.updateRightWeight();
+		// right subtree height += 1
+		// parent.updateBalanceFactors(1);
 		return pivot;
 	}
 
@@ -404,6 +310,8 @@ public class AVLNode<T> {
 		pivot.setParent(parent);
 		pivot.setLeftChild(this);
 		updateRightWeight();
+		// left subtree height += 1
+		// parent.updateBalanceFactors(-1);
 		return pivot;
 	}
 
