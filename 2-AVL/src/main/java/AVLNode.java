@@ -29,8 +29,10 @@ public class AVLNode<T> {
 	 * this replaces the balanceFactor field (which can be constructed from the
 	 * heights of the children) as well as the rightWeight field (which seemed
 	 * superfluous)
+	 *
+	 * a leaf node has a height of 1, analagous to the 'length' of an array
 	 */
-	private int height;
+	private int height = 1;
 
 	public AVLNode(T data, double value) {
 		Objects.requireNonNull(data);
@@ -116,6 +118,14 @@ public class AVLNode<T> {
 		return parent == null;
 	}
 
+	public AVLNode<T> getRoot() {
+		AVLNode<T> root = this;
+		while (!root.isRoot()) {
+			root = root.parent;
+		}
+		return root;
+	}
+
 	protected boolean isRightChild() {
 		return !isRoot() && parent.rightChild == this;
 	}
@@ -139,10 +149,10 @@ public class AVLNode<T> {
 	public int getBalanceFactor() {
 		int ret = 0;
 		if (hasLeftChild()) {
-			ret = 1 + leftChild.getHeight();
+			ret = leftChild.getHeight();
 		}
 		if (hasRightChild()) {
-			ret -= 1 + rightChild.getHeight();
+			ret -= rightChild.getHeight();
 		}
 		return ret;
 	}
@@ -166,6 +176,10 @@ public class AVLNode<T> {
 			// root; tree still balanced
 			return null;
 		}
+	}
+
+	private boolean anyUnbalancedAbove() {
+		return unbalanced() || (hasParent() && parent.anyUnbalancedAbove());
 	}
 
 	private void updateHeight() {
@@ -192,7 +206,9 @@ public class AVLNode<T> {
 			if (hasLeftChild()) {
 				// it only remains an outside case if it was already and we're
 				// continuing in the same direction
-				return leftChild.insert(n, true, outside && onLeft);
+				leftChild.insert(n, true, outside && onLeft);
+				// root unchanged
+				return this;
 			} else {
 				// no left child
 				onLeft = true;
@@ -201,7 +217,8 @@ public class AVLNode<T> {
 		} else {
 			// newValue >= value
 			if (hasRightChild()) {
-				return rightChild.insert(n, false, outside && !onLeft);
+				rightChild.insert(n, false, outside && !onLeft);
+				return this;
 			} else {
 				// no right child
 				onLeft = false;
@@ -209,15 +226,13 @@ public class AVLNode<T> {
 			}
 		}
 
-		outside = outside && onLeft == isLeftChild();
-
-		AVLNode<T> newThis = this;
-		newThis = rebalance(onLeft, outside);
-		return newThis;
+		return rebalance(onLeft, isRoot() || (outside && onLeft == isLeftChild()));
 	}
 
 
 	public AVLNode<T> insert(AVLNode<T> n) {
+		Objects.requireNonNull(n);
+		// onLeft is always overriden so the false value is just a placeholder
 		return insert(n, false, true);
 	}
 
@@ -246,29 +261,42 @@ public class AVLNode<T> {
 	 * @param outside
 	 */
 	private AVLNode<T> rebalance(boolean onLeft, boolean outside) {
-//		updateHeight();
-//		if (!unbalanced()) {
-//			if (hasParent()) {
-//				boolean isLeft = isLeftChild();
-//				// remains outside case if it already was AND we keep going in
-//				// the same path (i.e. up and left or down and right)
-//				parent.rebalance(isLeft, outside && onLeft == isLeft);
-//			}
-//			return this;
-//		}
+		// updateHeight();
+		// if (!unbalanced()) {
+		// 	if (hasParent()) {
+		// 		boolean isLeft = isLeftChild();
+		// 		// remains outside case if it already was AND we keep going in
+		// 		// the same path (i.e. up and left or down and right)
+		// 		parent.rebalance(isLeft, outside && onLeft == isLeft);
+		// 	}
+		// 	return this;
+		// }
 
-		System.out.println("onleft: " + onLeft + ", outside: " + outside + ", this: " + this);
+
+		updateHeights();
+
+		if (!anyUnbalancedAbove()) {
+			return this;
+		}
 
 		AVLNode<T> newThis = this;
+
+		System.out.println("onLeft = [" + onLeft + "], outside = [" + outside + "], this = [" + this + "]");
+		System.out.println(DotDigraph.toString(getRoot()).replace('\n', ' '));
+
 
 		if (!outside) {
 			// for an inside case we need a double rotation
 			if (onLeft) {
 				newThis = newThis.rotateRight();
-				newThis = newThis.rotateLeft();
+				if (newThis.hasParent()) {
+					newThis.parent.rotateLeft();
+				}
 			} else {
 				newThis = newThis.rotateLeft();
-				newThis = newThis.rotateRight();
+				if (newThis.hasParent()) {
+					newThis.parent.rotateRight();
+				}
 			}
 		} else {
 			// outside cases
@@ -280,6 +308,9 @@ public class AVLNode<T> {
 		}
 
 		updateHeights();
+
+		System.out.println("done!");
+		System.out.println(DotDigraph.toString(getRoot()).replace('\n', ' '));
 
 		return newThis;
 	}

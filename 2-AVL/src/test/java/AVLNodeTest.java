@@ -135,12 +135,12 @@ class AVLNodeTest {
     @Test
     void genericTest() {
         AVLNode<Integer> root = new AVLNode<>(0, 0.0);
-        for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(4)) {
+        for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(100)) {
             root = root.insert(n);
         }
-		while (!root.isRoot()) {
-        	root = root.getParent();
-		}
+		// while (!root.isRoot()) {
+        	// root = root.getParent();
+		// }
         System.out.println(DotDigraph.toString(root));
     }
 
