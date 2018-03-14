@@ -17,7 +17,7 @@
 
 import org.junit.jupiter.api.Test;
 
-import java.util.function.Function;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -107,6 +107,11 @@ class AVLNodeTest {
 
     @Test
     void treeString() {
+		AVLNode<String> root = new AVLNode<>("A", 0.0);
+		for (char i = 'A'; i < 'Z'; i++) {
+			root.insert(String.valueOf(i), (double) i);
+		}
+		System.out.println(root.treeString());
     }
 
     @Test
@@ -122,26 +127,35 @@ class AVLNodeTest {
                 new AVLNode<>(100, 20.0), "checking within epsilon");
     }
 
+    <T> void checkBalances(AVLNode<T> root) {
+		if (root == null) {
+			return;
+		}
+    	assertFalse(root.isUnbalanced(), "checking balance about " + root);
+		checkBalances(root.getLeftChild());
+		checkBalances(root.getRightChild());
+	}
+
     @Test
     void balanceTest() {
         AVLNode<Integer> root = new AVLNode<>(0, 0.0);
         for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(100)) {
             root = root.insert(n);
-            assertFalse(root.unbalanced(), DotDigraph.toString(root));
+           	checkBalances(root);
         }
-        System.out.println(DotDigraph.toString(root));
     }
 
+    /**
+     * make sure inserting stuff doesn't crash
+     */
     @Test
     void genericTest() {
         AVLNode<Integer> root = new AVLNode<>(0, 0.0);
-        for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(100)) {
+        int i = 0;
+        for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(80)) {
             root = root.insert(n);
+            assertNotNull(root);
         }
-		// while (!root.isRoot()) {
-        	// root = root.getParent();
-		// }
-        System.out.println(DotDigraph.toString(root));
     }
 
     @Test
@@ -170,9 +184,13 @@ class AVLNodeTest {
 
     @Test
     void hashCodeTest() {
+    	Integer data = new Integer(100);
+    	double value = 3.2;
+    	assertEquals(Objects.hash(data, value), new AVLNode<Integer>(data, value).hashCode());
     }
 
     @Test
     void toStringTest() {
+    	assertEquals("AVLNode[0.0 -> 999, BF=0, Height=1]", new AVLNode<Integer>(999, 0.0).toString());
     }
 }

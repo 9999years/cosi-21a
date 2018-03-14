@@ -30,15 +30,16 @@ class DotDigraphTest {
 		// left left
 		n.insert(4, -1.0);
 		assertEquals(
-		"digraph {\n"
+				"digraph {\n"
 				+ "node[shape=box];\n"
-				+ "1[label=\"9.9 &#x2192; 1\"];\n"
-				+ "1 -> 2;\n"
-				+ "1 -> 3;\n"
-				+ "2[label=\"0.0 &#x2192; 2\"];\n"
-				+ "2 -> 4;\n"
-				+ "4[label=\"-1.0 &#x2192; 4\"];\n"
-				+ "3[label=\"20.0 &#x2192; 3\"];\n"
+				+ "graph[splines=polyline];\n"
+				+ "1[label=\"9.9 -> 1, BF=1, Height=3\"];\n"
+				+ "1:s -> 2:ne;\n"
+				+ "1:s -> 3:nw;\n"
+				+ "2[label=\"0.0 -> 2, BF=1, Height=2\"];\n"
+				+ "2:s -> 4:ne;\n"
+				+ "4[label=\"-1.0 -> 4, BF=0, Height=1\"];\n"
+				+ "3[label=\"20.0 -> 3, BF=0, Height=1\"];\n"
 				+ "}\n",
 				DotDigraph.toString(n));
 	}

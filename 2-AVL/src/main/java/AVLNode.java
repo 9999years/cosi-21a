@@ -29,7 +29,7 @@ public class AVLNode<T> {
 	 * this replaces the balanceFactor field (which can be constructed from the
 	 * heights of the children) as well as the rightWeight field (which seemed
 	 * superfluous)
-	 *
+	 * <p>
 	 * a leaf node has a height of 1, analagous to the 'length' of an array
 	 */
 	private int height = 1;
@@ -71,11 +71,11 @@ public class AVLNode<T> {
 	}
 
 	protected void setRightChild(AVLNode<T> n) {
-		if(hasRightChild()) {
+		if (hasRightChild()) {
 			rightChild.parent = null;
 		}
 		rightChild = n;
-		if(n != null) {
+		if (n != null) {
 			n.parent = this;
 		}
 	}
@@ -161,79 +161,84 @@ public class AVLNode<T> {
 		return height;
 	}
 
-	/**
-	 * changes this node's balance factor by delta and updates its parents until
-	 * finding one that is unbalanced
-	 *
-	 * @return the first unbalanced node found or null if no nodes are unbalanced
-	 */
-	private AVLNode<T> nextUnbalanced() {
-		if (unbalanced()) {
-			return this;
-		} else if (hasParent()) {
-			return parent.nextUnbalanced();
-		} else {
-			// root; tree still balanced
-			return null;
-		}
-	}
-
 	private boolean anyUnbalancedAbove() {
-		return unbalanced() || (hasParent() && parent.anyUnbalancedAbove());
+		return isUnbalanced() || (hasParent() && parent.anyUnbalancedAbove());
 	}
 
 	private void updateHeight() {
 		height = 1 + Math.max(
-				hasLeftChild()  ? leftChild.getHeight()  : 0,
+				hasLeftChild() ? leftChild.getHeight() : 0,
 				hasRightChild() ? rightChild.getHeight() : 0);
 	}
 
-	private void updateHeights() {
-		updateHeight();
-		if (hasParent()) {
-			parent.updateHeights();
-		}
-	}
-
-	public boolean unbalanced() {
+	public boolean isUnbalanced() {
 		int balanceFactor = getBalanceFactor();
 		return balanceFactor < -1 || balanceFactor > 1;
 	}
 
-	private AVLNode<T> insert(
-			AVLNode<T> n, boolean onLeft, boolean outside) {
+	private boolean isLeftHeavy() {
+		return getBalanceFactor() > 0;
+	}
+
+	private boolean isRightHeavy() {
+		return getBalanceFactor() < 0;
+	}
+
+	private boolean isLeftUnbalanced() {
+		return getBalanceFactor() > 1;
+	}
+
+	private boolean isRightUnbalanced() {
+		return getBalanceFactor() < -1;
+	}
+
+	public AVLNode<T> insert(AVLNode<T> n) {
+		boolean onLeft = false;
 		if (n.value < value) {
+			onLeft = true;
 			if (hasLeftChild()) {
 				// it only remains an outside case if it was already and we're
 				// continuing in the same direction
-				leftChild.insert(n, true, outside && onLeft);
+				leftChild.insert(n);
 				// root unchanged
-				return this;
 			} else {
 				// no left child
-				onLeft = true;
 				setLeftChild(n);
 			}
 		} else {
 			// newValue >= value
 			if (hasRightChild()) {
-				rightChild.insert(n, false, outside && !onLeft);
-				return this;
+				rightChild.insert(n);
 			} else {
 				// no right child
-				onLeft = false;
 				setRightChild(n);
 			}
 		}
 
-		return rebalance(onLeft, isRoot() || (outside && onLeft == isLeftChild()));
-	}
+		updateHeight();
+		AVLNode<T> newThis = this;
+		if (onLeft && isLeftUnbalanced()) {
+			if (n.value < leftChild.value) {
+				newThis = rotateRight();
+			} else {
+				if (leftChild.hasRightChild()) {
+					leftChild.rotateLeft();
+				}
+				newThis = rotateRight();
+			}
+		} else if(!onLeft && isRightUnbalanced()) {
+			// right case
+			if (n.value > rightChild.value) {
+				newThis = rotateLeft();
+			} else {
+				if (rightChild.hasLeftChild()) {
+					rightChild.rotateRight();
+				}
+				newThis = rotateLeft();
+			}
+		}
 
-
-	public AVLNode<T> insert(AVLNode<T> n) {
-		Objects.requireNonNull(n);
-		// onLeft is always overriden so the false value is just a placeholder
-		return insert(n, false, true);
+		return newThis;
 	}
 
 	/**
@@ -256,68 +261,8 @@ public class AVLNode<T> {
 	}
 
 	/**
-	 * @return the new root of this tree or subtree
-	 * @param onLeft
-	 * @param outside
-	 */
-	private AVLNode<T> rebalance(boolean onLeft, boolean outside) {
-		// updateHeight();
-		// if (!unbalanced()) {
-		// 	if (hasParent()) {
-		// 		boolean isLeft = isLeftChild();
-		// 		// remains outside case if it already was AND we keep going in
-		// 		// the same path (i.e. up and left or down and right)
-		// 		parent.rebalance(isLeft, outside && onLeft == isLeft);
-		// 	}
-		// 	return this;
-		// }
-
-
-		updateHeights();
-
-		if (!anyUnbalancedAbove()) {
-			return this;
-		}
-
-		AVLNode<T> newThis = this;
-
-		System.out.println("onLeft = [" + onLeft + "], outside = [" + outside + "], this = [" + this + "]");
-		System.out.println(DotDigraph.toString(getRoot()).replace('\n', ' '));
-
-
-		if (!outside) {
-			// for an inside case we need a double rotation
-			if (onLeft) {
-				newThis = newThis.rotateRight();
-				if (newThis.hasParent()) {
-					newThis.parent.rotateLeft();
-				}
-			} else {
-				newThis = newThis.rotateLeft();
-				if (newThis.hasParent()) {
-					newThis.parent.rotateRight();
-				}
-			}
-		} else {
-			// outside cases
-			if (onLeft) {
-				newThis = newThis.rotateRight();
-			} else {
-				newThis = newThis.rotateLeft();
-			}
-		}
-
-		updateHeights();
-
-		System.out.println("done!");
-		System.out.println(DotDigraph.toString(getRoot()).replace('\n', ' '));
-
-		return newThis;
-	}
-
-	/**
 	 * can only be called if hasLeftChild()
-	 *
+	 * <p>
 	 * updates subtree heights but updating the heights of parent nodes i.e.
 	 * above root / pivot is on you
 	 *
@@ -336,8 +281,6 @@ public class AVLNode<T> {
 		// root: this
 		// unchanged: root  -> rr
 		//            pivot -> pl
-
-		System.out.println("rotating right about" + this);
 
 		Parameters.checkState(hasLeftChild(),
 				"right rotate requires a left child!");
@@ -369,8 +312,6 @@ public class AVLNode<T> {
 		// root: this
 		// unchanged: pivot -> pr
 		//            root  -> rl
-
-		System.out.println("rotating left about" + this);
 
 		Parameters.checkState(hasRightChild(),
 				"left rotate requires right child!");
@@ -436,6 +377,6 @@ public class AVLNode<T> {
 				+ "    ID=" + System.identityHashCode(this) + "\n"
 				+ "    LC=" + leftChild + "\n"
 				+ "    RC=" + rightChild + "\n"
-				+ "   PAR="+ parent + "\n";
+				+ "   PAR=" + parent + "\n";
 	}
 }
