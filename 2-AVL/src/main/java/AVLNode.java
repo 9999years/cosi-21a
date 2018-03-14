@@ -88,6 +88,13 @@ public class AVLNode<T> {
 				newParent.rightChild = this;
 			}
 		}
+		if (hasParent()) {
+			if (isLeftChild()) {
+				parent.leftChild = null;
+			} else {
+				parent.rightChild = null;
+			}
+		}
 		parent = newParent;
 	}
 
@@ -161,14 +168,37 @@ public class AVLNode<T> {
 		return height;
 	}
 
-	private boolean anyUnbalancedAbove() {
-		return isUnbalanced() || (hasParent() && parent.anyUnbalancedAbove());
+	private AVLNode<T> min() {
+		return hasLeftChild() ? leftChild.min() : this;
+	}
+
+	private AVLNode<T> max() {
+		return hasRightChild() ? rightChild.max() : this;
+	}
+
+	protected AVLNode<T> successor() {
+		return hasRightChild() ? rightChild.min() : null;
+	}
+
+	protected AVLNode<T> predecessor() {
+		return hasLeftChild() ? leftChild.max() : null;
+	}
+
+	private int getLeftHeight() {
+		return hasLeftChild() ? leftChild.getHeight() : 0;
+	}
+
+	private int getRightHeight() {
+		return hasRightChild() ? rightChild.getHeight() : 0;
+	}
+
+	protected AVLNode<T> higherChild() {
+		return getLeftHeight() > getRightHeight()
+			? leftChild : rightChild;
 	}
 
 	private void updateHeight() {
-		height = 1 + Math.max(
-				hasLeftChild() ? leftChild.getHeight() : 0,
-				hasRightChild() ? rightChild.getHeight() : 0);
+		height = 1 + Math.max(getLeftHeight(), getRightHeight());
 	}
 
 	public boolean isUnbalanced() {
@@ -251,13 +281,101 @@ public class AVLNode<T> {
 	}
 
 	/**
+	 * deletes this node from the tree and returns the tree's new root
+	 * @return
+	 */
+	private AVLNode<T> standardDelete() {
+		AVLNode<T> newThis = this;
+		if (hasLeftChild() != hasRightChild()) {
+			// one child
+			newThis = hasLeftChild() ? leftChild : rightChild;
+			swapThisInParent(newThis);
+		} else if (!hasLeftChild() && !hasRightChild()) {
+			// https://www.youtube.com/watch?v=Vm-NW1RwPY8
+			if (hasParent()) {
+				newThis = parent;
+			}
+			setParent(null);
+		} else {
+			// 2 children
+			AVLNode<T> succ = successor();
+			succ.standardDelete();
+			swapThisInParent(succ);
+		}
+		return newThis;
+	}
+
+	private AVLNode<T> delete() {
+		AVLNode<T> newThis = standardDelete();
+		return newThis.rebalance();
+	}
+
+	/**
 	 * This should return the new root of the tree
 	 * remember to update the right weight
 	 */
 	public AVLNode<T> delete(double value) {
-		//TODO: write standard vanilla BST delete method
-		//Extra Credit: use rotations to maintain the AVL condition
-		return this;
+		AVLNode<T> n = get(value);
+		if (n == null) {
+			// not found
+			return this;
+		} else if (n == this) {
+			return n.delete();
+		} else {
+			n.delete();
+			return this;
+		}
+	}
+
+	private AVLNode<T> rebalance() {
+		AVLNode<T> newThis = this;
+		updateHeight();
+		if (isUnbalanced()) {
+			// taller side inherently has at least one subtree of height 2
+			// so we know this is a valid call
+			AVLNode<T> taller = higherChild();
+			if (taller.isLeftChild()) {
+				if (taller.higherChild().isLeftChild()) {
+					// left left
+					newThis = rotateRight();
+				} else {
+					// left right
+					taller.rotateLeft();
+					newThis = rotateRight();
+				}
+			} else {
+				if (taller.higherChild().isLeftChild()) {
+					// right left
+					taller.rotateRight();
+					newThis = rotateLeft();
+				} else {
+					// right right
+					newThis = rotateLeft();
+				}
+			}
+		}
+
+		if (hasParent()) {
+			parent.rebalance();
+		}
+		return newThis;
+	}
+
+	/**
+	 * searches for a value in the tree such that |node.value - value| < EPSILON
+	 * @param value the value to search for
+	 * @return null if value not found in the tree; the node otherwise
+	 */
+	public AVLNode<T> get(double value) {
+		if(Doubles.equals(this.value, value, EPSILON)) {
+			return this;
+		} else if (hasLeftChild() && value <= this.value) {
+			return leftChild.get(value);
+		} else if (hasRightChild() && value >= this.value) {
+			return rightChild.get(value);
+		} else {
+			return null;
+		}
 	}
 
 	/**
