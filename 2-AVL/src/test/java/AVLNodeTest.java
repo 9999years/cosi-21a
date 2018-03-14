@@ -120,7 +120,7 @@ class AVLNodeTest {
 			System.out.println(value);
 
 			System.out.println(DotDigraph.toString(root.getRoot()).replace('\n', ' '));
-			assertEquals(root, root.getRoot());
+			assertEquals(root.getRoot(), root);
 			assertNotNull(root.get(value));
 			checkBalances(root);
 			root = root.delete(value);

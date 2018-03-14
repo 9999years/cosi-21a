@@ -126,11 +126,11 @@ public class AVLNode<T> {
 	}
 
 	public AVLNode<T> getRoot() {
-		AVLNode<T> root = this;
-		while (!root.isRoot()) {
-			root = root.parent;
+		if (isRoot()) {
+			return this;
+		} else {
+			return parent.getRoot();
 		}
-		return root;
 	}
 
 	protected boolean isRightChild() {
@@ -298,9 +298,9 @@ public class AVLNode<T> {
 			setParent(null);
 		} else {
 			// 2 children
-			AVLNode<T> succ = successor();
-			succ.standardDelete();
-			swapThisInParent(succ);
+			newThis = successor();
+			newThis.delete();
+			swapThisInParent(newThis);
 		}
 		return newThis;
 	}
@@ -319,7 +319,7 @@ public class AVLNode<T> {
 		if (n == null) {
 			// not found
 			return this;
-		} else if (n == this) {
+		} else if (n == this || n.parent == this) {
 			return n.delete();
 		} else {
 			n.delete();
