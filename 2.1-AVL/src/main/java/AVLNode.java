@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Random;
 
 public class AVLNode<T> implements AVLNodeInterface<T> {
 	public static final double EPSILON = 1e-10;

@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/rebeccaturner-AVL.iml" filepath="$PROJECT_DIR$/rebeccaturner-AVL.iml" />
       <module fileurl="file://$PROJECT_DIR$/rebeccaturner-PA2-AVL.iml" filepath="$PROJECT_DIR$/rebeccaturner-PA2-AVL.iml" />
     </modules>
   </component>
