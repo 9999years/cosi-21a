@@ -9,10 +9,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="rebeccaturner-PA2-AVL" />
         <module name="rebeccaturner-Structures" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="rebeccaturner-PA2-AVL" target="1.8" />
       <module name="rebeccaturner-Structures" target="1.8" />
     </bytecodeTargetLevel>
   </component>

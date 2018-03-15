@@ -61,9 +61,6 @@ public class AVLNode<T> {
 	}
 
 	protected void setLeftChild(AVLNode<T> n) {
-		if (hasLeftChild()) {
-			leftChild.parent = null;
-		}
 		leftChild = n;
 		if (n != null) {
 			n.parent = this;
@@ -71,9 +68,6 @@ public class AVLNode<T> {
 	}
 
 	protected void setRightChild(AVLNode<T> n) {
-		if (hasRightChild()) {
-			rightChild.parent = null;
-		}
 		rightChild = n;
 		if (n != null) {
 			n.parent = this;
@@ -299,15 +293,16 @@ public class AVLNode<T> {
 		} else {
 			// 2 children
 			newThis = successor();
-			newThis.delete();
+			// delete successor (i.e. cut it's parent links)
+			newThis.standardDelete();
 			swapThisInParent(newThis);
 		}
 		return newThis;
 	}
 
-	private AVLNode<T> delete() {
+	private AVLNode<T> delete(AVLNode<T> root) {
 		AVLNode<T> newThis = standardDelete();
-		return newThis.rebalance();
+		return newThis.rebalance(root);
 	}
 
 	/**
@@ -319,15 +314,17 @@ public class AVLNode<T> {
 		if (n == null) {
 			// not found
 			return this;
-		} else if (n == this || n.parent == this) {
-			return n.delete();
 		} else {
-			n.delete();
-			return this;
+			return n.delete(this);
 		}
 	}
 
-	private AVLNode<T> rebalance() {
+	/**
+	 * returns the new root of the tree rooted in `root`, i.e. NOT the new root of
+	 * this subtree
+	 * @return null if this isnt a member of the tree rooted in `root`
+	 */
+	private AVLNode<T> rebalance(AVLNode<T> root) {
 		AVLNode<T> newThis = this;
 		updateHeight();
 		if (isUnbalanced()) {
@@ -355,10 +352,16 @@ public class AVLNode<T> {
 			}
 		}
 
+		AVLNode<T> newParentRoot = null;
 		if (hasParent()) {
-			parent.rebalance();
+			newParentRoot = parent.rebalance(root);
 		}
-		return newThis;
+
+		if (this == root) {
+			return newThis;
+		} else {
+			return newParentRoot;
+		}
 	}
 
 	/**

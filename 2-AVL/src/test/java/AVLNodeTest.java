@@ -97,9 +97,32 @@ class AVLNodeTest {
         assertEquals(new AVLNode<>(3, 20.0), n.getRightChild());
     }
 
+    void checkParents(AVLNode<?> root) {
+		if (root.hasLeftChild()) {
+			assertSame(root, root.getLeftChild().getParent());
+			checkParents(root.getLeftChild());
+		}
+		if (root.hasRightChild()) {
+			assertSame(root, root.getRightChild().getParent());
+			checkParents(root.getRightChild());
+		}
+	}
+
+    @Test
+    void parent() {
+		AVLNode<Integer> root = new AVLNode<>(0, 0.0);
+		for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(100)) {
+			root = root.insert(n);
+			checkParents(root);
+		}
+	}
+
+	/**
+	 * inserts random nodes and deletes them in a random order
+	 */
     @Test
     void delete() {
-		// insert 100 nodes, delete them 1 by 1
+		// insert nodes, delete them 1 by 1
 		int count = 10;
 		List<Double> vals = new ArrayList<>(count);
 		AVLNodeGenerator gen = new AVLNodeGenerator(359).finite(count);
@@ -107,23 +130,22 @@ class AVLNodeTest {
 		vals.add(root.getValue());
 		// insert
 		for (AVLNode<Integer> n : gen) {
-			vals.add(n.getValue());
 			System.out.println(n.getValue());
+			vals.add(n.getValue());
 			root = root.insert(n);
 		}
 		// delete
 		Random rand = new Random(10);
-		System.out.println("deleting!");
 		System.out.println(DotDigraph.toString(root).replace('\n', ' '));
 		while (!vals.isEmpty()) {
 			double value = vals.remove(rand.nextInt(vals.size()));
-			System.out.println(value);
-
+			System.out.println("deleting " + value);
 			System.out.println(DotDigraph.toString(root.getRoot()).replace('\n', ' '));
-			assertEquals(root.getRoot(), root);
+			assertEquals(root.getRoot(), root,
+					"asserting returned node is the tree's root");
 			assertNotNull(root.get(value));
 			checkBalances(root);
-			root = root.delete(value);
+ 			root = root.delete(value);
 		}
 		System.out.println(root.treeString());
 		// if everything's been deleted, we should have a null root
@@ -163,11 +185,16 @@ class AVLNodeTest {
 		checkBalances(root.getRightChild());
 	}
 
+	/**
+	 * you can try this with 10_000 elements if youd like but itll take a while
+	 * (like 20-30 seconds a while)
+	 */
     @Test
     void balanceTest() {
         AVLNode<Integer> root = new AVLNode<>(0, 0.0);
-        for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(100)) {
+        for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(1000)) {
             root = root.insert(n);
+			checkParents(root);
            	checkBalances(root);
         }
     }
@@ -218,8 +245,8 @@ class AVLNodeTest {
 	void getTest() {
 		AVLNode<String> root = new AVLNode<>("A", 10.1);
 		root = root.insert("B", 0.1);
-		assertEquals(root, root.get(10.1));
+		assertSame(root, root.get(10.1));
 		assertNull(root.get(10.10001));
-		assertEquals(root.getLeftChild(), root.get(0.1));
+		assertSame(root.getLeftChild(), root.get(0.1));
 	}
 }
