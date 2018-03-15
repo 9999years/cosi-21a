@@ -130,13 +130,11 @@ class AVLNodeTest {
 		vals.add(root.getValue());
 		// insert
 		for (AVLNode<Integer> n : gen) {
-			System.out.println(n.getValue());
 			vals.add(n.getValue());
 			root = root.insert(n);
 		}
 		// delete
 		Random rand = new Random(10);
-		System.out.println(DotDigraph.toString(root).replace('\n', ' '));
 		while (!vals.isEmpty()) {
 			double value = vals.remove(rand.nextInt(vals.size()));
 			System.out.println("deleting " + value);

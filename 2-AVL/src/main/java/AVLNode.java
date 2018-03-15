@@ -296,6 +296,9 @@ public class AVLNode<T> {
 			// delete successor (i.e. cut it's parent links)
 			newThis.standardDelete();
 			swapThisInParent(newThis);
+			// patch successor back in
+			newThis.setLeftChild(leftChild);
+			newThis.setRightChild(rightChild);
 		}
 		return newThis;
 	}
@@ -327,28 +330,25 @@ public class AVLNode<T> {
 	private AVLNode<T> rebalance(AVLNode<T> root) {
 		AVLNode<T> newThis = this;
 		updateHeight();
-		if (isUnbalanced()) {
-			// taller side inherently has at least one subtree of height 2
-			// so we know this is a valid call
-			AVLNode<T> taller = higherChild();
-			if (taller.isLeftChild()) {
-				if (taller.higherChild().isLeftChild()) {
-					// left left
-					newThis = rotateRight();
-				} else {
-					// left right
-					taller.rotateLeft();
-					newThis = rotateRight();
-				}
+
+		if (isLeftUnbalanced()) {
+			// left case
+			if (leftChild.isRightUnbalanced() || leftChild.isRightHeavy()) {
+				// left right
+				leftChild.rotateLeft();
+				newThis = rotateRight();
 			} else {
-				if (taller.higherChild().isLeftChild()) {
-					// right left
-					taller.rotateRight();
-					newThis = rotateLeft();
-				} else {
-					// right right
-					newThis = rotateLeft();
-				}
+				// left left
+				newThis = rotateRight();
+			}
+		} else if(isRightUnbalanced()) {
+			if (rightChild.isLeftUnbalanced() || rightChild.isLeftHeavy()) {
+				// right right
+				newThis = rotateLeft();
+			} else {
+				// right left
+				rightChild.rotateRight();
+				newThis = rotateLeft();
 			}
 		}
 
@@ -357,7 +357,7 @@ public class AVLNode<T> {
 			newParentRoot = parent.rebalance(root);
 		}
 
-		if (this == root) {
+		if (this == root || isRoot()) {
 			return newThis;
 		} else {
 			return newParentRoot;
