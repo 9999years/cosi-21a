@@ -40,7 +40,7 @@ public class DotDigraph {
 	 */
 	private static String nodeDeclaration(
 			AVLNode<?> n, Function<AVLNode<?>, String> nodeText, int id) {
-		return id + "[label=\"" + nodeText.apply(n) + "\"];\n";
+		return id + "[label=\"" + nodeText.apply(n) + "\"]; ";
 	}
 
 	private static int leftId(int id) {
@@ -73,10 +73,10 @@ public class DotDigraph {
 		int rightId = rightId(id);
 		sb.append(nodeDeclaration(tree, nodeText, id));
 		if(tree.hasLeftChild()) {
-			sb.append(id).append(":s -> ").append(leftId).append(":ne;\n");
+			sb.append(id).append(":s -> ").append(leftId).append(":ne; ");
 		}
 		if(tree.hasRightChild()) {
-			sb.append(id).append(":s -> ").append(rightId).append(":nw;\n");
+			sb.append(id).append(":s -> ").append(rightId).append(":nw; ");
 		}
 		if(tree.hasLeftChild()) {
 			sb.append(dotStringNoWrapper(tree.getLeftChild(), nodeText, leftId));
@@ -100,9 +100,9 @@ public class DotDigraph {
 	 */
 	public static String toString(
 			AVLNode<?> tree, Function<AVLNode<?>, String> nodeText) {
-		return "digraph {\nnode[shape=box];\ngraph[splines=polyline];\n"
+		return "digraph { node[shape=box]; graph[splines=polyline]; "
 				+ dotStringNoWrapper(tree, nodeText, INITIAL_ID)
-				+ "}\n";
+				+ "}";
 	}
 
 }

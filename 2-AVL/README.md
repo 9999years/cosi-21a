@@ -1,4 +1,4 @@
-# HashMap implementation
+# AVL Tree
 
 # Compiling
 
@@ -8,5 +8,9 @@ compile the project either with [Maven][1] or directly.
 ## Maven
 
     mvn compile
+
+You can also test with Maven:
+
+    mvn test
 
 [1]: https://maven.apache.org/

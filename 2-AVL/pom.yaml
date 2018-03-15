@@ -58,3 +58,14 @@ build:
         version: 3.0.0
         configuration:
             show: private
+
+        # source zip; make with `mvn package`
+      - groupId: org.apache.maven.plugins
+        artifactId: maven-assembly-plugin
+        executions:
+          - configuration:
+                descriptors: [ assembly/src.xml ]
+                # no -src at end of filename
+                appendAssemblyId: false
+            goals: [ single ]
+            phase: package

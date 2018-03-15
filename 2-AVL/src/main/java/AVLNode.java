@@ -414,16 +414,12 @@ public class AVLNode<T> {
 		} else {
 			// 2 children
 			newThis = successor();
-			AVLNode<T> succParent = newThis.parent;
 			// delete successor (i.e. cut it's parent links)
-			newThis.standardDelete();
+			newThis.delete(this);
 			swapThisInParent(newThis);
 			// patch successor back in
 			newThis.setLeftChild(leftChild);
 			newThis.setRightChild(rightChild);
-			if (succParent != null) {
-				succParent.rebalance(newThis);
-			}
 		}
 		return newThis;
 	}

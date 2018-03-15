@@ -19,9 +19,10 @@
 		</fileSet>
 		<fileSet>
 			<includes>
-				<include>pom.xml</include>
+				<include>pom.yaml</include>
 				<include>README.md</include>
 				<include>assembly/*.xml</include>
+				<include>.mvn/extensions.xml</include>
 			</includes>
 		</fileSet>
 	</fileSets>

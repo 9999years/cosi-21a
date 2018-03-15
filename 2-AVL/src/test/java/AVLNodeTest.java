@@ -123,7 +123,7 @@ class AVLNodeTest {
     @Test
     void delete() {
 		// insert nodes, delete them 1 by 1
-		int count = 100;
+		int count = 1000;
 		List<Double> vals = new ArrayList<>(count);
 		AVLNodeGenerator gen = new AVLNodeGenerator(359).finite(count);
 		AVLNode<Integer> root = gen.next();
@@ -140,9 +140,8 @@ class AVLNodeTest {
 			assertEquals(root.getRoot(), root,
 					"asserting returned node is the tree's root");
 			assertNotNull(root.get(value));
+			// check avl property is maintained
 			checkBalances(root);
-			System.out.println("deleting " + value);
-			System.out.println(DotDigraph.toString(root.getRoot()).replace('\n', ' '));
  			root = root.delete(value);
 		}
 		// if everything's been deleted, we should have a null root
