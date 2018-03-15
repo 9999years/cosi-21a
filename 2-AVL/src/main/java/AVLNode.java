@@ -34,32 +34,53 @@ public class AVLNode<T> {
 	 */
 	private int height = 1;
 
+	/**
+	 * O(1)
+	 */
 	public AVLNode(T data, double value) {
 		Objects.requireNonNull(data);
 		this.data = data;
 		this.value = value;
 	}
 
+	/**
+	 * O(1)
+	 */
 	protected boolean hasLeftChild() {
 		return leftChild != null;
 	}
 
+	/**
+	 * O(1)
+	 */
 	protected boolean hasRightChild() {
 		return rightChild != null;
 	}
 
+	/**
+	 * O(1)
+	 */
 	protected boolean hasParent() {
 		return parent != null;
 	}
 
+	/**
+	 * O(1)
+	 */
 	protected AVLNode<T> getLeftChild() {
 		return leftChild;
 	}
 
+	/**
+	 * O(1)
+	 */
 	protected AVLNode<T> getRightChild() {
 		return rightChild;
 	}
 
+	/**
+	 * O(1)
+	 */
 	protected void setLeftChild(AVLNode<T> n) {
 		leftChild = n;
 		if (n != null) {
@@ -67,6 +88,9 @@ public class AVLNode<T> {
 		}
 	}
 
+	/**
+	 * O(1)
+	 */
 	protected void setRightChild(AVLNode<T> n) {
 		rightChild = n;
 		if (n != null) {
@@ -74,6 +98,9 @@ public class AVLNode<T> {
 		}
 	}
 
+	/**
+	 * O(1)
+	 */
 	protected void setParent(AVLNode<T> newParent) {
 		if (newParent != null) {
 			if (isLeftChild()) {
@@ -97,6 +124,8 @@ public class AVLNode<T> {
 	 * this is a left child parent.leftChild is set to this), this sets another
 	 * node's parent to this node's parent while ensuring this node's
 	 * parent/child directionality (rather than the new node's)
+	 *
+	 * O(1)
 	 */
 	protected void swapThisInParent(AVLNode<T> newThis) {
 		if (parent != null) {
@@ -111,14 +140,23 @@ public class AVLNode<T> {
 		}
 	}
 
+	/**
+	 * O(1)
+	 */
 	protected AVLNode<T> getParent() {
 		return parent;
 	}
 
+	/**
+	 * O(1)
+	 */
 	protected boolean isRoot() {
 		return parent == null;
 	}
 
+	/**
+	 * O(log n)
+	 */
 	public AVLNode<T> getRoot() {
 		if (isRoot()) {
 			return this;
@@ -127,26 +165,44 @@ public class AVLNode<T> {
 		}
 	}
 
+	/**
+	 * O(1)
+	 */
 	protected boolean isRightChild() {
 		return !isRoot() && parent.rightChild == this;
 	}
 
+	/**
+	 * O(1)
+	 */
 	protected boolean isLeftChild() {
 		return !isRoot() && parent.leftChild == this;
 	}
 
+	/**
+	 * O(1)
+	 */
 	public T getData() {
 		return data;
 	}
 
+	/**
+	 * O(1)
+	 */
 	public double getValue() {
 		return value;
 	}
 
+	/**
+	 * O(1)
+	 */
 	public boolean isLeaf() {
 		return leftChild == null && rightChild == null;
 	}
 
+	/**
+	 * O(1)
+	 */
 	public int getBalanceFactor() {
 		int ret = 0;
 		if (hasLeftChild()) {
@@ -158,64 +214,122 @@ public class AVLNode<T> {
 		return ret;
 	}
 
+	/**
+	 * O(1)
+	 */
 	public int getHeight() {
 		return height;
 	}
 
+	/**
+	 * O(log n)
+	 */
 	private AVLNode<T> min() {
 		return hasLeftChild() ? leftChild.min() : this;
 	}
 
+	/**
+	 * O(log n)
+	 */
 	private AVLNode<T> max() {
 		return hasRightChild() ? rightChild.max() : this;
 	}
 
+	/**
+	 * O(log n)
+	 */
 	protected AVLNode<T> successor() {
 		return hasRightChild() ? rightChild.min() : null;
 	}
 
+	/**
+	 * O(log n)
+	 */
 	protected AVLNode<T> predecessor() {
 		return hasLeftChild() ? leftChild.max() : null;
 	}
 
+	/**
+	 * O(log n)
+	 */
 	private int getLeftHeight() {
 		return hasLeftChild() ? leftChild.getHeight() : 0;
 	}
 
+	/**
+	 * O(log n)
+	 */
 	private int getRightHeight() {
 		return hasRightChild() ? rightChild.getHeight() : 0;
 	}
 
+	/**
+	 * O(1)
+	 */
 	protected AVLNode<T> higherChild() {
 		return getLeftHeight() > getRightHeight()
 			? leftChild : rightChild;
 	}
 
+	/**
+	 * O(log n)
+	 */
+	private void updateHeightsTo(AVLNode<T> stopAt) {
+		if (this == stopAt) {
+			return;
+		}
+		updateHeight();
+		if (hasParent()) {
+			parent.updateHeightsTo(stopAt);
+		}
+	}
+
+	/**
+	 * O(1)
+	 */
 	private void updateHeight() {
 		height = 1 + Math.max(getLeftHeight(), getRightHeight());
 	}
 
+	/**
+	 * O(1)
+	 */
 	public boolean isUnbalanced() {
 		int balanceFactor = getBalanceFactor();
 		return balanceFactor < -1 || balanceFactor > 1;
 	}
 
+	/**
+	 * O(1)
+	 */
 	private boolean isLeftHeavy() {
 		return getBalanceFactor() > 0;
 	}
 
+	/**
+	 * O(1)
+	 */
 	private boolean isRightHeavy() {
 		return getBalanceFactor() < 0;
 	}
 
+	/**
+	 * O(1)
+	 */
 	private boolean isLeftUnbalanced() {
 		return getBalanceFactor() > 1;
 	}
 
+	/**
+	 * O(1)
+	 */
 	private boolean isRightUnbalanced() {
 		return getBalanceFactor() < -1;
 	}
 
+	/**
+	 * O(log n)
+	 */
 	public AVLNode<T> insert(AVLNode<T> n) {
 		boolean onLeft = false;
 		if (n.value < value) {
@@ -269,6 +383,8 @@ public class AVLNode<T> {
 	 * This should return the new root of the tree
 	 * make sure to update the balance factor and right weight
 	 * and use rotations to maintain AVL condition
+	 *
+	 * O(log n)
 	 */
 	public AVLNode<T> insert(T data, double value) {
 		return insert(new AVLNode<>(data, value));
@@ -276,7 +392,8 @@ public class AVLNode<T> {
 
 	/**
 	 * deletes this node from the tree and returns the tree's new root
-	 * @return
+	 *
+	 * O(1)
 	 */
 	private AVLNode<T> standardDelete() {
 		AVLNode<T> newThis = this;
@@ -288,29 +405,42 @@ public class AVLNode<T> {
 			// https://www.youtube.com/watch?v=Vm-NW1RwPY8
 			if (hasParent()) {
 				newThis = parent;
+				setParent(null);
+			} else {
+				// no parent & no children means we're deleting the last node
+				// in a 1-node tree
+				newThis = null;
 			}
-			setParent(null);
 		} else {
 			// 2 children
 			newThis = successor();
+			AVLNode<T> succParent = newThis.parent;
 			// delete successor (i.e. cut it's parent links)
 			newThis.standardDelete();
 			swapThisInParent(newThis);
 			// patch successor back in
 			newThis.setLeftChild(leftChild);
 			newThis.setRightChild(rightChild);
+			if (succParent != null) {
+				succParent.rebalance(newThis);
+			}
 		}
 		return newThis;
 	}
 
+	/**
+	 * O(log n)
+	 */
 	private AVLNode<T> delete(AVLNode<T> root) {
 		AVLNode<T> newThis = standardDelete();
-		return newThis.rebalance(root);
+		return newThis == null ? null : newThis.rebalance(root);
 	}
 
 	/**
 	 * This should return the new root of the tree
 	 * remember to update the right weight
+	 *
+	 * O(log n)
 	 */
 	public AVLNode<T> delete(double value) {
 		AVLNode<T> n = get(value);
@@ -325,6 +455,9 @@ public class AVLNode<T> {
 	/**
 	 * returns the new root of the tree rooted in `root`, i.e. NOT the new root of
 	 * this subtree
+	 *
+	 * O(log n)
+	 *
 	 * @return null if this isnt a member of the tree rooted in `root`
 	 */
 	private AVLNode<T> rebalance(AVLNode<T> root) {
@@ -333,7 +466,8 @@ public class AVLNode<T> {
 
 		if (isLeftUnbalanced()) {
 			// left case
-			if (leftChild.isRightUnbalanced() || leftChild.isRightHeavy()) {
+			if (leftChild.isRightHeavy()) {
+				// bf < 0
 				// left right
 				leftChild.rotateLeft();
 				newThis = rotateRight();
@@ -342,12 +476,14 @@ public class AVLNode<T> {
 				newThis = rotateRight();
 			}
 		} else if(isRightUnbalanced()) {
-			if (rightChild.isLeftUnbalanced() || rightChild.isLeftHeavy()) {
-				// right right
-				newThis = rotateLeft();
-			} else {
+			if (rightChild.isLeftHeavy()) {
+				// right bf >= 1
 				// right left
 				rightChild.rotateRight();
+				newThis = rotateLeft();
+			} else {
+				// right bf <= 0
+				// right right
 				newThis = rotateLeft();
 			}
 		}
@@ -366,6 +502,7 @@ public class AVLNode<T> {
 
 	/**
 	 * searches for a value in the tree such that |node.value - value| < EPSILON
+	 * O(log n)
 	 * @param value the value to search for
 	 * @return null if value not found in the tree; the node otherwise
 	 */
@@ -386,6 +523,8 @@ public class AVLNode<T> {
 	 * <p>
 	 * updates subtree heights but updating the heights of parent nodes i.e.
 	 * above root / pivot is on you
+	 *
+	 * O(1)
 	 *
 	 * @return true if the tree's root is changed
 	 * @throws IllegalStateException if this is not a left child
@@ -420,6 +559,8 @@ public class AVLNode<T> {
 
 	/**
 	 * can only be called if hasRightChild()
+	 *
+	 * O(1)
 	 */
 	private AVLNode<T> rotateLeft() {
 		//       ?                    ?
@@ -452,6 +593,8 @@ public class AVLNode<T> {
 	 * <p>
 	 * implementation note: this allocates and immediately destroys a whole
 	 * BUNCHA strings
+	 *
+	 * O(n)
 	 */
 	public String treeString() {
 		StringBuilder sb = new StringBuilder("(");
@@ -467,6 +610,8 @@ public class AVLNode<T> {
 
 	/**
 	 * uses a fairly large epsilon (1e-10) for comparing `data` fields
+	 *
+	 * O(1)
 	 */
 	@Override
 	public boolean equals(Object o) {
@@ -478,26 +623,20 @@ public class AVLNode<T> {
 				&& Doubles.equals(value, n.value, EPSILON);
 	}
 
+	/**
+	 * O(1)
+	 */
 	@Override
 	public int hashCode() {
 		return Objects.hash(data, value);
 	}
 
+	/**
+	 * O(1)
+	 */
 	@Override
 	public String toString() {
 		return "AVLNode[" + value + " -> " + data
 				+ ", BF=" + getBalanceFactor() + ", Height=" + height + "]";
-	}
-
-	/**
-	 * a debugging string that includes the value, data, balanceFactor,
-	 * rightWeight, parent, and information on both children
-	 */
-	protected String debug() {
-		return this.toString() + ":\n"
-				+ "    ID=" + System.identityHashCode(this) + "\n"
-				+ "    LC=" + leftChild + "\n"
-				+ "    RC=" + rightChild + "\n"
-				+ "   PAR=" + parent + "\n";
 	}
 }

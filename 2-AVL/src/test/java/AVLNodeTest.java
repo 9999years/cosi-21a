@@ -123,7 +123,7 @@ class AVLNodeTest {
     @Test
     void delete() {
 		// insert nodes, delete them 1 by 1
-		int count = 10;
+		int count = 100;
 		List<Double> vals = new ArrayList<>(count);
 		AVLNodeGenerator gen = new AVLNodeGenerator(359).finite(count);
 		AVLNode<Integer> root = gen.next();
@@ -137,15 +137,14 @@ class AVLNodeTest {
 		Random rand = new Random(10);
 		while (!vals.isEmpty()) {
 			double value = vals.remove(rand.nextInt(vals.size()));
-			System.out.println("deleting " + value);
-			System.out.println(DotDigraph.toString(root.getRoot()).replace('\n', ' '));
 			assertEquals(root.getRoot(), root,
 					"asserting returned node is the tree's root");
 			assertNotNull(root.get(value));
 			checkBalances(root);
+			System.out.println("deleting " + value);
+			System.out.println(DotDigraph.toString(root.getRoot()).replace('\n', ' '));
  			root = root.delete(value);
 		}
-		System.out.println(root.treeString());
 		// if everything's been deleted, we should have a null root
 		assertNull(root);
     }
