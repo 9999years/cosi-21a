@@ -17,7 +17,7 @@
 
 import java.util.Objects;
 
-public class AVLNode<T> {
+public class AVLNode<T> implements AVLNodeInterface<T> {
 	public static final double EPSILON = 1e-10;
 
 	private T data;
@@ -512,6 +512,11 @@ public class AVLNode<T> {
 		} else {
 			return null;
 		}
+	}
+
+	public T getData(double value) {
+		AVLNode<T> ret = get(value);
+		return ret == null ? null : ret.data;
 	}
 
 	/**
