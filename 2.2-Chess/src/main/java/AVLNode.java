@@ -333,11 +333,19 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	}
 
 	/**
-	 * O(1)
+	 * O(log n)
 	 */
 	@Mutate
 	private void updateRightWeight() {
-		rightWeight = 1 + (hasRightChild() ? rightChild.rightWeight : 0);
+		System.out.println("updating " + this + "'s RW");
+		AVLNode<T> n = rightChild;
+		rightWeight = 0;
+		while (n != null) {
+			rightWeight += 1 + n.rightWeight;
+			System.out.println("new rw now =" + rightWeight + " (+= " + (n.rightWeight + 1) + " of " + n + ")");
+			System.out.println("LC = " + n.leftChild);
+			n = n.leftChild;
+		}
 	}
 
 	/**
@@ -616,6 +624,8 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 		// root: this
 		// unchanged: root  -> rr
 		//            pivot -> pl
+		// RWs that change: pivot, make sure to check after root -> pr has
+		// been set
 
 		Parameters.checkState(hasLeftChild(),
 				"right rotate requires a left child!");
@@ -629,6 +639,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 		pivot.setRightChild(this);
 		updateHeight();
 		pivot.updateHeight();
+		pivot.updateRightWeight();
 		return pivot;
 	}
 
