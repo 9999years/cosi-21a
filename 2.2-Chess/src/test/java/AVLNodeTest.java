@@ -250,7 +250,7 @@ class AVLNodeTest {
 			// leaf, base case
 			return 0;
 		}
-		return actualWeight(n.getLeftChild())
+		return 1 + actualWeight(n.getLeftChild())
 			+ actualWeight(n.getRightChild());
 	}
 
@@ -266,8 +266,8 @@ class AVLNodeTest {
 	void rightWeightTest() {
 		AVLNode<Integer> root = new AVLNode<>(0, 0.0);
 		for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(1000)) {
-			System.out.println(DotDigraph.toString(root));
 			root = root.insert(n);
+			System.out.println(DotDigraph.toString(root));
 			assertRightWeight(root);
 		}
 	}

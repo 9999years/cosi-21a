@@ -718,6 +718,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	@Pure
 	public String toString() {
 		return "AVLNode[" + value + " -> " + data
-				+ ", BF=" + getBalanceFactor() + ", Height=" + height + "]";
+				+ ", BF=" + getBalanceFactor() + ", Height=" + height
+				+ ", RW=" + getRightWeight() + "]";
 	}
 }
