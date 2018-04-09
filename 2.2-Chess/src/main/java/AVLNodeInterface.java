@@ -25,6 +25,7 @@ public interface AVLNodeInterface<T> {
 	 *  returns the data object stored in the node with this.value=value
 	 * @param value the value to find
 	 */
+	@Pure
 	T getData(double value);
 
 	/**
@@ -33,6 +34,7 @@ public interface AVLNodeInterface<T> {
 	 * tree below, the printout would be:
 	 * (((alice)bill((dave)fred(jane(joe))))judy(mary(tom)))
 	 */
+	@Pure
 	String treeString();
 
 	/**
@@ -41,6 +43,7 @@ public interface AVLNodeInterface<T> {
 	 * @param value the new node's value
 	 * @return the tree's new root
 	 */
+	@Mutate
 	AVLNode<T> insert(T data, double value);
 
 	/**
@@ -49,5 +52,6 @@ public interface AVLNodeInterface<T> {
 	 * @param value the value of the node to delete
 	 * @return the tree's new root
 	 */
+	@Mutate
 	AVLNode<T> delete(double value);
 }

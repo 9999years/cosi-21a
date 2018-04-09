@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -244,5 +243,32 @@ class AVLNodeTest {
 		assertSame(root, root.get(10.1));
 		assertNull(root.get(10.10001));
 		assertSame(root.getLeftChild(), root.get(0.1));
+	}
+
+	int actualWeight(AVLNode<?> n) {
+		if (n == null) {
+			// leaf, base case
+			return 0;
+		}
+		return actualWeight(n.getLeftChild())
+			+ actualWeight(n.getRightChild());
+	}
+
+	int actualRightWeight(AVLNode<?> n) {
+		return actualWeight(n.getRightChild());
+	}
+
+	void assertRightWeight(AVLNode<?> n) {
+		assertEquals(actualRightWeight(n), n.getRightWeight());
+	}
+
+	@Test
+	void rightWeightTest() {
+		AVLNode<Integer> root = new AVLNode<>(0, 0.0);
+		for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(1000)) {
+			System.out.println(DotDigraph.toString(root));
+			root = root.insert(n);
+			assertRightWeight(root);
+		}
 	}
 }

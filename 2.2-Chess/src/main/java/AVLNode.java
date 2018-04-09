@@ -29,12 +29,18 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	private AVLNode<T> rightChild;
 	/**
 	 * this replaces the balanceFactor field (which can be constructed from the
-	 * heights of the children) as well as the rightWeight field (which seemed
-	 * superfluous)
-	 * <p>
-	 * a leaf node has a height of 1, analagous to the 'length' of an array
+	 * heights of the children)
+	 *
+	 * a leaf node has a height of 1, analogous to the 'length' of an array
 	 */
 	private int height = 1;
+	/**
+	 * stores the amount of nodes in this node's right sub-tree
+	 *
+	 * IMO this is not... a good way to implement an index in a tree but what
+	 * do i know
+	 */
+	private int rightWeight = 0;
 
 	/**
 	 * O(1)
@@ -48,6 +54,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	protected boolean hasLeftChild() {
 		return leftChild != null;
 	}
@@ -55,6 +62,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	protected boolean hasRightChild() {
 		return rightChild != null;
 	}
@@ -62,6 +70,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	protected boolean hasParent() {
 		return parent != null;
 	}
@@ -69,6 +78,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	protected AVLNode<T> getLeftChild() {
 		return leftChild;
 	}
@@ -76,6 +86,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	protected AVLNode<T> getRightChild() {
 		return rightChild;
 	}
@@ -83,6 +94,15 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
+	protected int getRightWeight() {
+		return rightWeight;
+	}
+
+	/**
+	 * O(1)
+	 */
+	@Mutate
 	protected void setLeftChild(AVLNode<T> n) {
 		leftChild = n;
 		if (n != null) {
@@ -93,22 +113,26 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Mutate
 	protected void setRightChild(AVLNode<T> n) {
 		rightChild = n;
 		if (n != null) {
 			n.parent = this;
 		}
+		updateRightWeight();
 	}
 
 	/**
 	 * O(1)
 	 */
+	@Mutate
 	protected void setParent(AVLNode<T> newParent) {
 		if (newParent != null) {
 			if (isLeftChild()) {
 				newParent.leftChild = this;
 			} else {
 				newParent.rightChild = this;
+				newParent.updateRightWeight();
 			}
 		}
 		if (hasParent()) {
@@ -116,6 +140,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 				parent.leftChild = null;
 			} else {
 				parent.rightChild = null;
+				parent.updateRightWeight();
 			}
 		}
 		parent = newParent;
@@ -129,12 +154,14 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 *
 	 * O(1)
 	 */
+	@Mutate
 	protected void swapThisInParent(AVLNode<T> newThis) {
 		if (parent != null) {
 			if (isLeftChild()) {
 				parent.leftChild = newThis;
 			} else {
 				parent.rightChild = newThis;
+				parent.updateRightWeight();
 			}
 		}
 		if (newThis != null) {
@@ -145,6 +172,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	protected AVLNode<T> getParent() {
 		return parent;
 	}
@@ -152,6 +180,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	protected boolean isRoot() {
 		return parent == null;
 	}
@@ -159,6 +188,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(log n)
 	 */
+	@Pure
 	public AVLNode<T> getRoot() {
 		if (isRoot()) {
 			return this;
@@ -170,6 +200,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	protected boolean isRightChild() {
 		return !isRoot() && parent.rightChild == this;
 	}
@@ -177,6 +208,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	protected boolean isLeftChild() {
 		return !isRoot() && parent.leftChild == this;
 	}
@@ -184,6 +216,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	public T getData() {
 		return data;
 	}
@@ -191,6 +224,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	public double getValue() {
 		return value;
 	}
@@ -198,6 +232,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	public boolean isLeaf() {
 		return leftChild == null && rightChild == null;
 	}
@@ -205,6 +240,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	public int getBalanceFactor() {
 		int ret = 0;
 		if (hasLeftChild()) {
@@ -220,6 +256,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	public int getHeight() {
 		return height;
 	}
@@ -227,6 +264,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(log n)
 	 */
+	@Pure
 	private AVLNode<T> min() {
 		return hasLeftChild() ? leftChild.min() : this;
 	}
@@ -234,6 +272,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(log n)
 	 */
+	@Pure
 	private AVLNode<T> max() {
 		return hasRightChild() ? rightChild.max() : this;
 	}
@@ -241,6 +280,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(log n)
 	 */
+	@Pure
 	protected AVLNode<T> successor() {
 		return hasRightChild() ? rightChild.min() : null;
 	}
@@ -248,6 +288,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(log n)
 	 */
+	@Pure
 	protected AVLNode<T> predecessor() {
 		return hasLeftChild() ? leftChild.max() : null;
 	}
@@ -255,6 +296,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(log n)
 	 */
+	@Pure
 	private int getLeftHeight() {
 		return hasLeftChild() ? leftChild.getHeight() : 0;
 	}
@@ -262,6 +304,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(log n)
 	 */
+	@Pure
 	private int getRightHeight() {
 		return hasRightChild() ? rightChild.getHeight() : 0;
 	}
@@ -269,6 +312,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	protected AVLNode<T> higherChild() {
 		return getLeftHeight() > getRightHeight()
 			? leftChild : rightChild;
@@ -277,6 +321,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(log n)
 	 */
+	@Mutate
 	private void updateHeightsTo(AVLNode<T> stopAt) {
 		if (this == stopAt) {
 			return;
@@ -290,6 +335,15 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Mutate
+	private void updateRightWeight() {
+		rightWeight = 1 + (hasRightChild() ? rightChild.rightWeight : 0);
+	}
+
+	/**
+	 * O(1)
+	 */
+	@Mutate
 	private void updateHeight() {
 		height = 1 + Math.max(getLeftHeight(), getRightHeight());
 	}
@@ -297,6 +351,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	public boolean isUnbalanced() {
 		int balanceFactor = getBalanceFactor();
 		return balanceFactor < -1 || balanceFactor > 1;
@@ -304,7 +359,10 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 
 	/**
 	 * O(1)
+	 *
+	 * Heavy is OK; unbalanced is a problem
 	 */
+	@Pure
 	private boolean isLeftHeavy() {
 		return getBalanceFactor() > 0;
 	}
@@ -312,6 +370,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	private boolean isRightHeavy() {
 		return getBalanceFactor() < 0;
 	}
@@ -319,6 +378,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	private boolean isLeftUnbalanced() {
 		return getBalanceFactor() > 1;
 	}
@@ -326,6 +386,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(1)
 	 */
+	@Pure
 	private boolean isRightUnbalanced() {
 		return getBalanceFactor() < -1;
 	}
@@ -333,6 +394,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * O(log n)
 	 */
+	@Mutate
 	public AVLNode<T> insert(AVLNode<T> n) {
 		boolean onLeft = false;
 		if (n.value < value) {
@@ -348,6 +410,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 			}
 		} else {
 			// newValue >= value
+			rightWeight += 1;
 			if (hasRightChild()) {
 				rightChild.insert(n);
 			} else {
@@ -389,6 +452,8 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 *
 	 * O(log n)
 	 */
+	@Mutate
+	@Override
 	public AVLNode<T> insert(T data, double value) {
 		return insert(new AVLNode<>(data, value));
 	}
@@ -441,6 +506,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 *
 	 * O(log n)
 	 */
+	@Override
 	public AVLNode<T> delete(double value) {
 		AVLNode<T> n = get(value);
 		if (n == null) {
@@ -459,6 +525,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 *
 	 * @return null if this isnt a member of the tree rooted in `root`
 	 */
+	@Mutate
 	private AVLNode<T> rebalance(AVLNode<T> root) {
 		AVLNode<T> newThis = this;
 		updateHeight();
@@ -505,6 +572,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 * @param value the value to search for
 	 * @return null if value not found in the tree; the node otherwise
 	 */
+	@Pure
 	public AVLNode<T> get(double value) {
 		if(Doubles.equals(this.value, value, EPSILON)) {
 			return this;
@@ -517,6 +585,8 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 		}
 	}
 
+	@Pure
+	@Override
 	public T getData(double value) {
 		AVLNode<T> ret = get(value);
 		return ret == null ? null : ret.data;
@@ -533,6 +603,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 * @return true if the tree's root is changed
 	 * @throws IllegalStateException if this is not a left child
 	 */
+	@Mutate
 	private AVLNode<T> rotateRight() {
 		//         ?              ?
 		//         |              |
@@ -566,6 +637,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 *
 	 * O(1)
 	 */
+	@Mutate
 	private AVLNode<T> rotateLeft() {
 		//       ?                    ?
 		//       |                    |
@@ -600,6 +672,8 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 *
 	 * O(n)
 	 */
+	@Pure
+	@Override
 	public String treeString() {
 		StringBuilder sb = new StringBuilder("(");
 		if (hasLeftChild()) {
@@ -618,6 +692,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 * O(1)
 	 */
 	@Override
+	@Pure
 	public boolean equals(Object o) {
 		if (!(o instanceof AVLNode)) {
 			return false;
@@ -631,6 +706,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 * O(1)
 	 */
 	@Override
+	@Pure
 	public int hashCode() {
 		return Objects.hash(data, value);
 	}
@@ -639,6 +715,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 * O(1)
 	 */
 	@Override
+	@Pure
 	public String toString() {
 		return "AVLNode[" + value + " -> " + data
 				+ ", BF=" + getBalanceFactor() + ", Height=" + height + "]";
