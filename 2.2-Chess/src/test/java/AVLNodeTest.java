@@ -267,6 +267,7 @@ class AVLNodeTest {
 		AVLNode<Integer> root = new AVLNode<>(0, 0.0);
 		for(AVLNode<Integer> n : new AVLNodeGenerator(637275).finite(1000)) {
 			root = root.insert(n);
+			System.out.println("[INFO] [INFO] Done with insert");
 			System.out.println(DotDigraph.toString(root));
 			assertRightWeight(root);
 		}

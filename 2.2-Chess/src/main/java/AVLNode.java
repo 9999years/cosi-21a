@@ -15,9 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Random;
 
 public class AVLNode<T> implements AVLNodeInterface<T> {
 	public static final double EPSILON = 1e-10;
@@ -30,13 +28,13 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * this replaces the balanceFactor field (which can be constructed from the
 	 * heights of the children)
-	 *
+	 * <p>
 	 * a leaf node has a height of 1, analogous to the 'length' of an array
 	 */
 	private int height = 1;
 	/**
 	 * stores the amount of nodes in this node's right sub-tree
-	 *
+	 * <p>
 	 * IMO this is not... a good way to implement an index in a tree but what
 	 * do i know
 	 */
@@ -151,7 +149,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 * this is a left child parent.leftChild is set to this), this sets another
 	 * node's parent to this node's parent while ensuring this node's
 	 * parent/child directionality (rather than the new node's)
-	 *
+	 * <p>
 	 * O(1)
 	 */
 	@Mutate
@@ -315,7 +313,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	@Pure
 	protected AVLNode<T> higherChild() {
 		return getLeftHeight() > getRightHeight()
-			? leftChild : rightChild;
+				? leftChild : rightChild;
 	}
 
 	/**
@@ -337,7 +335,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 */
 	@Mutate
 	private void updateRightWeight() {
-		System.out.println("updating " + this + "'s RW");
+		System.out.println("updating " + simpleString() + "'s RW");
 		AVLNode<T> n = rightChild;
 		rightWeight = 0;
 		while (n != null) {
@@ -345,6 +343,27 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 			System.out.println("new rw now =" + rightWeight + " (+= " + (n.rightWeight + 1) + " of " + n + ")");
 			System.out.println("LC = " + n.leftChild);
 			n = n.leftChild;
+		}
+		System.out.println(simpleString() + "'s final RW is " + rightWeight);
+		System.out.println(DotDigraph.toString(this));
+	}
+
+	/**
+	 * O(log n)
+	 * <p>
+	 * updates the rightWeight field of all nodes above this one; being a
+	 * leftChild isn't necessarily relevant, because even a leftChild node
+	 * might be in some higher node's subtree
+	 */
+	@Mutate
+	private void updateRightWeightsAbove(int delta, boolean fromRight) {
+		System.out.print("Δ=" + delta + ", updating RWs at " + simpleString());
+		if (fromRight) {
+			rightWeight += delta;
+		}
+		System.out.println(", rw now " + rightWeight);
+		if (hasParent()) {
+			parent.updateRightWeightsAbove(delta, isRightChild());
 		}
 	}
 
@@ -367,7 +386,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 
 	/**
 	 * O(1)
-	 *
+	 * <p>
 	 * Heavy is OK; unbalanced is a problem
 	 */
 	@Pure
@@ -414,15 +433,19 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 				// root unchanged
 			} else {
 				// no left child
+				System.out.println("[INFO] Inserting " + n.simpleString() + " on LEFT of " + simpleString());
+				System.out.println(DotDigraph.toString(getRoot()));
+				updateRightWeightsAbove(1, false);
 				setLeftChild(n);
 			}
 		} else {
 			// newValue >= value
-			rightWeight += 1;
 			if (hasRightChild()) {
 				rightChild.insert(n);
 			} else {
 				// no right child
+				System.out.println("[INFO] Inserting " + n.simpleString() + " on RIGHT of " + simpleString());
+				updateRightWeightsAbove(1, true);
 				setRightChild(n);
 			}
 		}
@@ -438,7 +461,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 				}
 				newThis = rotateRight();
 			}
-		} else if(!onLeft && isRightUnbalanced()) {
+		} else if (!onLeft && isRightUnbalanced()) {
 			// right case
 			if (n.value > rightChild.value) {
 				newThis = rotateLeft();
@@ -457,7 +480,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 * This should return the new root of the tree
 	 * make sure to update the balance factor and right weight
 	 * and use rotations to maintain AVL condition
-	 *
+	 * <p>
 	 * O(log n)
 	 */
 	@Mutate
@@ -468,7 +491,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 
 	/**
 	 * deletes this node from the tree and returns the tree's new root
-	 *
+	 * <p>
 	 * O(1)
 	 */
 	private AVLNode<T> standardDelete() {
@@ -477,10 +500,12 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 			// one child
 			newThis = hasLeftChild() ? leftChild : rightChild;
 			swapThisInParent(newThis);
+			newThis.updateRightWeightsAbove(-1, newThis.isRightChild());
 		} else if (!hasLeftChild() && !hasRightChild()) {
 			// https://www.youtube.com/watch?v=Vm-NW1RwPY8
 			if (hasParent()) {
 				newThis = parent;
+				newThis.updateRightWeightsAbove(-1, isRightChild());
 				setParent(null);
 			} else {
 				// no parent & no children means we're deleting the last node
@@ -496,6 +521,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 			// patch successor back in
 			newThis.setLeftChild(leftChild);
 			newThis.setRightChild(rightChild);
+			updateRightWeightsAbove(-1, true);
 		}
 		return newThis;
 	}
@@ -511,7 +537,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * This should return the new root of the tree
 	 * remember to update the right weight
-	 *
+	 * <p>
 	 * O(log n)
 	 */
 	@Override
@@ -528,7 +554,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * returns the new root of the tree rooted in `root`, i.e. NOT the new root of
 	 * this subtree
-	 *
+	 * <p>
 	 * O(log n)
 	 *
 	 * @return null if this isnt a member of the tree rooted in `root`
@@ -549,7 +575,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 				// left left
 				newThis = rotateRight();
 			}
-		} else if(isRightUnbalanced()) {
+		} else if (isRightUnbalanced()) {
 			if (rightChild.isLeftHeavy()) {
 				// right bf >= 1
 				// right left
@@ -577,12 +603,13 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	/**
 	 * searches for a value in the tree such that |node.value - value| < EPSILON
 	 * O(log n)
+	 *
 	 * @param value the value to search for
 	 * @return null if value not found in the tree; the node otherwise
 	 */
 	@Pure
 	public AVLNode<T> get(double value) {
-		if(Doubles.equals(this.value, value, EPSILON)) {
+		if (Doubles.equals(this.value, value, EPSILON)) {
 			return this;
 		} else if (hasLeftChild() && value <= this.value) {
 			return leftChild.get(value);
@@ -605,7 +632,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 * <p>
 	 * updates subtree heights but updating the heights of parent nodes i.e.
 	 * above root / pivot is on you
-	 *
+	 * <p>
 	 * O(1)
 	 *
 	 * @return true if the tree's root is changed
@@ -627,6 +654,8 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 		// RWs that change: pivot, make sure to check after root -> pr has
 		// been set
 
+		System.out.println("[INFO] RIGHT rotate about " + simpleString());
+
 		Parameters.checkState(hasLeftChild(),
 				"right rotate requires a left child!");
 		// raises pivot, lowers this
@@ -645,7 +674,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 
 	/**
 	 * can only be called if hasRightChild()
-	 *
+	 * <p>
 	 * O(1)
 	 */
 	@Mutate
@@ -662,6 +691,8 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 		// unchanged: pivot -> pr
 		//            root  -> rl
 
+		System.out.println("[INFO] LEFT rotate about " + simpleString());
+
 		Parameters.checkState(hasRightChild(),
 				"left rotate requires right child!");
 		AVLNode<T> pivot = rightChild;
@@ -671,6 +702,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 		// height of pivot & root have changed (possibly)
 		updateHeight();
 		pivot.updateHeight();
+		updateRightWeight();
 		return pivot;
 	}
 
@@ -680,7 +712,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 * <p>
 	 * implementation note: this allocates and immediately destroys a whole
 	 * BUNCHA strings
-	 *
+	 * <p>
 	 * O(n)
 	 */
 	@Pure
@@ -699,7 +731,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 
 	/**
 	 * uses a fairly large epsilon (1e-10) for comparing `data` fields
-	 *
+	 * <p>
 	 * O(1)
 	 */
 	@Override
@@ -728,8 +760,16 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	@Override
 	@Pure
 	public String toString() {
-		return "AVLNode[" + value + " -> " + data
+		return "AVLNode[" + simpleString()
 				+ ", BF=" + getBalanceFactor() + ", Height=" + height
 				+ ", RW=" + getRightWeight() + "]";
+	}
+
+	/**
+	 * O(1)
+	 */
+	@Pure
+	public String simpleString() {
+		return "(" + value + " → " + data + ")";
 	}
 }
