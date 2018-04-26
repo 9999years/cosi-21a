@@ -1,0 +1,72 @@
+modelVersion: 4.0.0
+groupId: org.becca.cosi21a
+# all you have to change to adapt to a new proj.
+artifactId: rebeccaturner-PA3-Dijkstra
+version: 1.0.0
+
+properties:
+    java.version: 1.8
+    project.build.sourceEncoding: UTF-8
+    junit.jupiter.version: 5.0.3
+    junit.platform.version: 1.0.3
+
+dependencies:
+  - groupId: org.junit.jupiter
+    artifactId: junit-jupiter-api
+    version: '${junit.jupiter.version}'
+    scope: test
+  - groupId: org.junit.jupiter
+    artifactId: junit-jupiter-params
+    version: '${junit.jupiter.version}'
+    scope: test
+
+build:
+    # suppress version nr
+    finalName: '${project.artifactId}'
+    plugins:
+        # compiler
+      - groupId: org.apache.maven.plugins
+        artifactId: maven-compiler-plugin
+        version: 3.7.0
+        configuration:
+            source: '${java.version}'
+            target: '${java.version}'
+            #compilerArgs: [ -verbose, '-Xlint:unchecked' ]
+
+        # junit tests
+      - groupId: org.apache.maven.plugins
+        artifactId: maven-surefire-plugin
+        version: 2.19.1
+        configuration:
+            trimStackTrace: false
+        dependencies:
+            # launcher
+          - groupId: org.junit.platform
+            artifactId: junit-platform-surefire-provider
+            version: '${junit.platform.version}'
+            # api
+          - groupId: org.junit.jupiter
+            artifactId: junit-jupiter-engine
+            version: '${junit.jupiter.version}'
+            # parameterized tests
+          - groupId: org.junit.jupiter
+            artifactId: junit-jupiter-params
+            version: '${junit.jupiter.version}'
+
+        # javadoc
+      - groupId: org.apache.maven.plugins
+        artifactId: maven-javadoc-plugin
+        version: 3.0.0
+        configuration:
+            show: private
+
+        # source zip; make with `mvn package`
+      - groupId: org.apache.maven.plugins
+        artifactId: maven-assembly-plugin
+        executions:
+          - configuration:
+                descriptors: [ assembly/src.xml ]
+                # no -src at end of filename
+                appendAssemblyId: false
+            goals: [ single ]
+            phase: package

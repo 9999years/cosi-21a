@@ -450,6 +450,8 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 			}
 		}
 
+		System.out.println("rebalancing");
+
 		updateHeight();
 		AVLNode<T> newThis = this;
 		if (onLeft && isLeftUnbalanced()) {
@@ -530,6 +532,7 @@ public class AVLNode<T> implements AVLNodeInterface<T> {
 	 * O(log n)
 	 */
 	private AVLNode<T> delete(AVLNode<T> root) {
+		System.out.println("[NOTE] deleting " + simpleString());
 		AVLNode<T> newThis = standardDelete();
 		return newThis == null ? null : newThis.rebalance(root);
 	}
