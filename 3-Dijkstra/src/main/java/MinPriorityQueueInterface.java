@@ -14,11 +14,11 @@ public interface MinPriorityQueueInterface<T> {
 	/**
 	 * "calls heapify"
 	 */
-	protected void rebalance();
+	void rebalance();
 
 	/**
 	 * when t's priority changes, restore the heap property about t
 	 * @param t the node with changed priority in the queue
 	 */
-	protected void heapify(T t);
+	void heapify(T t);
 }
