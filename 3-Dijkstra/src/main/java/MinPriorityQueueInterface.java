@@ -1,4 +1,8 @@
 public interface MinPriorityQueueInterface<T> {
+	/**
+	 * inserts an element into the queue
+	 * @param t the element to insert
+	 */
 	void insert(T t);
 
 	/**
